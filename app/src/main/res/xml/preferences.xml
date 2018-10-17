@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <Preference
+        android:title="About this app"
+        android:icon="@drawable/ic_baseline_info_24px"
+        android:key="about_pref" />
+
+    <Preference
+        android:title="Log Out"
+        android:icon="@drawable/ic_baseline_exit_to_app_24px"
+        android:key="logout_pref"
+        android:widgetLayout="?android:button" />
+
+</PreferenceScreen>

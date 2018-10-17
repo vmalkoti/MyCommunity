@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout>
+
+    <data>
+        <!-- add variables here -->
+    </data>
+
+    <!--
+    <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".ViewResidentInfo">
+
+    -->
+            <android.support.constraint.ConstraintLayout
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <ImageView
+                    android:id="@+id/resident_photo"
+                    android:layout_width="match_parent"
+                    android:layout_height="250dp"
+                    android:scaleType="centerCrop"
+                    tools:src="@tools:sample/backgrounds/scenic" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="75dp"
+                    android:background="@drawable/fade_gradient_bottom"
+                    app:layout_constraintBottom_toBottomOf="@id/resident_photo" />
+
+
+                <TextView
+                    android:id="@+id/resident_fname_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:textSize="16sp"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/resident_photo"
+                    tools:text="First Name" />
+
+
+                <TextView
+                    android:id="@+id/resident_lname_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="@id/resident_fname_tv"
+                    app:layout_constraintStart_toStartOf="@id/resident_fname_tv"
+                    app:layout_constraintTop_toBottomOf="@id/resident_fname_tv"
+                    tools:text="Last Name" />
+
+
+                <TextView
+                    android:id="@+id/resident_gender_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="@id/resident_lname_tv"
+                    app:layout_constraintStart_toStartOf="@id/resident_lname_tv"
+                    app:layout_constraintTop_toBottomOf="@id/resident_lname_tv"
+                    tools:text="Gender" />
+
+                <TextView
+                    android:id="@+id/resident_email_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:autoLink="email"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="@id/resident_gender_tv"
+                    app:layout_constraintStart_toStartOf="@id/resident_gender_tv"
+                    app:layout_constraintTop_toBottomOf="@id/resident_gender_tv"
+                    tools:text="email@email.com" />
+
+                <TextView
+                    android:id="@+id/resident_phone_tv"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:autoLink="phone"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="@id/resident_email_tv"
+                    app:layout_constraintStart_toStartOf="@id/resident_email_tv"
+                    app:layout_constraintTop_toBottomOf="@id/resident_email_tv"
+                    tools:text="+1 (555)-555-5555" />
+
+            </android.support.constraint.ConstraintLayout>
+
+    <!--
+
+        </android.support.v4.widget.NestedScrollView>
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fab_edit_resident"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="16dp"
+            android:src="@drawable/ic_baseline_edit_24px"
+            app:fabSize="normal" />
+
+
+    </FrameLayout>
+
+    -->
+</layout>

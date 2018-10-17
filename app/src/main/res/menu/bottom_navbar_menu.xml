@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item android:id="@+id/action_building"
+        android:title="Units"
+        android:icon="@drawable/ic_baseline_domain_48px"
+        app:showAsAction="always" />
+
+    <item android:id="@+id/action_people"
+        android:title="People"
+        android:icon="@drawable/ic_baseline_people_24px"
+        app:showAsAction="always" />
+
+    <item android:id="@+id/action_maintenance"
+        android:title="Requests"
+        android:icon="@drawable/ic_baseline_build_24px"
+        app:showAsAction="always" />
+
+    <item android:id="@+id/action_ads"
+        android:title="Ads"
+        android:icon="@drawable/ic_baseline_ballot_24px"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/action_settings"
+        android:title="Settings"
+        android:icon="@drawable/ic_baseline_settings_20px"
+        app:showAsAction="always" />
+
+</menu>

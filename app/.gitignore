@@ -1,0 +1,20 @@
+# any build directory
+/build
+
+# Intellij folder - user specific configs
+.idea
+
+# Firebase config file
+app/google-services.json
+
+# Crashlytics configuations
+com_crashlytics_export_strings.xml
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Gradle generated files
+.gradle/
+
+# Signing files
+.signing/

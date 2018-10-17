@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+    </data>
+
+    <android.support.v4.widget.NestedScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:context=".ViewAdInfo">
+
+
+            <TextView
+                android:id="@+id/ad_post_title_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:textSize="24sp"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Post Title" />
+
+
+            <TextView
+                android:id="@+id/ad_post_resident_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:textSize="16sp"
+                app:layout_constraintLeft_toLeftOf="@id/ad_post_title_tv"
+                app:layout_constraintRight_toRightOf="@id/ad_post_title_tv"
+                app:layout_constraintTop_toBottomOf="@id/ad_post_title_tv"
+                tools:text="@tools:sample/full_names" />
+
+            <TextView
+                android:id="@+id/ad_post_date_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:textSize="16sp"
+                app:layout_constraintLeft_toLeftOf="@id/ad_post_resident_tv"
+                app:layout_constraintRight_toRightOf="@id/ad_post_resident_tv"
+                app:layout_constraintTop_toBottomOf="@id/ad_post_resident_tv"
+                tools:text="@tools:sample/date/mmddyy" />
+
+
+            <TextView
+                android:id="@+id/ad_post_desc_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:textSize="16sp"
+                app:layout_constraintLeft_toLeftOf="@id/ad_post_date_tv"
+                app:layout_constraintRight_toRightOf="@id/ad_post_date_tv"
+                app:layout_constraintTop_toBottomOf="@id/ad_post_date_tv"
+                tools:text="@tools:sample/lorem[15]" />
+
+
+        </android.support.constraint.ConstraintLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+
+</layout>

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout>
+
+    <data>
+        <!-- add variables here -->
+    </data>
+
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".UserAuthentication">
+
+
+        <android.support.constraint.Group
+            android:id="@+id/sign_in_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="user_login_id, user_login_password,authenticate_user" />
+
+        <android.support.constraint.Group
+            android:id="@+id/sign_up_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:constraint_referenced_ids="signup_user_resident,signup_user_mgmt" />
+
+        <TextView
+            android:id="@+id/app_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="64dp"
+            android:text="My Community"
+            android:textColor="@android:color/darker_gray"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <!--
+        <Button
+            android:id="@+id/sign_in_tab"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginLeft="32dp"
+            android:layout_marginTop="16dp"
+            android:background="@android:color/transparent"
+            android:text="Sign-In"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@+id/sign_up_tab"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/app_title" />
+
+        <Button
+            android:id="@+id/sign_up_tab"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:layout_marginRight="32dp"
+            android:background="@android:color/transparent"
+            android:text="Sign-Up"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@id/sign_in_tab"
+            app:layout_constraintTop_toTopOf="@id/sign_in_tab" />
+        -->
+
+
+        <EditText
+            android:id="@+id/user_login_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginTop="32dp"
+            android:digits="0,1,2,3,4,5,6,7,8,9,abcdefghijklmnopqrstuvwxyz,_,-,.,@"
+            android:hint="Email ID"
+            android:inputType="textEmailAddress"
+            app:layout_constraintTop_toBottomOf="@id/app_title" />
+
+        <EditText
+            android:id="@+id/user_login_password"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="32dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginBottom="8dp"
+            android:hint="Password"
+            android:inputType="textPassword"
+            app:layout_constraintTop_toBottomOf="@id/user_login_id" />
+
+
+        <Button
+            android:id="@+id/authenticate_user"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="32dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginRight="32dp"
+            android:background="@color/colorAccent"
+            android:text="Log In"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/user_login_password" />
+
+
+
+        <Button
+            android:id="@+id/signup_user_resident"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="32dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginRight="32dp"
+            android:background="@android:color/transparent"
+            android:text="New Resident Sign-Up"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/signup_user_mgmt" />
+
+
+        <Button
+            android:id="@+id/signup_user_mgmt"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="32dp"
+            android:layout_marginBottom="32dp"
+            android:layout_marginRight="32dp"
+            android:background="@android:color/transparent"
+            android:text="New Management Sign Up"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
+
+
+    </android.support.constraint.ConstraintLayout>
+
+</layout>

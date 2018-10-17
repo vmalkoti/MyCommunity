@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout>
+
+    <data>
+        <!-- add variables here -->
+    </data>
+
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".EditMaintenanceDetails">
+
+
+        <EditText
+            android:id="@+id/ad_post_title_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:hint="Title"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+
+        <EditText
+            android:id="@+id/ad_post_resident_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:enabled="false"
+            android:hint="Resident Name"
+            app:layout_constraintLeft_toLeftOf="@id/ad_post_title_et"
+            app:layout_constraintRight_toRightOf="@id/ad_post_title_et"
+            app:layout_constraintTop_toBottomOf="@id/ad_post_title_et" />
+
+
+
+        <EditText
+            android:id="@+id/request_desc_et"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:hint="Description"
+            android:maxLines="7"
+            app:layout_constraintLeft_toLeftOf="@id/ad_post_resident_et"
+            app:layout_constraintRight_toRightOf="@id/ad_post_resident_et"
+            app:layout_constraintTop_toBottomOf="@id/ad_post_resident_et" />
+
+
+        <Button
+            android:id="@+id/request_submit_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:background="@color/colorAccent"
+            android:text="Submit"
+            android:visibility="visible"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/request_desc_et" />
+
+
+    </android.support.constraint.ConstraintLayout>
+
+</layout>

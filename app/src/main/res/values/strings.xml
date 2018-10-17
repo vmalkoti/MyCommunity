@@ -1,0 +1,64 @@
+<resources>
+
+    <string name="app_name">My Community</string>
+
+    <string name="gender_female">Female</string>
+    <string name="gender_male">Male</string>
+
+    <string-array name="gender_list">
+        <item>@string/gender_female</item>
+        <item>@string/gender_male</item>
+    </string-array>
+
+    <string name="req_status_open">Open</string>
+    <string name="req_status_progress">In Progress</string>
+    <string name="req_status_vendor">Pending with vendor</string>
+    <string name="req_status_closed">Closed</string>
+
+    <string-array name="request_status_list">
+        <item>@string/req_status_open</item>
+        <item>@string/req_status_closed</item>
+        <item>@string/req_status_progress</item>
+        <item>@string/req_status_vendor</item>
+    </string-array>
+
+    <string name="apt_status_leasing">Leasing</string>
+    <string name="apt_status_occupied">Occupied</string>
+    <string name="apt_status_repair">In Repair/Renovation</string>
+    <string name="apt_status_vacant">Vacant</string>
+
+    <string-array name="apt_status_list">
+        <item>@string/apt_status_leasing</item>
+        <item>@string/apt_status_occupied</item>
+        <item>@string/apt_status_repair</item>
+        <item>@string/apt_status_vacant</item>
+    </string-array>
+
+    <string name="ipsum">Lorem ipsum dolor sit amet, erat sed accumsan sit, dolor curabitur justo a, vel non lobortis ultricies per. Pede metus quam dui velit, erat sodales taciti ullamcorper, orci risus praesent ac. Metus malesuada morbi semper, egestas sit elementum pellentesque, mauris mi varius rutrum amet, facilisis sit eros urna nisl. Vitae nec odio rhoncus, cum natoque volutpat sed, proin tincidunt ante mi arcu.</string>
+
+    <string name="resident_signup_alert">Currently, new residents can only be added by the building manager. Please contact your building manager.</string>
+
+
+    <string name="admob_sample_unit_id">ca-app-pub-3940256099942544~3347511713</string>
+
+
+    <string name="admob_sample_app_id">ca-app-pub-3940256099942544~3347511713</string>
+    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="interstitial_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+
+    <string name="about_app_msg">
+        This app is created as Capstone project for Udacity Android Nanodegree program. This app demonstrates usage of:
+        \n 1. Third party library integration
+        \n 2. Google services (Firebase Auth, Realtime DB, Storage, Ads)
+        \n 3. Read network data (Firebase)
+        \n 4. Data persistence (with offline Firebase and Room)
+        \n 5. App widget
+        \n 6. Notifications
+        \n 7. Material design
+    </string>
+    <string name="appwidget_text">Logged In</string>
+    <string name="add_widget">Add widget</string>
+
+
+</resources>
+

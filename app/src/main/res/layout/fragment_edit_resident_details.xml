@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout>
+
+    <data>
+        <!-- add variables here -->
+    </data>
+
+
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".EditResidentDetails">
+
+        <ImageView
+            android:id="@+id/resident_photo"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:scaleType="centerCrop"
+            tools:src="@tools:sample/backgrounds/scenic" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="75dp"
+            android:background="@drawable/fade_gradient_bottom"
+            app:layout_constraintBottom_toBottomOf="@id/resident_photo" />
+
+        <EditText
+            android:id="@+id/resident_first_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:hint="First Name"
+            app:layout_constraintTop_toBottomOf="@id/resident_photo" />
+
+        <EditText
+            android:id="@+id/resident_last_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:hint="Last Name"
+            app:layout_constraintTop_toBottomOf="@id/resident_first_name" />
+
+        <Spinner
+            android:id="@+id/resident_gender"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:entries="@array/gender_list"
+            app:layout_constraintTop_toBottomOf="@id/resident_last_name" />
+
+        <EditText
+            android:id="@+id/resident_email_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:hint="Email"
+            android:inputType="textEmailAddress"
+            app:layout_constraintTop_toBottomOf="@id/resident_gender" />
+
+        <EditText
+            android:id="@+id/resident_phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:hint="Phone"
+            android:inputType="phone|number"
+            app:layout_constraintTop_toBottomOf="@id/resident_email_id" />
+
+        <!--
+        Generate random password when Add is clicked
+        https://stackoverflow.com/questions/42110897/how-to-generate-random-alpha-and-numeric-string
+        -->
+        <Button
+            android:id="@+id/add_resident_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:background="@color/colorAccent"
+            android:text="Add"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/update_resident_btn"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/resident_phone" />
+
+        <Button
+            android:id="@+id/update_resident_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:background="@color/colorAccent"
+            android:text="Update"
+            android:visibility="visible"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/cancel_btn"
+            app:layout_constraintStart_toEndOf="@+id/add_resident_btn"
+            app:layout_constraintTop_toBottomOf="@id/resident_phone" />
+
+        <Button
+            android:id="@+id/cancel_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:background="@color/colorAccent"
+            android:text="Cancel"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/update_resident_btn"
+            app:layout_constraintTop_toBottomOf="@id/resident_phone" />
+
+    </android.support.constraint.ConstraintLayout>
+
+</layout>
