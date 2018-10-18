@@ -48,7 +48,7 @@
                 <action android:name="android.appwidget.action.APPWIDGET_DISABLED" />
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
                 <action android:name="android.appwidget.action.APPWIDGET_DELETED" />
-            <!-- For AlarmManager custom intent -->
+                <!-- Custom intent for AlarmManager broadcast -->
                 <action android:name="com.malkoti.capstone.mycommunity.HOMESCREEN_WIDGET_UPDATE" />
             </intent-filter>
 

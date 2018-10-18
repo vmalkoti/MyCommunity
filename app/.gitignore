@@ -5,7 +5,7 @@
 .idea
 
 # Firebase config file
-app/google-services.json
+google-services.json
 
 # Crashlytics configuations
 com_crashlytics_export_strings.xml

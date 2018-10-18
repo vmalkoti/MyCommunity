@@ -12,12 +12,12 @@ import android.view.ViewGroup;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link EditAdDetails.OnFragmentInteractionListener} interface
+ * {@link EditAnnouncementDetails.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link EditAdDetails#newInstance} factory method to
+ * Use the {@link EditAnnouncementDetails#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class EditAdDetails extends Fragment {
+public class EditAnnouncementDetails extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     /**
@@ -31,7 +31,7 @@ public class EditAdDetails extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    public EditAdDetails() {
+    public EditAnnouncementDetails() {
         // Required empty public constructor
     }
 
@@ -39,10 +39,10 @@ public class EditAdDetails extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @return A new instance of fragment EditAdDetails.
+     * @return A new instance of fragment EditAnnouncementDetails.
      */
-    public static EditAdDetails newInstance() {
-        EditAdDetails fragment = new EditAdDetails();
+    public static EditAnnouncementDetails newInstance() {
+        EditAnnouncementDetails fragment = new EditAnnouncementDetails();
         return fragment;
     }
 

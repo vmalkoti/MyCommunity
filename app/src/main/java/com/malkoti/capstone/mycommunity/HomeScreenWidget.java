@@ -79,7 +79,8 @@ public class HomeScreenWidget extends AppWidgetProvider {
     public void onDisabled(Context context) {
         // Enter relevant functionality for when the last widget is disabled
         super.onDisabled(context);
-        //clearWidgetUpdateAlarm(context);
+        Log.d(LOG_TAG, "onDisabled: Clearing alarm");
+        clearWidgetUpdateAlarm(context);
     }
 
     @Override

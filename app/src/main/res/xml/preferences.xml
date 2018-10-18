@@ -3,14 +3,29 @@
 
 
     <Preference
-        android:title="About this app"
+        android:title="About"
         android:icon="@drawable/ic_baseline_info_24px"
         android:key="about_pref" />
+
+    <Preference
+        android:title="Profile"
+        android:icon="@drawable/ic_baseline_person_24px"
+        android:key="profile_pref" />
+
+    <EditTextPreference
+        android:title="Password"
+        android:key="passwd_pref"
+        android:icon="@drawable/ic_baseline_security_24px"
+        android:inputType="textPassword" />
+
+    <!-- another edittextpref for widget update period? -->
 
     <Preference
         android:title="Log Out"
         android:icon="@drawable/ic_baseline_exit_to_app_24px"
         android:key="logout_pref"
         android:widgetLayout="?android:button" />
+
+
 
 </PreferenceScreen>

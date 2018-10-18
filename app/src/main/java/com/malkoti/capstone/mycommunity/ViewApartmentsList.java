@@ -29,7 +29,7 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class ViewApartmentsList extends Fragment {
-    private OnFragmentInteractionListener mListener;
+    private OnFragmentInteractionListener interactionListener;
     private FragmentViewApartmentsListBinding binding;
     private ApartmentsListAdapter adapter;
 
@@ -95,7 +95,7 @@ public class ViewApartmentsList extends Fragment {
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+            interactionListener = (OnFragmentInteractionListener) context;
         } else {
             /*
             throw new RuntimeException(context.toString()
@@ -107,7 +107,7 @@ public class ViewApartmentsList extends Fragment {
     @Override
     public void onDetach() {
         super.onDetach();
-        mListener = null;
+        interactionListener = null;
     }
 
     private void initUI() {
@@ -115,7 +115,7 @@ public class ViewApartmentsList extends Fragment {
         binding.apartmentsListRv.setLayoutManager(new LinearLayoutManager(ViewApartmentsList.this.getContext()));
         binding.apartmentsListRv.addItemDecoration(new DividerItemDecoration(getContext(),
                 DividerItemDecoration.VERTICAL));
-        adapter = new ApartmentsListAdapter(() -> mListener.onFragmentInteraction(null));
+        adapter = new ApartmentsListAdapter(() -> interactionListener.onFragmentInteraction(null));
         adapter.setData(Arrays.asList(1,2,3,4,5,6,7,8,9,10));
         binding.apartmentsListRv.setAdapter(adapter);
     }

@@ -96,13 +96,14 @@ public class FirebaseAuthUtil {
     }
 
     /**
+     * Reauthenticate user and, if successful, change password
      *
      * @param emailId
      * @param currentPassword
      * @param newPassword
      * @param callback
      */
-    public static void changeUserPassword(@NonNull String emailId, @NonNull String currentPassword,
+    public static void changeUserPasswordAfterReauth(@NonNull String emailId, @NonNull String currentPassword,
                                           @NonNull String newPassword,
                                           @NonNull ICallback callback) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
@@ -113,6 +114,23 @@ public class FirebaseAuthUtil {
                 .addOnFailureListener(ex -> callback.onFailure(ex.getLocalizedMessage()));
     }
 
+    /**
+     * Change current user password
+     *
+     * @param newPassword
+     * @param callback
+     */
+    public static void changeUserPassword(@NonNull String newPassword, @NonNull ICallback callback) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        setNewPassword(user, newPassword, callback);
+    }
+
+    /**
+     *
+     * @param user
+     * @param newPassword
+     * @param callback
+     */
     private static void setNewPassword(FirebaseUser user, String newPassword, ICallback callback) {
         user.updatePassword(newPassword)
                 .addOnSuccessListener(task -> callback.onSuccess())

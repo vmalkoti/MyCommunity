@@ -17,9 +17,9 @@
         android:icon="@drawable/ic_baseline_build_24px"
         app:showAsAction="always" />
 
-    <item android:id="@+id/action_ads"
-        android:title="Ads"
-        android:icon="@drawable/ic_baseline_ballot_24px"
+    <item android:id="@+id/action_notice"
+        android:title="Notices"
+        android:icon="@drawable/ic_baseline_announcement_24px"
         app:showAsAction="always" />
 
     <item

@@ -2,21 +2,17 @@ package com.malkoti.capstone.mycommunity;
 
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.malkoti.capstone.mycommunity.databinding.ActivityDetailsBinding;
 
 public class DetailsActivity extends AppCompatActivity {
-    public enum DetailsScreenType {COMMUNITY_DETAILS, APARTMENT_DETAILS, RESIDENT_DETAILS, MAINTENANCE_REQ_DETAILS, ADS_DETAILS}
+    public enum DetailsScreenType {COMMUNITY_DETAILS, APARTMENT_DETAILS, RESIDENT_DETAILS, MAINTENANCE_REQ_DETAILS, ANNOUNCEMENT_DETAILS}
 
     public static final String DISPLAY_SCREEN_TYPE = "DETAILS_TYPE";
     public static final String DISPLAY_ITEM_KEY = "DETAILS_ITEM_KEY";
@@ -92,8 +88,8 @@ public class DetailsActivity extends AppCompatActivity {
             case MAINTENANCE_REQ_DETAILS:
                 fragment = ViewMaintenanceReqInfo.newInstance();
                 break;
-            case ADS_DETAILS:
-                fragment = ViewAdInfo.newInstance();
+            case ANNOUNCEMENT_DETAILS:
+                fragment = ViewAnnouncementInfo.newInstance();
                 break;
             default:
                 return;
@@ -103,12 +99,7 @@ public class DetailsActivity extends AppCompatActivity {
                 .replace(R.id.container, fragment)
                 .commit();
 
-        // ad posts should not be editable
-        if(type == DetailsScreenType.ADS_DETAILS) {
-            binding.fabEditDetails.hide();
-        } else {
-            binding.fabEditDetails.show();
-        }
+        binding.fabEditDetails.show();
     }
 
 
@@ -132,8 +123,8 @@ public class DetailsActivity extends AppCompatActivity {
             case MAINTENANCE_REQ_DETAILS:
                 fragment = EditMaintenanceDetails.newInstance(true);
                 break;
-            case ADS_DETAILS:
-                fragment = EditAdDetails.newInstance();
+            case ANNOUNCEMENT_DETAILS:
+                fragment = EditAnnouncementDetails.newInstance();
                 break;
             default:
                 return;

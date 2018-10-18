@@ -9,20 +9,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.malkoti.capstone.mycommunity.databinding.FragmentViewAdInfoBinding;
+import com.malkoti.capstone.mycommunity.databinding.FragmentViewAnnouncementInfoBinding;
 
 
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link ViewAdInfo.OnFragmentInteractionListener} interface
+ * {@link ViewAnnouncementInfo.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link ViewAdInfo#newInstance} factory method to
+ * Use the {@link ViewAnnouncementInfo#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ViewAdInfo extends Fragment {
+public class ViewAnnouncementInfo extends Fragment {
     private OnFragmentInteractionListener interactionListener;
-    private FragmentViewAdInfoBinding binding;
+    private FragmentViewAnnouncementInfoBinding binding;
 
     /**
      * This interface must be implemented by activities that contain this
@@ -35,7 +35,7 @@ public class ViewAdInfo extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-    public ViewAdInfo() {
+    public ViewAnnouncementInfo() {
         // Required empty public constructor
     }
 
@@ -43,10 +43,10 @@ public class ViewAdInfo extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @return A new instance of fragment ViewAdInfo.
+     * @return A new instance of fragment ViewAnnouncementInfo.
      */
-    public static ViewAdInfo newInstance() {
-        ViewAdInfo fragment = new ViewAdInfo();
+    public static ViewAnnouncementInfo newInstance() {
+        ViewAnnouncementInfo fragment = new ViewAnnouncementInfo();
         return fragment;
     }
 
@@ -58,7 +58,7 @@ public class ViewAdInfo extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_view_ad_info,
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_view_announcement_info,
                 container, false);
         populateDummyData();
 
@@ -89,13 +89,12 @@ public class ViewAdInfo extends Fragment {
      *
      */
     private void populateDummyData() {
-        binding.adPostTitleTv.setText("Yard sale, everything $10!!!");
-        binding.adPostResidentTv.setText("Jacob");
+        binding.adPostTitleTv.setText("Fitness center renovation");
+        binding.adPostResidentTv.setText("Management Management");
         binding.adPostDateTv.setText("10-15-2018");
-        binding.adPostDescTv.setText("I'm moving to a different island and want to get rid of all the stuff. "
-                + "I'm selling everything from furniture to appliances. "
-                + "First come, first serve. Hurry up."
-                + "Contact +1-888-555-1234 for details.");
+        binding.adPostDescTv.setText("The gym will be closed for repair and renovation work "
+                + "from 10/01/2018 to 10/31/2018 to service machines, replace carpeting and mirrors, "
+                + "and for safety inspection of all machines.");
 
     }
 }

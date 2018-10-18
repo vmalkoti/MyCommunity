@@ -2,6 +2,7 @@ package com.malkoti.capstone.mycommunity;
 
 
 import android.content.Context;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
@@ -12,6 +13,23 @@ import android.support.v7.preference.PreferenceFragmentCompat;
  * Preferences screen for the app
  */
 public class AppPreferences extends PreferenceFragmentCompat {
+    private OnFragmentInteractionListener interactionListener;
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     * <p>
+     * See the Android Training lesson <a href=
+     * "http://developer.android.com/training/basics/fragments/communicating.html"
+     * >Communicating with Other Fragments</a> for more information.
+     */
+    public interface OnFragmentInteractionListener {
+        // TODO: Update argument type and name
+        void onFragmentInteraction(Uri uri);
+    }
+
 
     public AppPreferences() {
         // Required empty constructor
@@ -32,6 +50,20 @@ public class AppPreferences extends PreferenceFragmentCompat {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        if (context instanceof OnFragmentInteractionListener) {
+            interactionListener = (OnFragmentInteractionListener) context;
+        } else {
+            /*
+            throw new RuntimeException(context.toString()
+                    + " must implement OnFragmentInteractionListener");
+            */
+        }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        interactionListener = null;
     }
 
 
@@ -40,6 +72,10 @@ public class AppPreferences extends PreferenceFragmentCompat {
      */
     private void setUpPrefListeners() {
         Preference aboutButton = getPreferenceManager().findPreference("about_pref");
+        Preference profileButton = getPreferenceManager().findPreference("profile_pref");
+        Preference passwordChange = getPreferenceManager().findPreference("passwd_pref");
+        Preference logoutButton = getPreferenceManager().findPreference("logout_pref");
+
         if (aboutButton != null) {
             aboutButton.setOnPreferenceClickListener(preference -> {
                 showAlert(getString(R.string.about_app_msg));
@@ -47,7 +83,20 @@ public class AppPreferences extends PreferenceFragmentCompat {
             });
         }
 
-        Preference logoutButton = getPreferenceManager().findPreference("logout_pref");
+        if(profileButton != null) {
+            profileButton.setOnPreferenceClickListener(preference -> {
+                interactionListener.onFragmentInteraction(null);
+                return true;
+            });
+        }
+
+        if(passwordChange != null) {
+            passwordChange.setOnPreferenceChangeListener((preference, object) -> {
+                showAlert("Changing password to " + object);
+                return true;
+            });
+        }
+
         if (logoutButton != null) {
             logoutButton.setOnPreferenceClickListener(preference -> {
                 //showAlert("Clicked on Logout button");

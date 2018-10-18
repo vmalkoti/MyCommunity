@@ -10,8 +10,6 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
@@ -21,7 +19,6 @@ import com.aurelhubert.ahbottomnavigation.notification.AHNotification;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.malkoti.capstone.mycommunity.databinding.ActivityMainBinding;
 
 public class MainActivity
@@ -29,7 +26,8 @@ public class MainActivity
         implements ViewApartmentsList.OnFragmentInteractionListener,
         ViewResidentsList.OnFragmentInteractionListener,
         ViewMaintenanceList.OnFragmentInteractionListener,
-        ViewAdsList.OnFragmentInteractionListener {
+        ViewAnnouncementsList.OnFragmentInteractionListener,
+        AppPreferences.OnFragmentInteractionListener {
     private static final String LOG_TAG = "DEBUG_" + MainActivity.class.getSimpleName();
 
     private static final int RC_SIGN_IN = 2001;
@@ -62,11 +60,13 @@ public class MainActivity
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_main);
 
+        Log.d(LOG_TAG, "onCreate: Started");
         signInLaunchIntent = new Intent(MainActivity.this, LoginActivity.class);
 
         firebaseAuth = FirebaseAuth.getInstance();
 
         if(FirebaseAuthUtil.isUserSignedIn()) {
+            Log.d(LOG_TAG, "onCreate: Use Signed in");
             initUI();
             initAds();
         }
@@ -134,7 +134,7 @@ public class MainActivity
                     screenType = DetailsActivity.DetailsScreenType.MAINTENANCE_REQ_DETAILS;
                     break;
                 case 3:
-                    screenType = DetailsActivity.DetailsScreenType.ADS_DETAILS;
+                    screenType = DetailsActivity.DetailsScreenType.ANNOUNCEMENT_DETAILS;
                     break;
                 case 4:
                     // settings screen
@@ -166,7 +166,7 @@ public class MainActivity
         pagerAdapter.addFragment(ViewApartmentsList.newInstance());
         pagerAdapter.addFragment(ViewResidentsList.newInstance());
         pagerAdapter.addFragment(ViewMaintenanceList.newInstance());
-        pagerAdapter.addFragment(ViewAdsList.newInstance());
+        pagerAdapter.addFragment(ViewAnnouncementsList.newInstance());
         pagerAdapter.addFragment(AppPreferences.newInstance());
 
         binding.viewpager.setAdapter(pagerAdapter);
@@ -282,12 +282,15 @@ public class MainActivity
                 showDetailsScreenForItem(DetailsActivity.DetailsScreenType.MAINTENANCE_REQ_DETAILS, "req1234");
                 break;
             case 3:
-                showDetailsScreenForItem(DetailsActivity.DetailsScreenType.ADS_DETAILS, "ads1234");
+                showDetailsScreenForItem(DetailsActivity.DetailsScreenType.ANNOUNCEMENT_DETAILS, "ads1234");
                 break;
             case 4:
-                Log.d(LOG_TAG, "For settings screen");
+                // if manager, show community details screen
+                showDetailsScreenForItem(DetailsActivity.DetailsScreenType.COMMUNITY_DETAILS, "bldg1234");
+                // if resident, show resident details screen
+                // showDetailsScreenForItem(DetailsActivity.DetailsScreenType.RESIDENT_DETAILS, "res1234");
             default:
-                Log.d(LOG_TAG, "Unknown fragment listener");
+                Log.e(LOG_TAG, "Unknown fragment listener");
         }
 
     }

@@ -13,7 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.malkoti.capstone.mycommunity.databinding.FragmentViewAdsListBinding;
+import com.malkoti.capstone.mycommunity.databinding.FragmentViewAnnouncementsListBinding;
 import com.malkoti.capstone.mycommunity.databinding.ListItemAdBinding;
 
 import java.util.Arrays;
@@ -23,15 +23,15 @@ import java.util.List;
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
- * {@link ViewAdsList.OnFragmentInteractionListener} interface
+ * {@link ViewAnnouncementsList.OnFragmentInteractionListener} interface
  * to handle interaction events.
- * Use the {@link ViewAdsList#newInstance} factory method to
+ * Use the {@link ViewAnnouncementsList#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ViewAdsList extends Fragment {
+public class ViewAnnouncementsList extends Fragment {
     private OnFragmentInteractionListener interactionListener;
-    private FragmentViewAdsListBinding binding;
-    private AdsListAdapter adapter;
+    private FragmentViewAnnouncementsListBinding binding;
+    private AnnouncementsListAdapter adapter;
 
 
     /**
@@ -50,7 +50,7 @@ public class ViewAdsList extends Fragment {
     }
 
 
-    public ViewAdsList() {
+    public ViewAnnouncementsList() {
         // Required empty public constructor
     }
 
@@ -58,11 +58,11 @@ public class ViewAdsList extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @return A new instance of fragment ViewAdsList.
+     * @return A new instance of fragment ViewAnnouncementsList.
      */
     // TODO: Rename and change types and number of parameters
-    public static ViewAdsList newInstance() {
-        ViewAdsList fragment = new ViewAdsList();
+    public static ViewAnnouncementsList newInstance() {
+        ViewAnnouncementsList fragment = new ViewAnnouncementsList();
         return fragment;
     }
 
@@ -74,7 +74,7 @@ public class ViewAdsList extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_view_ads_list,
+        binding = DataBindingUtil.inflate(inflater, R.layout.fragment_view_announcements_list,
                 container, false);
         initUI();
 
@@ -104,10 +104,10 @@ public class ViewAdsList extends Fragment {
 
     private void initUI() {
         binding.adsListRv.setHasFixedSize(true);
-        binding.adsListRv.setLayoutManager(new LinearLayoutManager(ViewAdsList.this.getContext()));
+        binding.adsListRv.setLayoutManager(new LinearLayoutManager(ViewAnnouncementsList.this.getContext()));
         binding.adsListRv.addItemDecoration(new DividerItemDecoration(getContext(),
                 DividerItemDecoration.VERTICAL));
-        adapter = new AdsListAdapter(() -> interactionListener.onFragmentInteraction(null));
+        adapter = new AnnouncementsListAdapter(() -> interactionListener.onFragmentInteraction(null));
         adapter.setData(Arrays.asList(1,2,3,4,5,6,7,8,9,10));
         binding.adsListRv.setAdapter(adapter);
     }
@@ -115,7 +115,7 @@ public class ViewAdsList extends Fragment {
 }
 
 
-class AdsListAdapter extends RecyclerView.Adapter<AdsListAdapter.AdsViewHolder> {
+class AnnouncementsListAdapter extends RecyclerView.Adapter<AnnouncementsListAdapter.AdsViewHolder> {
     private List<Integer> ads;
     private OnAdsItemClickListener listener;
 
@@ -127,7 +127,7 @@ class AdsListAdapter extends RecyclerView.Adapter<AdsListAdapter.AdsViewHolder> 
     }
 
 
-    public AdsListAdapter(OnAdsItemClickListener listener) {
+    public AnnouncementsListAdapter(OnAdsItemClickListener listener) {
         this.listener = listener;
     }
 
@@ -172,8 +172,8 @@ class AdsListAdapter extends RecyclerView.Adapter<AdsListAdapter.AdsViewHolder> 
         }
 
         void bindView(int position) {
-            itemBinding.adItemTitleTv.setText("Yard Sale!!!!");
-            itemBinding.adItemByTv.setText("Tom Sawyer");
+            itemBinding.adItemTitleTv.setText("Fitness center renovation");
+            itemBinding.adItemByTv.setText("Management Management");
             itemBinding.adItemDateTv.setText("10-01-2018");
 
             itemBinding.adItemContainer.setOnClickListener(view -> listener.onItemClick());
