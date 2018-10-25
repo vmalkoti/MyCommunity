@@ -1,8 +1,10 @@
 package com.malkoti.capstone.mycommunity;
 
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Build;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,6 +14,12 @@ import android.widget.Toast;
 import com.google.firebase.auth.FirebaseAuth;
 
 import com.malkoti.capstone.mycommunity.databinding.ActivityLoginBinding;
+import com.malkoti.capstone.mycommunity.model.AppUser;
+import com.malkoti.capstone.mycommunity.model.Community;
+import com.malkoti.capstone.mycommunity.model.Management;
+import com.malkoti.capstone.mycommunity.utils.FirebaseAuthUtil;
+import com.malkoti.capstone.mycommunity.utils.FirebaseDbUtils;
+import com.malkoti.capstone.mycommunity.viewmodels.AppLoginViewModel;
 
 
 /**
@@ -23,7 +31,8 @@ public class LoginActivity extends AppCompatActivity
     private static final String LOG_TAG = "DEBUG_" + LoginActivity.class.getSimpleName();
     private FirebaseAuth firebaseAuth;
 
-    ActivityLoginBinding binding;
+    private ActivityLoginBinding binding;
+    private AppLoginViewModel loginViewModel;
 
     public static final int RESULT_SUCCESS = 1001;
     public static final int RESULT_FAILURE = 1002;
@@ -38,156 +47,143 @@ public class LoginActivity extends AppCompatActivity
         binding = DataBindingUtil.setContentView(this, R.layout.activity_login);
         binding.loginProgressbar.hide();
 
+        loginViewModel = ViewModelProviders.of(this).get(AppLoginViewModel.class);
+
         firebaseAuth = FirebaseAuth.getInstance();
 
-        getSupportFragmentManager()
-                .beginTransaction()
-                .replace(R.id.login_container, UserAuthentication.newInstance())
-                .commit();
+        if (savedInstanceState == null) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.login_container, UserAuthentication.newInstance())
+                    .commit();
+        }
     }
 
     @Override
-    public void onUserLogin(String emailId, String password, boolean isExistingUser) {
-        Log.d(LOG_TAG, "isExistingUser=" + isExistingUser);
+    public void onUserLogin(String emailId, String password) {
 
         binding.loginProgressbar.show();
 
-        if (isExistingUser) {
-            authenticateUser(emailId, password);
-        } else  {
-            signUpNewUser(emailId, password);
-        }
+        FirebaseAuthUtil.authenticateUser(emailId, password, new FirebaseAuthUtil.ICallback() {
+            @Override
+            public void onSuccess() {
+                Log.d(LOG_TAG, "authenticateUser:success");
+                binding.loginProgressbar.hide();
+                setResult(AppCompatActivity.RESULT_OK);
+                finish();
+            }
+
+            @Override
+            public void onFailure(@Nullable String failureMessage) {
+                // If sign in fails, display a message to the user.
+                Log.w(LOG_TAG, "authenticateUser: Failure - " + failureMessage);
+                binding.loginProgressbar.hide();
+                Toast.makeText(LoginActivity.this, "Authentication failed.",
+                        Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        //authenticateUser(emailId, password);
+
     }
 
 
     @Override
     public void onUserSignUp(boolean forNewResident) {
+        UserSignup.SignupType signupType;
         Log.d(LOG_TAG, "Signin up new user. Is a Resident? " + forNewResident);
 
-        if(forNewResident) {
-            // show an alert tht functionality is not yet available
-            AlertDialog.Builder builder;
-
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
-            } else {
-                builder = new AlertDialog.Builder(this);
-            }
-            builder.setMessage(getString(R.string.resident_signup_alert))
-                    .setCancelable(true)
-                    .setNeutralButton("OK", (dialog, which) -> dialog.dismiss());
-            AlertDialog alert = builder.create();
-            alert.show();
+        if (forNewResident) {
+            signupType = UserSignup.SignupType.FOR_RESIDENT;
         } else {
-            // show sign-up screen for management
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(R.id.login_container, UserSignup.newInstance())
-                    .addToBackStack(null)
-                    .commit();
+            signupType = UserSignup.SignupType.FOR_MANAGER;
         }
+
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.login_container, UserSignup.newInstance(signupType))
+                .addToBackStack(null)
+                .commit();
     }
 
 
     @Override
     public void onSignUpScreenSubmitAction() {
-        Toast.makeText(LoginActivity.this, "New user signed up.",
-                Toast.LENGTH_SHORT).show();
+        Log.d(LOG_TAG, "onSignUpScreenSubmitAction: started");
 
-        Log.d(LOG_TAG, "onSignUpScreenSubmitAction: executing");
+        binding.loginProgressbar.show();
 
-        // TODO: Create new user account; read from activity owned livedata
+        String email = loginViewModel.getUserEmail().getValue();
+        String password = loginViewModel.getUserPassword().getValue();
 
-        // TODO: Create new user, management and building nodes
+        // NOTE: Use RxJava to improve this callback code spaghetti
+
+        // Create new user account
+        FirebaseAuthUtil.signUpNewUser(email, password, new FirebaseAuthUtil.ICallback() {
+            @Override
+            public void onSuccess() {
+                Log.d(LOG_TAG, "Signup new user success");
+
+                /*
+                FirebaseAuthUtil.authenticateUser(email, password, new FirebaseAuthUtil.ICallback() {
+                    @Override
+                    public void onSuccess() {
+                        Log.d(LOG_TAG, "authenticateUser:success");
+
+                        binding.loginProgressbar.hide();
+                        setResult(AppCompatActivity.RESULT_OK);
+
+                        // Create new management and building nodes
+                        createNewManagerInDb(FirebaseAuthUtil.getSignedInUserId());
+
+                        finish();
+                    }
+
+                    @Override
+                    public void onFailure(@Nullable String failureMessage) {
+                        // If sign in fails, display a message to the user.
+                        Log.w(LOG_TAG, "authenticateUser: Failure - " + failureMessage);
+                        binding.loginProgressbar.hide();
+                        Toast.makeText(LoginActivity.this, "Authentication failed.",
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+                */
+
+                binding.loginProgressbar.hide();
+                setResult(AppCompatActivity.RESULT_OK);
+                Log.d(LOG_TAG, "onSignUpScreenSubmitAction: In signup success, uid is " +
+                    FirebaseAuth.getInstance().getCurrentUser().getUid());
+
+                // Create new management and building nodes
+                createNewManagerInDb(FirebaseAuthUtil.getSignedInUserId());
+
+                Log.d(LOG_TAG, "Closing Login Activity");
+
+                finish();
+
+            }
+
+            @Override
+            public void onFailure(@Nullable String failureMessage) {
+                Log.d(LOG_TAG, "authenticateUser: Failure - " + failureMessage);
+                binding.loginProgressbar.hide();
+                Toast.makeText(LoginActivity.this,
+                        "Error creating new user account: " + failureMessage, Toast.LENGTH_LONG).show();
+            }
+        });
+
 
         setResult(RESULT_SUCCESS);
 
         finish();
     }
 
-    /**
-     *
-     * @param userId
-     * @param userPassword
-     */
-    private void authenticateUser(String userId, String userPassword) {
-        firebaseAuth.signInWithEmailAndPassword(userId, userPassword)
-                .addOnCompleteListener(LoginActivity.this,
-                        task -> {
-                            if (task.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
-                                Log.d(LOG_TAG, "authenticateUser:success");
-                                binding.loginProgressbar.hide();
-                                setResult(RESULT_SUCCESS);
-                                // login/signup was successful, show MainActivity
-                                finish();
-
-                            } else {
-                                // If sign in fails, display a message to the user.
-                                Log.w(LOG_TAG, "authenticateUser:failure", task.getException());
-                                binding.loginProgressbar.hide();
-                                Toast.makeText(LoginActivity.this, "Authentication failed.",
-                                        Toast.LENGTH_SHORT).show();
-                            }
-                        });
-    }
-
-    /**
-     *
-     * @param userId
-     * @param userPassword
-     */
-    private void signUpNewUser(String userId, String userPassword) {
-        firebaseAuth.createUserWithEmailAndPassword(userId, userPassword)
-                .addOnCompleteListener(LoginActivity.this,
-                        task -> {
-                            if (task.isSuccessful()) {
-                                // Sign in success, update UI with the signed-in user's information
-                                Log.d(LOG_TAG, "signUpNewUser:success");
-                                binding.loginProgressbar.hide();
-                                setResult(RESULT_SUCCESS);
-                                finish();
-
-                            }
-                            /*
-                            else {
-                                // If sign in fails, display a message to the user.
-                                Log.w(LOG_TAG, "createUserWithEmail:failure", task.getException());
-                                Toast.makeText(UserAuthentication.this.getContext(),
-                                        "Authentication failed.",
-                                        Toast.LENGTH_SHORT).show();
-                            }
-                            */
-                        })
-                .addOnFailureListener(LoginActivity.this,
-                        ex -> {
-                            Log.e(LOG_TAG, "signUpNewUser:failure", ex.getCause());
-                            binding.loginProgressbar.hide();
-                            Toast.makeText(LoginActivity.this,
-                                    ex.getLocalizedMessage(), Toast.LENGTH_SHORT).show();
-                        });
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        /*
-        FirebaseUser user = firebaseAuth.getCurrentUser();
-        if (user != null) {
-            Toast.makeText(this, "User already signed in", Toast.LENGTH_SHORT).show();
-            // show MainActivity
-            finish();
-        } else {
-            Toast.makeText(this, "User not signed in", Toast.LENGTH_SHORT).show();
-        }
-        */
-    }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        setResult(RESULT_CANCELLED);
+        setResult(AppCompatActivity.RESULT_CANCELED);
     }
 
     @Override
@@ -196,10 +192,39 @@ public class LoginActivity extends AppCompatActivity
 
         /*
         if(firebaseAuth.getCurrentUser() == null) {
-            setResult(RESULT_CANCELLED);
+            setResult(AppCompatActivity.RESULT_CANCELED);
         } else {
-            setResult(RESULT_SUCCESS);
+            setResult(AppCompatActivity.RESULT_OK);
         }
         */
+    }
+
+
+    /**
+     * @param message
+     */
+    private void showAlert(String message) {
+        AlertDialog.Builder builder;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
+        } else {
+            builder = new AlertDialog.Builder(this);
+        }
+        builder.setMessage(message)
+                .setCancelable(true)
+                .setNeutralButton("OK", (dialog, which) -> dialog.dismiss());
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    /**
+     *
+     */
+    public void createNewManagerInDb(String uid) {
+        FirebaseDbUtils.createNewManagerInDb(uid,
+                loginViewModel.getManager().getValue(),
+                loginViewModel.getManagedCommunity().getValue(),
+                loginViewModel.getManagement().getValue());
     }
 }

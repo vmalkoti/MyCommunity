@@ -3,10 +3,14 @@
 <layout xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
-
+        <variable
+            name="community"
+            type="com.malkoti.capstone.mycommunity.model.Community" />
     </data>
 
-    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/community_info_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -26,6 +30,7 @@
                 android:id="@+id/community_name_et"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="@{community.name}"
                 android:hint="Community Name" />
 
         </android.support.design.widget.TextInputLayout>
@@ -47,6 +52,7 @@
                 android:id="@+id/community_desc_et"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="@{community.description}"
                 android:hint="Enter some information about your community"
                 android:maxLines="5" />
 
@@ -69,6 +75,7 @@
                 android:id="@+id/community_street_address_et"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="@{community.streetAddress}"
                 android:hint="Street Address" />
 
         </android.support.design.widget.TextInputLayout>
@@ -90,6 +97,7 @@
                 android:id="@+id/community_city_et"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="@{community.city}"
                 android:hint="City" />
 
         </android.support.design.widget.TextInputLayout>
@@ -110,6 +118,7 @@
                 android:id="@+id/community_state_et"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="@{community.state}"
                 android:hint="State"
                 android:inputType="textAutoComplete" />
 
@@ -132,6 +141,7 @@
                 android:id="@+id/community_zip_et"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="@{community.zip}"
                 android:hint="Zip"
                 android:inputType="number" />
 
@@ -154,6 +164,7 @@
                 android:id="@+id/community_country_et"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="@{community.country}"
                 android:hint="Country"
                 android:inputType="textAutoComplete" />
 
@@ -176,6 +187,7 @@
                 android:id="@+id/community_phone_et"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:text="@{community.phoneNum}"
                 android:hint="Phone"
                 android:inputType="phone" />
 

@@ -59,6 +59,9 @@
     <string name="appwidget_text">Logged In</string>
     <string name="add_widget">Add widget</string>
 
+    <string name="signup_id_hint_mgmt">Use an email ID that is associated with your management</string>
+    <string name="signup_id_hint_resident">Use email ID that you provided to the management</string>
+
 
 </resources>
 

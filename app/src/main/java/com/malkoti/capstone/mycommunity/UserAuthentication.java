@@ -4,6 +4,7 @@ import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,7 +21,7 @@ import com.malkoti.capstone.mycommunity.databinding.FragmentUserAuthBinding;
  * create an instance of this fragment.
  */
 public class UserAuthentication extends Fragment {
-    private static final String LOG_TAG = UserAuthentication.class.getSimpleName();
+    private static final String LOG_TAG = "DEBUG_" + UserAuthentication.class.getSimpleName();
     //private FirebaseAuth firebaseAuth;
     FragmentUserAuthBinding loginBinding;
 
@@ -38,7 +39,7 @@ public class UserAuthentication extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        void onUserLogin(String emailId, String password, boolean isExistingUser);
+        void onUserLogin(String emailId, String password);
         void onUserSignUp(boolean forNewResident);
     }
 
@@ -59,6 +60,7 @@ public class UserAuthentication extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(LOG_TAG, "New fragment created");
         // loginBinding = DataBindingUtil.setContentView(this.getActivity(), R.layout.fragment_user_auth);
         //firebaseAuth = FirebaseAuth.getInstance();
     }
@@ -113,7 +115,7 @@ public class UserAuthentication extends Fragment {
         final String userId = loginBinding.userLoginId.getText().toString();
         final String userPassword = loginBinding.userLoginPassword.getText().toString();
 
-        interactionListener.onUserLogin(userId, userPassword, true);
+        interactionListener.onUserLogin(userId, userPassword);
     }
 
 

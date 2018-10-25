@@ -12,11 +12,18 @@
         android:icon="@drawable/ic_baseline_person_24px"
         android:key="profile_pref" />
 
+    <!--
     <EditTextPreference
         android:title="Password"
         android:key="passwd_pref"
         android:icon="@drawable/ic_baseline_security_24px"
         android:inputType="textPassword" />
+    -->
+
+    <Preference
+        android:title="Simulate Crash for Crashlytics"
+        android:icon="@drawable/ic_baseline_report_problem_24px"
+        android:key="crash_pref" />
 
     <!-- another edittextpref for widget update period? -->
 

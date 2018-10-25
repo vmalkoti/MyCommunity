@@ -1,4 +1,4 @@
-package com.malkoti.capstone.mycommunity;
+package com.malkoti.capstone.mycommunity.utils;
 
 
 import android.support.annotation.NonNull;
@@ -21,8 +21,14 @@ public class FirebaseAuthUtil {
      */
     public interface ICallback {
         void onSuccess();
+
         void onFailure(@Nullable String failureMessage);
     }
+
+
+    private FirebaseAuthUtil() {
+    }
+
 
     /**
      * Authenticate user with provided credentials
@@ -68,23 +74,22 @@ public class FirebaseAuthUtil {
                         Log.d(LOG_TAG, "signUpNewUser:success");
                         callback.onSuccess();
 
-                    } /* else {
-                                // If sign in fails, display a message to the user.
-                                Log.w(LOG_TAG, "createUserWithEmail:failure", task.getException());
-                                Toast.makeText(UserAuthentication.this.getContext(),
-                                        "Authentication failed.",
-                                        Toast.LENGTH_SHORT).show();
-                    } */
-                })
+                    } else {
+                        // If sign in fails, display a message to the user.
+                        Log.w(LOG_TAG, "createUserWithEmail:failure", task.getException());
+                        callback.onFailure(task.getException().getLocalizedMessage());
+                    }
+                });
+        /*
                 .addOnFailureListener(ex -> {
-                            Log.e(LOG_TAG, "signUpNewUser:failure", ex.getCause());
-                            callback.onFailure(ex.getLocalizedMessage());
-                        });
+                    Log.e(LOG_TAG, "signUpNewUser:failure", ex.getCause());
+                    callback.onFailure(ex.getLocalizedMessage());
+                });
+        */
     }
 
 
     /**
-     *
      * @return
      */
     public static boolean isUserSignedIn() {
@@ -104,8 +109,8 @@ public class FirebaseAuthUtil {
      * @param callback
      */
     public static void changeUserPasswordAfterReauth(@NonNull String emailId, @NonNull String currentPassword,
-                                          @NonNull String newPassword,
-                                          @NonNull ICallback callback) {
+                                                     @NonNull String newPassword,
+                                                     @NonNull ICallback callback) {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
         AuthCredential credential = EmailAuthProvider.getCredential(emailId, currentPassword);
@@ -126,7 +131,6 @@ public class FirebaseAuthUtil {
     }
 
     /**
-     *
      * @param user
      * @param newPassword
      * @param callback
@@ -135,5 +139,20 @@ public class FirebaseAuthUtil {
         user.updatePassword(newPassword)
                 .addOnSuccessListener(task -> callback.onSuccess())
                 .addOnFailureListener(ex -> callback.onFailure(ex.getLocalizedMessage()));
+    }
+
+    /**
+     * Get unique ID of the signed in user
+     *
+     * @return
+     */
+    public static String getSignedInUserId() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        return user == null ? "" : user.getUid();
+    }
+
+
+    public static void deleteUser(String uid) {
+
     }
 }

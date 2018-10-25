@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.RemoteViews;
 
+import com.malkoti.capstone.mycommunity.utils.FirebaseAuthUtil;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;

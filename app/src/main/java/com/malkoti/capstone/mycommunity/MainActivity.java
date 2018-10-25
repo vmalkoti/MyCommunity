@@ -20,6 +20,7 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.auth.FirebaseAuth;
 import com.malkoti.capstone.mycommunity.databinding.ActivityMainBinding;
+import com.malkoti.capstone.mycommunity.utils.FirebaseAuthUtil;
 
 public class MainActivity
         extends AppCompatActivity

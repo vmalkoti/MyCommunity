@@ -9,6 +9,9 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 
+import com.crashlytics.android.Crashlytics;
+import com.malkoti.capstone.mycommunity.utils.FirebaseAuthUtil;
+
 /**
  * Preferences screen for the app
  */
@@ -73,7 +76,8 @@ public class AppPreferences extends PreferenceFragmentCompat {
     private void setUpPrefListeners() {
         Preference aboutButton = getPreferenceManager().findPreference("about_pref");
         Preference profileButton = getPreferenceManager().findPreference("profile_pref");
-        Preference passwordChange = getPreferenceManager().findPreference("passwd_pref");
+        //Preference passwordChange = getPreferenceManager().findPreference("passwd_pref");
+        Preference simulateCrash = getPreferenceManager().findPreference("crash_pref");
         Preference logoutButton = getPreferenceManager().findPreference("logout_pref");
 
         if (aboutButton != null) {
@@ -90,9 +94,18 @@ public class AppPreferences extends PreferenceFragmentCompat {
             });
         }
 
+        /*
         if(passwordChange != null) {
             passwordChange.setOnPreferenceChangeListener((preference, object) -> {
                 showAlert("Changing password to " + object);
+                return true;
+            });
+        }
+        */
+
+        if(simulateCrash != null) {
+            simulateCrash.setOnPreferenceClickListener(preference -> {
+                Crashlytics.getInstance().crash();
                 return true;
             });
         }
