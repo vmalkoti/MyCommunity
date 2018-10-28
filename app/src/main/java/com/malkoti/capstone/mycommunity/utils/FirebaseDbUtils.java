@@ -2,13 +2,9 @@ package com.malkoti.capstone.mycommunity.utils;
 
 import android.support.annotation.NonNull;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.malkoti.capstone.mycommunity.LoginActivity;
 import com.malkoti.capstone.mycommunity.model.AnnouncementPost;
 import com.malkoti.capstone.mycommunity.model.Apartment;
 import com.malkoti.capstone.mycommunity.model.AppUser;
