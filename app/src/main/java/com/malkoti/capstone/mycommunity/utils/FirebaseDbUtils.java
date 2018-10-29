@@ -3,8 +3,11 @@ package com.malkoti.capstone.mycommunity.utils;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.malkoti.capstone.mycommunity.model.AnnouncementPost;
 import com.malkoti.capstone.mycommunity.model.Apartment;
 import com.malkoti.capstone.mycommunity.model.AppUser;
@@ -18,18 +21,18 @@ import java.util.Map;
 public class FirebaseDbUtils {
     private static final String LOG_TAG = "DEBUG_" + FirebaseDbUtils.class.getSimpleName();
 
-    private static final String USERS_NODE_NAME = "users";
-    private static final String USERS_NODE_PATH = "/users/";
-    private static final String MGMT_NODE_NAME = "managements";
-    private static final String MGMT_NODE_PATH = "/managements/";
-    private static final String COMMUNITY_NODE_NAME = "communities";
-    private static final String COMMUNITY_NODE_PATH = "/communities/";
-    private static final String APTS_NODE_NAME = "apartements";
-    private static final String APTS_NODE_PATH = "/apartements/";
-    private static final String REQUESTS_NODE_NAME = "requests";
-    private static final String REQUESTS_NODE_PATH = "/requests/";
-    private static final String ANNOUNCEMENTS_NODE_NAME = "announcements";
-    private static final String ANNOUNCEMENTS_NODE_PATH = "/announcements/";
+    public static final String USERS_NODE_NAME = "users";
+    public static final String USERS_NODE_PATH = "/users/";
+    public static final String MGMT_NODE_NAME = "managements";
+    public static final String MGMT_NODE_PATH = "/managements/";
+    public static final String COMMUNITY_NODE_NAME = "communities";
+    public static final String COMMUNITY_NODE_PATH = "/communities/";
+    public static final String APTS_NODE_NAME = "apartements";
+    public static final String APTS_NODE_PATH = "/apartements/";
+    public static final String REQUESTS_NODE_NAME = "requests";
+    public static final String REQUESTS_NODE_PATH = "/requests/";
+    public static final String ANNOUNCEMENTS_NODE_NAME = "announcements";
+    public static final String ANNOUNCEMENTS_NODE_PATH = "/announcements/";
 
     private FirebaseDbUtils() {
         throw new RuntimeException("Cannot instantiate this class");
@@ -169,6 +172,8 @@ public class FirebaseDbUtils {
             }
         });
     }
+
+
 
 
 }
