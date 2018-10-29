@@ -101,4 +101,8 @@ public class MaintenanceRequest implements Parcelable {
 
         return  result;
     }
+
+    public static MaintenanceRequest getDummyObject() {
+        return new MaintenanceRequest("", "", "", "", "", "", "");
+    }
 }

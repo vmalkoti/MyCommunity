@@ -72,6 +72,8 @@ public class Community implements Parcelable {
         mgrId = in.readString();
     }
 
+
+
     /*
      * Parcelable implementation
      */
@@ -119,5 +121,10 @@ public class Community implements Parcelable {
         result.put("mgrId", mgrId);
 
         return  result;
+    }
+
+
+    public static Community getDummyObject() {
+        return new Community("", "", "", "", "", "", "", "");
     }
 }

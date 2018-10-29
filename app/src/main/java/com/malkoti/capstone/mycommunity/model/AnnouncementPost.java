@@ -39,6 +39,7 @@ public class AnnouncementPost implements Parcelable {
         postDescription = in.readString();
     }
 
+
     /*
      * Parcelable implementation
      */
@@ -90,5 +91,10 @@ public class AnnouncementPost implements Parcelable {
         result.put("postDescription", postDescription);
 
         return result;
+    }
+
+
+    public static AnnouncementPost getDummyObject() {
+        return new AnnouncementPost("", "", "", "", "");
     }
 }

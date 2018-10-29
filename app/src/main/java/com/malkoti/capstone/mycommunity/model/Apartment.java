@@ -93,4 +93,8 @@ public class Apartment implements Parcelable {
 
         return result;
     }
+
+    public static Apartment getDummyObject() {
+        return new Apartment("", 1, "","","");
+    }
 }

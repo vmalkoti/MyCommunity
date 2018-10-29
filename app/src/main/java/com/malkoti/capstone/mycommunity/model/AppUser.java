@@ -59,6 +59,10 @@ public class AppUser implements Parcelable {
         aptId = in.readString();
     }
 
+    public static AppUser getDummyObject() {
+        return new AppUser("", false, "", "", "", "", "", "");
+    }
+
     /*
      * Parcelable implementation
      */
