@@ -1,5 +1,6 @@
 package com.malkoti.capstone.mycommunity;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
@@ -11,6 +12,12 @@ import android.util.Log;
 import android.view.MenuItem;
 
 import com.malkoti.capstone.mycommunity.databinding.ActivityDetailsBinding;
+import com.malkoti.capstone.mycommunity.model.AnnouncementPost;
+import com.malkoti.capstone.mycommunity.model.Apartment;
+import com.malkoti.capstone.mycommunity.model.AppUser;
+import com.malkoti.capstone.mycommunity.model.Community;
+import com.malkoti.capstone.mycommunity.model.MaintenanceRequest;
+import com.malkoti.capstone.mycommunity.viewmodels.DetailsViewModel;
 
 public class DetailsActivity extends AppCompatActivity
         implements EditApartmentDetails.OnFragmentInteractionListener,
@@ -25,10 +32,15 @@ public class DetailsActivity extends AppCompatActivity
 
     public static final String DISPLAY_SCREEN_TYPE = "DETAILS_TYPE";
     public static final String DISPLAY_ITEM_KEY = "DETAILS_ITEM_KEY";
+    public static final String DISPLAY_ITEM_DETAILS = "DISPLAY_ITEM_DETAILS";
+
     private ActivityDetailsBinding binding;
 
     private DetailsScreenType type;
     private String itemKey;
+
+    private DetailsViewModel viewModel;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +59,10 @@ public class DetailsActivity extends AppCompatActivity
         Intent activityStartIntent = getIntent();
         type = (DetailsScreenType) activityStartIntent.getSerializableExtra(DISPLAY_SCREEN_TYPE);
         itemKey = activityStartIntent.getStringExtra(DISPLAY_ITEM_KEY);
+
+        viewModel = ViewModelProviders.of(this).get(DetailsViewModel.class);
+
+        // item = getIntent().getParcelableExtra(DISPLAY_ITEM_DETAILS);
 
         // attach onclick listener to floating action button
         binding.fabEditDetails.setOnClickListener(v -> {
@@ -97,15 +113,18 @@ public class DetailsActivity extends AppCompatActivity
                 updateResidentInfo(itemKey);
                 break;
             case MAINTENANCE_REQ_DETAILS:
+                updateMaintenanceReqInfo(itemKey);
                 break;
             case ANNOUNCEMENT_DETAILS:
+                updateAnnouncementInfo(itemKey);
                 break;
-                default:
-                    Log.d(LOG_TAG, "Unknown fragment interaction");
+            default:
+                Log.d(LOG_TAG, "Unknown fragment interaction");
         }
     }
 
     /**
+     * Show fragment to display information
      * @param type
      */
     private void showItemInfoFragment(DetailsScreenType type) {
@@ -140,6 +159,7 @@ public class DetailsActivity extends AppCompatActivity
 
 
     /**
+     * Show fragment to edit information
      * @param type
      */
     private void showItemEditableFragment(DetailsScreenType type, String key) {
@@ -147,18 +167,33 @@ public class DetailsActivity extends AppCompatActivity
 
         switch (type) {
             case COMMUNITY_DETAILS:
+                if (key==null || key.trim().equals("")) {
+                    viewModel.setSelectedCommunity(Community.getDummyObject());
+                }
                 fragment = EditCommunityDetails.newInstance();
                 break;
             case APARTMENT_DETAILS:
+                if (key==null || key.trim().equals("")) {
+                    viewModel.setSelectedApartment(Apartment.getDummyObject());
+                }
                 fragment = EditApartmentDetails.newInstance();
                 break;
             case RESIDENT_DETAILS:
+                if (key==null || key.trim().equals("")) {
+                    viewModel.setSelectedUser(AppUser.getDummyObject());
+                }
                 fragment = EditResidentDetails.newInstance();
                 break;
             case MAINTENANCE_REQ_DETAILS:
+                if (key==null || key.trim().equals("")) {
+                    viewModel.setSelectedRequest(MaintenanceRequest.getDummyObject());
+                }
                 fragment = EditMaintenanceDetails.newInstance(true);
                 break;
             case ANNOUNCEMENT_DETAILS:
+                if (key==null || key.trim().equals("")) {
+                    viewModel.setSelectedAnnouncement(AnnouncementPost.getDummyObject());
+                }
                 fragment = EditAnnouncementDetails.newInstance();
                 break;
             default:
@@ -176,13 +211,14 @@ public class DetailsActivity extends AppCompatActivity
     }
 
     /**
-     *
+     * Update information received from Community screen
      * @param id
      */
     public void updateCommunityInfo(String id) {
         // update/create entry in "communities"
-
-        // if new, add entry under management's "communities" node
+        if(id==null || id.trim().equals("")) {
+            viewModel.createNewCommunity();
+        }
 
     }
 
@@ -192,9 +228,9 @@ public class DetailsActivity extends AppCompatActivity
      */
     public void updateApartmentInfo(String id) {
         // update/create entry in "apartments"
-
-        // if new, add entry under community's "apartments" node
-
+        if(id==null || id.trim().equals("")) {
+            viewModel.createNewApartment();
+        }
     }
 
     /**
@@ -203,8 +239,9 @@ public class DetailsActivity extends AppCompatActivity
      */
     public void updateResidentInfo(String id) {
         // update/create entry in "users"
-
-        // if new, add entry under community's "residents" node
+        if(id==null || id.trim().equals("")) {
+            viewModel.createNewResident();
+        }
 
     }
 
@@ -214,7 +251,9 @@ public class DetailsActivity extends AppCompatActivity
      */
     public void updateAnnouncementInfo(String id) {
         // update/create entry in "announcements"
-
+        if(id==null || id.trim().equals("")) {
+            viewModel.createNewAnnouncement();
+        }
 
     }
 
@@ -224,8 +263,9 @@ public class DetailsActivity extends AppCompatActivity
      */
     public void updateMaintenanceReqInfo(String id) {
         // update/create entry in "requests"
-
-        // if new, add entry under user's "requests" node
+        if(id==null || id.trim().equals("")) {
+            viewModel.createNewRequest();
+        }
     }
 
 }

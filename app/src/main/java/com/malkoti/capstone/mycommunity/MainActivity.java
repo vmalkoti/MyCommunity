@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Handler;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
@@ -233,6 +234,9 @@ public class MainActivity
         Intent intent = new Intent(this, DetailsActivity.class);
         intent.putExtra(DetailsActivity.DISPLAY_SCREEN_TYPE, screenType);
         intent.putExtra(DetailsActivity.DISPLAY_ITEM_KEY, key);
+
+        intent.putExtra(DetailsActivity.DISPLAY_ITEM_DETAILS, (Parcelable) null);
+
         startActivity(intent);
     }
 
@@ -271,6 +275,7 @@ public class MainActivity
     @Override
     public void onFragmentInteraction(Uri uri) {
         int position = binding.bottomNavigation.getCurrentItem();
+
 
         switch (position) {
             case 0:

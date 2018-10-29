@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.malkoti.capstone.mycommunity.viewmodels.DetailsViewModel;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -19,6 +21,7 @@ import android.view.ViewGroup;
  */
 public class EditCommunityDetails extends Fragment {
     private OnFragmentInteractionListener mListener;
+    private DetailsViewModel viewModel;
 
 
     /*
