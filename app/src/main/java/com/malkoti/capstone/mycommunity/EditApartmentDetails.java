@@ -1,6 +1,8 @@
 package com.malkoti.capstone.mycommunity;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -8,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.malkoti.capstone.mycommunity.databinding.FragmentEditApartmentDetailsBinding;
 import com.malkoti.capstone.mycommunity.model.Apartment;
 import com.malkoti.capstone.mycommunity.viewmodels.DetailsViewModel;
 
@@ -22,7 +25,19 @@ import com.malkoti.capstone.mycommunity.viewmodels.DetailsViewModel;
  */
 public class EditApartmentDetails extends Fragment {
     private OnFragmentInteractionListener mListener;
+    private FragmentEditApartmentDetailsBinding binding;
     private DetailsViewModel viewModel;
+
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that activity.
+     */
+    public interface OnFragmentInteractionListener {
+        void onFragmentInteraction(Uri uri);
+    }
+
 
     public EditApartmentDetails() {
         // Required empty public constructor
@@ -48,9 +63,12 @@ public class EditApartmentDetails extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        binding = DataBindingUtil.inflate(inflater,
+                R.layout.fragment_edit_apartment_details, container, false);
 
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_edit_apartment_details, container, false);
+        initUI();
+
+        return binding.getRoot();
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -79,18 +97,48 @@ public class EditApartmentDetails extends Fragment {
         mListener = null;
     }
 
+
     /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
+     * Initialize UI componenets
      */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+    private void initUI() {
+        viewModel = ViewModelProviders.of(getActivity()).get(DetailsViewModel.class);
+
+        binding.submitBtn.setOnClickListener(v -> {
+            if (fieldsVerified()) {
+                mListener.onFragmentInteraction(null);
+            }
+        });
+    }
+
+    /**
+     * Verify field inputs
+     * @return True if all fields have valid values, else false
+     */
+    private boolean fieldsVerified() {
+        String name = binding.aptNameEt.getText().toString().trim();
+        int rooms = Integer.parseInt(binding.aptNumRoomsEt.getText().toString());
+        String status = binding.aptStatusSp.getSelectedItem().toString();
+        String notes = binding.aptNotesEt.getText().toString().trim();
+
+        if(name.equals("")) {
+            binding.aptNameEt.setError("Required");
+            return false;
+        }
+        if(rooms<=0) {
+            binding.aptNumRoomsEt.setError("Invalid");
+            return false;
+        }
+        // notes is optional
+
+        viewModel.getSelectedApartment().getValue().aptName = name;
+        viewModel.getSelectedApartment().getValue().numOfBedrooms = rooms;
+        viewModel.getSelectedApartment().getValue().status = status;
+        viewModel.getSelectedApartment().getValue().aptDescription = notes;
+
+        //Apartment apt = new Apartment(name, rooms, status, "", notes);
+        //viewModel.setSelectedApartment(apt);
+
+        return true;
     }
 }
