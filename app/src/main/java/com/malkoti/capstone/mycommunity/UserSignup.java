@@ -206,7 +206,7 @@ public class UserSignup extends Fragment {
         //loginViewModel.setManagement(new Management(binding.signUpEntryFields.getCommunity().name));
 
         loginViewModel.setManager(new AppUser(name, true,
-                "", binding.userLoginIdEt.getText().toString().trim(), phone));
+                "", binding.userLoginIdEt.getText().toString().trim(), phone, "", "", ""));
 
         return true;
     }

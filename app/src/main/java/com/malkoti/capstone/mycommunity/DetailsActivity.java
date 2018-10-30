@@ -27,6 +27,7 @@ public class DetailsActivity extends AppCompatActivity
         EditAnnouncementDetails.OnFragmentInteractionListener {
 
     private static final String LOG_TAG = "DEBUG_" + DetailsActivity.class.getSimpleName();
+    private static final boolean EDIT_MODE_ENABLED = false; // editing is disabled in current version
 
     public enum DetailsScreenType {COMMUNITY_DETAILS, APARTMENT_DETAILS, RESIDENT_DETAILS, MAINTENANCE_REQ_DETAILS, ANNOUNCEMENT_DETAILS}
 
@@ -61,6 +62,7 @@ public class DetailsActivity extends AppCompatActivity
         itemKey = activityStartIntent.getStringExtra(DISPLAY_ITEM_KEY);
 
         viewModel = ViewModelProviders.of(this).get(DetailsViewModel.class);
+        viewModel.getSignedInUser();
 
         // item = getIntent().getParcelableExtra(DISPLAY_ITEM_DETAILS);
 
@@ -154,7 +156,9 @@ public class DetailsActivity extends AppCompatActivity
                 .replace(R.id.container, fragment)
                 .commit();
 
-        binding.fabEditDetails.show();
+        if(EDIT_MODE_ENABLED) {
+            binding.fabEditDetails.show();
+        }
     }
 
 
@@ -219,7 +223,7 @@ public class DetailsActivity extends AppCompatActivity
         if(id==null || id.trim().equals("")) {
             viewModel.createNewCommunity();
         }
-
+        finish();
     }
 
     /**
@@ -231,6 +235,7 @@ public class DetailsActivity extends AppCompatActivity
         if(id==null || id.trim().equals("")) {
             viewModel.createNewApartment();
         }
+        finish();
     }
 
     /**
@@ -242,7 +247,7 @@ public class DetailsActivity extends AppCompatActivity
         if(id==null || id.trim().equals("")) {
             viewModel.createNewResident();
         }
-
+        finish();
     }
 
     /**
@@ -254,7 +259,7 @@ public class DetailsActivity extends AppCompatActivity
         if(id==null || id.trim().equals("")) {
             viewModel.createNewAnnouncement();
         }
-
+        finish();
     }
 
     /**
@@ -266,6 +271,7 @@ public class DetailsActivity extends AppCompatActivity
         if(id==null || id.trim().equals("")) {
             viewModel.createNewRequest();
         }
+        finish();
     }
 
 }

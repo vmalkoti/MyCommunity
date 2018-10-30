@@ -27,8 +27,8 @@ public class FirebaseDbUtils {
     public static final String MGMT_NODE_PATH = "/managements/";
     public static final String COMMUNITY_NODE_NAME = "communities";
     public static final String COMMUNITY_NODE_PATH = "/communities/";
-    public static final String APTS_NODE_NAME = "apartements";
-    public static final String APTS_NODE_PATH = "/apartements/";
+    public static final String APTS_NODE_NAME = "apartments";
+    public static final String APTS_NODE_PATH = "/apartments/";
     public static final String REQUESTS_NODE_NAME = "requests";
     public static final String REQUESTS_NODE_PATH = "/requests/";
     public static final String ANNOUNCEMENTS_NODE_NAME = "announcements";

@@ -5,6 +5,7 @@ import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -15,10 +16,14 @@ import com.malkoti.capstone.mycommunity.model.Apartment;
 import com.malkoti.capstone.mycommunity.model.AppUser;
 import com.malkoti.capstone.mycommunity.model.Community;
 import com.malkoti.capstone.mycommunity.model.MaintenanceRequest;
+import com.malkoti.capstone.mycommunity.utils.FirebaseAuthUtil;
 import com.malkoti.capstone.mycommunity.utils.FirebaseDbUtils;
 
 public class DetailsViewModel extends ViewModel {
     private static final String LOG_TAG = "DEBUG_" + DetailsViewModel.class.getSimpleName();
+
+    private final MutableLiveData<AppUser> signedInUser = new MutableLiveData<>();
+    private final MutableLiveData<String> signedInUserId = new MutableLiveData<>();
 
     private final MutableLiveData<AppUser> selectedUser = new MutableLiveData<>();
     private final MutableLiveData<Apartment> selectedApartment = new MutableLiveData<>();
@@ -44,6 +49,36 @@ public class DetailsViewModel extends ViewModel {
 
     public MutableLiveData<AnnouncementPost> getSelectedAnnouncement() {
         return selectedAnnouncement;
+    }
+
+    /**
+     * Get details of currently signed in user
+     * @return
+     */
+    public MutableLiveData<AppUser> getSignedInUser() {
+        Log.d(LOG_TAG, "getSignedInUser: get signed in user's node object for reference later");
+
+        // https://stackoverflow.com/questions/39109616/should-firebasedatabase-getinstance-be-used-sparingly/39109665#39109665
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+        // for managers
+        database.getReference(FirebaseDbUtils.USERS_NODE_NAME)
+                .child(FirebaseAuthUtil.getSignedInUserId())
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        signedInUserId.setValue(dataSnapshot.getKey());
+                        signedInUser.setValue(dataSnapshot.getValue(AppUser.class));
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.e(LOG_TAG, "createNewApartment: Error getting user object",
+                                databaseError.toException());
+                    }
+                });
+
+        return signedInUser;
     }
 
     public void setSelectedUser(AppUser user) {
@@ -76,19 +111,52 @@ public class DetailsViewModel extends ViewModel {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference communitiesNode = database.getReference(FirebaseDbUtils.COMMUNITY_NODE_NAME);
 
-        communitiesNode.setValue(selectedUser.getValue());
+        communitiesNode.push().setValue(selectedUser.getValue());
     }
 
+    /**
+     *
+     */
     public void createNewApartment() {
         Log.d(LOG_TAG, "createNewApartment: For apartment " + selectedApartment.getValue().aptName);
 
         // https://stackoverflow.com/questions/39109616/should-firebasedatabase-getinstance-be-used-sparingly/39109665#39109665
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference aptsNode = database.getReference(FirebaseDbUtils.APTS_NODE_NAME);
 
-        aptsNode.setValue(selectedApartment.getValue());
+        /*
+        database.getReference(FirebaseDbUtils.USERS_NODE_NAME)
+                .child(FirebaseAuthUtil.getSignedInUserId())
+                .child("communityId")
+                .addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        String communityId = dataSnapshot.getValue(String.class);
+                        selectedApartment.getValue().communityId = communityId;
+
+                        DatabaseReference aptsNode = database.getReference(FirebaseDbUtils.APTS_NODE_NAME);
+                        aptsNode.push().setValue(selectedApartment.getValue());
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.e(LOG_TAG, "createNewApartment: Error getting community ID of the manager",
+                                databaseError.toException());
+                    }
+                });
+        */
+
+        String communityId = signedInUser.getValue().communityId;
+        selectedApartment.getValue().communityId = communityId;
+
+        DatabaseReference aptsNode = database.getReference(FirebaseDbUtils.APTS_NODE_NAME);
+        aptsNode.push().setValue(selectedApartment.getValue());
+
+
     }
 
+    /**
+     *
+     */
     public void createNewResident() {
         Log.d(LOG_TAG, "createNewResident: For resident " + selectedUser.getValue().fullName);
 
@@ -96,19 +164,26 @@ public class DetailsViewModel extends ViewModel {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference usersNode = database.getReference(FirebaseDbUtils.USERS_NODE_NAME);
 
-        usersNode.setValue(selectedUser.getValue());
+        usersNode.push().setValue(selectedUser.getValue());
     }
 
+    /**
+     *
+     */
     public void createNewAnnouncement() {
         Log.d(LOG_TAG, "createNewAnnouncement: For announcement " + selectedAnnouncement.getValue().announcementTitle);
 
         // https://stackoverflow.com/questions/39109616/should-firebasedatabase-getinstance-be-used-sparingly/39109665#39109665
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference announcementsNode = database.getReference(FirebaseDbUtils.ANNOUNCEMENTS_NODE_NAME);
-
-        announcementsNode.setValue(selectedUser.getValue());
+        selectedAnnouncement.getValue().managerId = signedInUserId.getValue();
+        selectedAnnouncement.getValue().communityId = signedInUser.getValue().communityId;
+        announcementsNode.push().setValue(selectedAnnouncement.getValue());
     }
 
+    /**
+     *
+     */
     public void createNewRequest() {
         Log.d(LOG_TAG, "createNewRequest: For user " + selectedRequest.getValue().reqType);
 
@@ -116,13 +191,11 @@ public class DetailsViewModel extends ViewModel {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference requestsNode = database.getReference(FirebaseDbUtils.REQUESTS_NODE_NAME);
 
-        requestsNode.setValue(selectedUser.getValue());
+        requestsNode.push().setValue(selectedUser.getValue());
     }
 
 
-
     /**
-     *
      * @param key
      * @return
      */
