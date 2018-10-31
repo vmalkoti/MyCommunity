@@ -1,12 +1,22 @@
 package com.malkoti.capstone.mycommunity;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.malkoti.capstone.mycommunity.databinding.FragmentEditAnnouncementDetailsBinding;
+import com.malkoti.capstone.mycommunity.viewmodels.DetailsViewModel;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 
 /**
@@ -19,6 +29,8 @@ import android.view.ViewGroup;
  */
 public class EditAnnouncementDetails extends Fragment {
     private OnFragmentInteractionListener mListener;
+    private FragmentEditAnnouncementDetailsBinding binding;
+    private DetailsViewModel viewModel;
 
     /**
      * This interface must be implemented by activities that contain this
@@ -54,8 +66,12 @@ public class EditAnnouncementDetails extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_edit_ad_details, container, false);
+        binding = DataBindingUtil.inflate(inflater,
+                R.layout.fragment_edit_announcement_details, container, false);
+
+        initUI();
+
+        return binding.getRoot();
     }
 
 
@@ -79,4 +95,40 @@ public class EditAnnouncementDetails extends Fragment {
     }
 
 
+    private void initUI() {
+        viewModel = ViewModelProviders.of(getActivity()).get(DetailsViewModel.class);
+
+        binding.requestSubmitBtn.setOnClickListener(v -> {
+            if (fieldsVerified()) {
+                mListener.onFragmentInteraction(null);
+            }
+        });
+    }
+
+    private boolean fieldsVerified() {
+        String title = binding.adPostTitleEt.getText().toString().trim();
+        String desc = binding.requestDescEt.getText().toString().trim();
+
+        if(title.equals("")) {
+            binding.adPostTitleEt.setError("Required");
+            return false;
+        }
+        if (desc.equals("")) {
+            binding.requestDescEt.setError("Required");
+            return false;
+        }
+
+        //String date = new SimpleDateFormat("mm/dd/yyyy HH:mm:ss").format(new Date());
+        String date = DateFormat
+                .getDateTimeInstance(DateFormat.SHORT, DateFormat.FULL)
+                .format(Calendar.getInstance().getTime());
+
+        viewModel.getSelectedAnnouncement().getValue().announcementTitle = title;
+        viewModel.getSelectedAnnouncement().getValue().postDescription = desc;
+        viewModel.getSelectedAnnouncement().getValue().postDate = date;
+
+        return true;
+    }
+
 }
+
