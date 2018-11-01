@@ -67,6 +67,8 @@ public class MainActivity
 
         firebaseAuth = FirebaseAuth.getInstance();
 
+        //if(savedInstanceState != null) return;
+
         if(FirebaseAuthUtil.isUserSignedIn()) {
             Log.d(LOG_TAG, "onCreate: Use Signed in");
             initUI();
@@ -85,6 +87,8 @@ public class MainActivity
     protected void onResume() {
         super.onResume();
         firebaseAuth.addAuthStateListener(authStateListener);
+        // set the visibility of FAB - required to show/hide after rotation
+        setFabVisibility(binding.bottomNavigation.getCurrentItem());
     }
 
     @Override
@@ -149,6 +153,9 @@ public class MainActivity
         });
     }
 
+    /**
+     *
+     */
     private void initAds() {
         MobileAds.initialize(this, getString(R.string.admob_sample_app_id));
 
@@ -178,6 +185,7 @@ public class MainActivity
      * Set up components for the BottomNavigation in the activity
      */
     private void setupBottomNavBar() {
+        Log.d(LOG_TAG, "setupBottomNavBar: Setting up bottom navigation");
         bottomNavAdapter = new AHBottomNavigationAdapter(this, R.menu.bottom_navbar_menu);
         bottomNavAdapter.setupWithBottomNavigation(binding.bottomNavigation);
 
@@ -185,15 +193,8 @@ public class MainActivity
             if (!wasSelected) {
                 Log.d(LOG_TAG, "Navbar button clicked =" + position);
                 binding.viewpager.setCurrentItem(position, false);
-
-                if (position == 4) {
-                    // hide on settings screen
-                    binding.bottomFab.hide();
-                } else {
-                    binding.bottomFab.show();
-                }
             }
-
+            setFabVisibility(position);
 
             // if manager
             //
@@ -216,6 +217,24 @@ public class MainActivity
         binding.bottomNavigation.setBehaviorTranslationEnabled(true);
         // show first item of the tab
         binding.bottomNavigation.setCurrentItem(0);
+        setFabVisibility(binding.bottomNavigation.getCurrentItem());
+    }
+
+
+    /**
+     *
+     * @param bottomNavSelectedItemPosition
+     */
+    private void setFabVisibility(int bottomNavSelectedItemPosition) {
+        String title = binding.bottomNavigation.getItem(bottomNavSelectedItemPosition).getTitle(this);
+        Log.d(LOG_TAG, "setupBottomNavBar: Setting up FAB visibility for item " + title);
+
+        if (bottomNavSelectedItemPosition == 2 || bottomNavSelectedItemPosition == 4) {
+            // manager - hide on maintenance request and settings screen
+            binding.bottomFab.hide();
+        } else {
+            binding.bottomFab.show();
+        }
     }
 
     /**
