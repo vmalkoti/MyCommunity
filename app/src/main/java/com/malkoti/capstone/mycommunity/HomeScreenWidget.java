@@ -1,12 +1,14 @@
 package com.malkoti.capstone.mycommunity;
 
 import android.app.AlarmManager;
+import android.app.IntentService;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -15,6 +17,7 @@ import com.malkoti.capstone.mycommunity.utils.FirebaseAuthUtil;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+
 
 /**
  * Implementation of App Widget functionality.
@@ -35,7 +38,7 @@ public class HomeScreenWidget extends AppWidgetProvider {
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
 
-        Log.d(LOG_TAG, "updateAppWidget: Updating app widget");
+        Log.d(LOG_TAG, "updateAppWidget: Updating app widget static method");
 
         // Construct the RemoteViews object - move this in service
         CharSequence widgetText = context.getString(R.string.appwidget_text);
@@ -63,9 +66,11 @@ public class HomeScreenWidget extends AppWidgetProvider {
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+        Log.d(LOG_TAG, "onUpdate: Updating app widget callback method");
         // There may be multiple widgets active, so update all of them
         for (int appWidgetId : appWidgetIds) {
-            updateAppWidget(context, appWidgetManager, appWidgetId);
+            //updateAppWidget(context, appWidgetManager, appWidgetId);
+            startUpdateService(context, appWidgetId);
         }
     }
 
@@ -97,7 +102,8 @@ public class HomeScreenWidget extends AppWidgetProvider {
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
             int[] widgetIds = appWidgetManager.getAppWidgetIds(thisAppWidget);
             for (int id : widgetIds) {
-                updateAppWidget(context, appWidgetManager, id);
+                //updateAppWidget(context, appWidgetManager, id);
+                startUpdateService(context, id);
             }
         }
     }
@@ -146,6 +152,37 @@ public class HomeScreenWidget extends AppWidgetProvider {
 
     public static String getCurrentTimeStamp() {
         return SimpleDateFormat.getDateTimeInstance().format(new Date());
+    }
+
+    private void startUpdateService(Context context, int appWidgetId) {
+        Intent intent = new Intent(context, UpdateWidgetService.class);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+        intent.setAction("DEFAULT_ACTION");
+        context.startService(intent);
+    }
+
+    /**
+     * IntentService to update widget
+     */
+    public static class UpdateWidgetService extends IntentService {
+
+        public UpdateWidgetService() {
+            super(UpdateWidgetService.class.getSimpleName());
+        }
+
+
+        @Override
+        protected void onHandleIntent(@Nullable Intent intent) {
+            Log.d(LOG_TAG, "onHandleIntent: update widget via service");
+
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+            int incomingAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
+                    AppWidgetManager.INVALID_APPWIDGET_ID);
+
+            if(incomingAppWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
+                HomeScreenWidget.updateAppWidget(this, appWidgetManager, incomingAppWidgetId);
+            }
+        }
     }
 
 }

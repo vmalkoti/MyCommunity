@@ -57,6 +57,9 @@
                 android:resource="@xml/home_screen_widget_info" />
         </receiver>
 
+        <service android:name=".HomeScreenWidget$UpdateWidgetService" />
+
+
     </application>
 
 </manifest>
