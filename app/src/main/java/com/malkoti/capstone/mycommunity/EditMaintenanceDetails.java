@@ -1,5 +1,6 @@
 package com.malkoti.capstone.mycommunity;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
@@ -10,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.malkoti.capstone.mycommunity.databinding.FragmentEditMaintenanceDetailsBinding;
+import com.malkoti.capstone.mycommunity.model.AppUser;
+import com.malkoti.capstone.mycommunity.viewmodels.DetailsViewModel;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,8 +29,20 @@ import java.util.List;
 public class EditMaintenanceDetails extends Fragment {
     private OnFragmentInteractionListener mListener;
     private FragmentEditMaintenanceDetailsBinding maintenanceDetailsBinding;
+    private DetailsViewModel viewModel;
+
     private boolean isNewRequest;
     private static final String ARG_PARAM1 = "IS_NEW_REQ";
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that activity.
+     */
+    public interface OnFragmentInteractionListener {
+        void onFragmentInteraction(Uri uri);
+    }
+
 
     public EditMaintenanceDetails() {
         // Required empty public constructor
@@ -64,41 +79,12 @@ public class EditMaintenanceDetails extends Fragment {
                 R.layout.fragment_edit_maintenance_details,
                 container, false);
 
-        populateDummyData();
+        //populateDummyData();
         initUI();
 
         return maintenanceDetailsBinding.getRoot();
     }
 
-    /**
-     *
-     */
-    private void initUI() {
-        maintenanceDetailsBinding.newReqGroup.setEnabled(isNewRequest);
-        maintenanceDetailsBinding.existingReqGroup.setEnabled(!isNewRequest);
-    }
-
-    /**
-     *
-     */
-    private void populateDummyData() {
-        maintenanceDetailsBinding.requestTitleEt.setText("Electrical appliance not working");
-        maintenanceDetailsBinding.requestUnitEt.setText("Apt #123");
-        maintenanceDetailsBinding.requestResidentEt.setText("George Michael");
-        maintenanceDetailsBinding.requestDescEt.setText("The fridge is not cooling. Tried plugging out and back in but that made no difference.");
-        maintenanceDetailsBinding.requestCommentsEt.setText("Contacted Samsung for repairs.");
-
-        List<String> statusList = Arrays.asList(getResources().getStringArray(R.array.request_status_list));
-        String status = getString(R.string.req_status_vendor);
-        maintenanceDetailsBinding.requestStatus.setSelection(statusList.indexOf(status));
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
 
     @Override
     public void onAttach(Context context) {
@@ -119,18 +105,81 @@ public class EditMaintenanceDetails extends Fragment {
         mListener = null;
     }
 
+
     /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
+     *
      */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+    private void initUI() {
+        viewModel = ViewModelProviders.of(getActivity()).get(DetailsViewModel.class);
+
+        maintenanceDetailsBinding.newReqGroup.setEnabled(isNewRequest);
+        maintenanceDetailsBinding.existingReqGroup.setEnabled(!isNewRequest);
+
+        // disable fields to be automatically populated by code
+        maintenanceDetailsBinding.requestStatus.setEnabled(false);
+        //maintenanceDetailsBinding.requestUnitEt.setEnabled(false);
+        maintenanceDetailsBinding.requestResidentEt.setEnabled(false);
+
+        // extra field for future implementation
+        maintenanceDetailsBinding.requestCommentsEt.setVisibility(View.GONE);
+
+        maintenanceDetailsBinding.requestSubmitBtn.setOnClickListener(view -> {
+            if(fieldsVerified()) {
+                mListener.onFragmentInteraction(null);
+            }
+        });
     }
+
+    /**
+     *
+     * @return
+     */
+    private boolean fieldsVerified() {
+        String type = maintenanceDetailsBinding.requestTitleEt.getText().toString().trim();
+        String unit = maintenanceDetailsBinding.requestUnitEt.getText().toString().trim();
+        String desc = maintenanceDetailsBinding.requestDescEt.getText().toString().trim();
+
+        if(type.equals("")) {
+            maintenanceDetailsBinding.requestTitleEt.setError("Required");
+            return false;
+        }
+        if(unit.equals("")) {
+            maintenanceDetailsBinding.requestUnitEt.setError("Required");
+            return false;
+        }
+        if(desc.equals("")) {
+            maintenanceDetailsBinding.requestDescEt.setError("Required");
+            return false;
+        }
+
+        viewModel.getSelectedRequest().getValue().reqType = type;
+        viewModel.getSelectedRequest().getValue().reqDescription = desc;
+
+        return true;
+    }
+
+
+    private void autopopulateDefaults() {
+        AppUser user = viewModel.getSignedInUser().getValue();
+        // populate resident name
+        maintenanceDetailsBinding.requestResidentEt.setText(user.fullName);
+
+        // for future implementation - get apt name
+    }
+
+    /**
+     * Test method to provide dummy data for initial testing
+     */
+    private void populateDummyData() {
+        maintenanceDetailsBinding.requestTitleEt.setText("Electrical appliance not working");
+        maintenanceDetailsBinding.requestUnitEt.setText("Apt #123");
+        maintenanceDetailsBinding.requestResidentEt.setText("George Michael");
+        maintenanceDetailsBinding.requestDescEt.setText("The fridge is not cooling. Tried plugging out and back in but that made no difference.");
+        maintenanceDetailsBinding.requestCommentsEt.setText("Contacted Samsung for repairs.");
+
+        List<String> statusList = Arrays.asList(getResources().getStringArray(R.array.request_status_list));
+        String status = getString(R.string.req_status_vendor);
+        maintenanceDetailsBinding.requestStatus.setSelection(statusList.indexOf(status));
+    }
+
 }

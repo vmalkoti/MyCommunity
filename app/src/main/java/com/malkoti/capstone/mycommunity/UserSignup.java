@@ -162,7 +162,6 @@ public class UserSignup extends Fragment {
      * @return False if one or more fields have invalid values, else true
      */
     private boolean verifyCommunityFields() {
-        // TODO: Read fields values and check
         final String name = binding.signUpEntryFields.communityNameEt.getText().toString().trim();
         final String description = binding.signUpEntryFields.communityDescEt.getText().toString().trim();
         final String streetAddress = binding.signUpEntryFields.communityStreetAddressEt.getText().toString().trim();

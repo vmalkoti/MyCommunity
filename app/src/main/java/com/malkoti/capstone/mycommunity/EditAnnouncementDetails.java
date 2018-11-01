@@ -98,6 +98,8 @@ public class EditAnnouncementDetails extends Fragment {
     private void initUI() {
         viewModel = ViewModelProviders.of(getActivity()).get(DetailsViewModel.class);
 
+        binding.adPostResidentEt.setVisibility(View.GONE);
+
         binding.requestSubmitBtn.setOnClickListener(v -> {
             if (fieldsVerified()) {
                 mListener.onFragmentInteraction(null);

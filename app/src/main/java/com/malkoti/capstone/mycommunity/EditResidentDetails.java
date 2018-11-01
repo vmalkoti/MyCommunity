@@ -1,12 +1,22 @@
 package com.malkoti.capstone.mycommunity;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.TextView;
+
+import com.malkoti.capstone.mycommunity.databinding.FragmentEditResidentDetailsBinding;
+import com.malkoti.capstone.mycommunity.viewmodels.DetailsViewModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -19,6 +29,17 @@ import android.view.ViewGroup;
  */
 public class EditResidentDetails extends Fragment {
     private OnFragmentInteractionListener mListener;
+    private FragmentEditResidentDetailsBinding binding;
+    private DetailsViewModel viewModel;
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that activity.
+     */
+    public interface OnFragmentInteractionListener {
+        void onFragmentInteraction(Uri uri);
+    }
 
     public EditResidentDetails() {
         // Required empty public constructor
@@ -30,42 +51,27 @@ public class EditResidentDetails extends Fragment {
      *
      * @return A new instance of fragment EditResidentDetails.
      */
-    // TODO: Rename and change types and number of parameters
     public static EditResidentDetails newInstance() {
         EditResidentDetails fragment = new EditResidentDetails();
-        /*
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        */
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-        */
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_edit_resident_details, container, false);
+        binding = DataBindingUtil.inflate(inflater,
+                R.layout.fragment_edit_resident_details, container, false);
+
+        initUI();
+
+        return binding.getRoot();
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
-        }
-    }
 
     @Override
     public void onAttach(Context context) {
@@ -87,17 +93,93 @@ public class EditResidentDetails extends Fragment {
     }
 
     /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
+     *
      */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+    private void initUI() {
+        viewModel = ViewModelProviders.of(getActivity()).get(DetailsViewModel.class);
+
+        populateAptDropdown();
+
+        binding.addResidentBtn.setOnClickListener(view -> {
+            if(fieldsVerified()) {
+                mListener.onFragmentInteraction(null);
+            }
+        });
     }
+
+    /**
+     *
+     * @return
+     */
+    private boolean fieldsVerified() {
+        String fname = binding.residentFnameEt.getText().toString().trim();
+        String lName = binding.residentLnameEt.getText().toString().trim();
+        String gender = binding.residentGenderSpn.getSelectedItem().toString();
+        String apt = binding.residentAptSpn.getSelectedItem().toString();
+        String email = binding.residentEmailIdEt.getText().toString().trim();
+        String phone = binding.residentPhoneEt.getText().toString().trim();
+
+        if(fname.equals("")) {
+            binding.residentFnameEt.setError("Required");
+            return false;
+        }
+        if (lName.equals("")) {
+            binding.residentLnameEt.setError("Required");
+            return false;
+        }
+        /*
+        blank spinners
+
+        if (gender.equals("")) {
+            ((TextView) binding.residentGenderSpn.getSelectedView()).setError("Required");
+            return false;
+        }
+        if(apt.equals("")) {
+            ((TextView) binding.residentAptSpn.getSelectedView()).setError("Required");
+            return false;
+        }
+        */
+        if (email.equals("")) {
+            binding.residentEmailIdEt.setError("Required");
+            return false;
+        }
+        if(phone.equals("")) {
+            binding.residentPhoneEt.equals("");
+            return false;
+        }
+
+        // set resident indicator
+        viewModel.getSelectedUser().getValue().isManager = false;
+
+        viewModel.getSelectedUser().getValue().fullName = fname + " " + lName;
+        viewModel.getSelectedUser().getValue().gender = gender;
+        viewModel.getSelectedUser().getValue().email = email;
+        viewModel.getSelectedUser().getValue().phoneNum = phone;
+
+        // need to get apt id
+        viewModel.getSelectedUser().getValue().aptId = apt;
+
+        // set new resident's community id to manager's community
+        viewModel.getSelectedUser().getValue().communityId = viewModel.getSignedInUser().getValue().communityId;
+        viewModel.getSelectedUser().getValue().mgmtId = viewModel.getSignedInUser().getValue().mgmtId;
+
+
+        return true;
+    }
+
+    /**
+     *
+     */
+    private void populateAptDropdown() {
+        List<String> aptList = new ArrayList<>();
+        aptList.add("");
+        aptList.add("101");
+        aptList.add("102");
+        aptList.add("103");
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, aptList);
+        binding.residentAptSpn.setAdapter(adapter);
+        binding.residentAptSpn.setPrompt("Select an apartment");
+    }
+
 }
