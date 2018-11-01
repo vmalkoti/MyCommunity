@@ -62,7 +62,7 @@ public class DetailsActivity extends AppCompatActivity
         itemKey = activityStartIntent.getStringExtra(DISPLAY_ITEM_KEY);
 
         viewModel = ViewModelProviders.of(this).get(DetailsViewModel.class);
-        viewModel.getSignedInUser();
+        //viewModel.getSignedInUser();
 
         // item = getIntent().getParcelableExtra(DISPLAY_ITEM_DETAILS);
 
