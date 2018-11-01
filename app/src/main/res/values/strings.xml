@@ -56,7 +56,7 @@
         \n 6. Notifications
         \n 7. Material design
     </string>
-    <string name="appwidget_text">Logged In</string>
+    <string name="appwidget_text">Checking Login Status</string>
     <string name="add_widget">Add widget</string>
 
     <string name="signup_id_hint_mgmt">Use an email ID that is associated with your management</string>
