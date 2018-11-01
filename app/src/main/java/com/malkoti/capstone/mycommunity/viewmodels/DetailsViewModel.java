@@ -1,11 +1,12 @@
 package com.malkoti.capstone.mycommunity.viewmodels;
 
+import android.app.Application;
+import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.ViewModel;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.widget.Toast;
 
-import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -19,7 +20,11 @@ import com.malkoti.capstone.mycommunity.model.MaintenanceRequest;
 import com.malkoti.capstone.mycommunity.utils.FirebaseAuthUtil;
 import com.malkoti.capstone.mycommunity.utils.FirebaseDbUtils;
 
-public class DetailsViewModel extends ViewModel {
+
+/**
+ *
+ */
+public class DetailsViewModel extends AndroidViewModel {
     private static final String LOG_TAG = "DEBUG_" + DetailsViewModel.class.getSimpleName();
 
     private final MutableLiveData<AppUser> signedInUser = new MutableLiveData<>();
@@ -31,28 +36,18 @@ public class DetailsViewModel extends ViewModel {
     private final MutableLiveData<MaintenanceRequest> selectedRequest = new MutableLiveData<>();
     private final MutableLiveData<AnnouncementPost> selectedAnnouncement = new MutableLiveData<>();
 
-    public MutableLiveData<AppUser> getSelectedUser() {
-        return selectedUser;
+    /*
+     * Constructor matching super
+     */
+    public DetailsViewModel(@NonNull Application application) {
+        super(application);
+        getSignedInUser();
     }
 
-    public MutableLiveData<Apartment> getSelectedApartment() {
-        return selectedApartment;
-    }
-
-    public MutableLiveData<Community> getSelectedCommunity() {
-        return selectedCommunity;
-    }
-
-    public MutableLiveData<MaintenanceRequest> getSelectedRequest() {
-        return selectedRequest;
-    }
-
-    public MutableLiveData<AnnouncementPost> getSelectedAnnouncement() {
-        return selectedAnnouncement;
-    }
 
     /**
      * Get details of currently signed in user
+     *
      * @return
      */
     public MutableLiveData<AppUser> getSignedInUser() {
@@ -75,12 +70,37 @@ public class DetailsViewModel extends ViewModel {
                     public void onCancelled(@NonNull DatabaseError databaseError) {
                         Log.e(LOG_TAG, "createNewApartment: Error getting user object",
                                 databaseError.toException());
+                        Toast.makeText(getApplication().getApplicationContext(),
+                                "Error getting signed in user details: " + databaseError.getMessage(),
+                                Toast.LENGTH_LONG).show();
                     }
                 });
 
         return signedInUser;
     }
 
+    /* GETTERS */
+    public MutableLiveData<AppUser> getSelectedUser() {
+        return selectedUser;
+    }
+
+    public MutableLiveData<Apartment> getSelectedApartment() {
+        return selectedApartment;
+    }
+
+    public MutableLiveData<Community> getSelectedCommunity() {
+        return selectedCommunity;
+    }
+
+    public MutableLiveData<MaintenanceRequest> getSelectedRequest() {
+        return selectedRequest;
+    }
+
+    public MutableLiveData<AnnouncementPost> getSelectedAnnouncement() {
+        return selectedAnnouncement;
+    }
+
+    /* SETTERS */
     public void setSelectedUser(AppUser user) {
         this.selectedUser.setValue(user);
     }
@@ -101,7 +121,9 @@ public class DetailsViewModel extends ViewModel {
         this.selectedAnnouncement.setValue(post);
     }
 
+
     /*
+     * Create new node in community.
      * For future implementation. Right now, community can only be created on sign-up
      */
     public void createNewCommunity() {
@@ -111,11 +133,17 @@ public class DetailsViewModel extends ViewModel {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference communitiesNode = database.getReference(FirebaseDbUtils.COMMUNITY_NODE_NAME);
 
-        communitiesNode.push().setValue(selectedUser.getValue());
+        communitiesNode.push().setValue(selectedUser.getValue()).addOnCompleteListener(task -> {
+            if(task.isCanceled()) {
+                Toast.makeText(getApplication().getApplicationContext(),
+                        "Error getting signed in user details: " + task.getException().getLocalizedMessage(),
+                        Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     /**
-     *
+     * Create new node in apartments
      */
     public void createNewApartment() {
         Log.d(LOG_TAG, "createNewApartment: For apartment " + selectedApartment.getValue().aptName);
@@ -123,39 +151,22 @@ public class DetailsViewModel extends ViewModel {
         // https://stackoverflow.com/questions/39109616/should-firebasedatabase-getinstance-be-used-sparingly/39109665#39109665
         FirebaseDatabase database = FirebaseDatabase.getInstance();
 
-        /*
-        database.getReference(FirebaseDbUtils.USERS_NODE_NAME)
-                .child(FirebaseAuthUtil.getSignedInUserId())
-                .child("communityId")
-                .addListenerForSingleValueEvent(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        String communityId = dataSnapshot.getValue(String.class);
-                        selectedApartment.getValue().communityId = communityId;
-
-                        DatabaseReference aptsNode = database.getReference(FirebaseDbUtils.APTS_NODE_NAME);
-                        aptsNode.push().setValue(selectedApartment.getValue());
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.e(LOG_TAG, "createNewApartment: Error getting community ID of the manager",
-                                databaseError.toException());
-                    }
-                });
-        */
-
         String communityId = signedInUser.getValue().communityId;
         selectedApartment.getValue().communityId = communityId;
 
         DatabaseReference aptsNode = database.getReference(FirebaseDbUtils.APTS_NODE_NAME);
-        aptsNode.push().setValue(selectedApartment.getValue());
-
+        aptsNode.push().setValue(selectedApartment.getValue()).addOnCompleteListener(task -> {
+            if(task.isCanceled()) {
+                Toast.makeText(getApplication().getApplicationContext(),
+                        "Error getting signed in user details: " + task.getException().getLocalizedMessage(),
+                        Toast.LENGTH_LONG).show();
+            }
+        });
 
     }
 
     /**
-     *
+     * Create new node in users
      */
     public void createNewResident() {
         Log.d(LOG_TAG, "createNewResident: For resident " + selectedUser.getValue().fullName);
@@ -164,11 +175,17 @@ public class DetailsViewModel extends ViewModel {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference usersNode = database.getReference(FirebaseDbUtils.USERS_NODE_NAME);
 
-        usersNode.push().setValue(selectedUser.getValue());
+        usersNode.push().setValue(selectedUser.getValue()).addOnCompleteListener(task -> {
+            if(task.isCanceled()) {
+                Toast.makeText(getApplication().getApplicationContext(),
+                        "Error getting signed in user details: " + task.getException().getLocalizedMessage(),
+                        Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     /**
-     *
+     * Create new node in announcements
      */
     public void createNewAnnouncement() {
         Log.d(LOG_TAG, "createNewAnnouncement: For announcement " + selectedAnnouncement.getValue().announcementTitle);
@@ -178,11 +195,17 @@ public class DetailsViewModel extends ViewModel {
         DatabaseReference announcementsNode = database.getReference(FirebaseDbUtils.ANNOUNCEMENTS_NODE_NAME);
         selectedAnnouncement.getValue().managerId = signedInUserId.getValue();
         selectedAnnouncement.getValue().communityId = signedInUser.getValue().communityId;
-        announcementsNode.push().setValue(selectedAnnouncement.getValue());
+        announcementsNode.push().setValue(selectedAnnouncement.getValue()).addOnCompleteListener(task -> {
+            if(task.isCanceled()) {
+                Toast.makeText(getApplication().getApplicationContext(),
+                        "Error getting signed in user details: " + task.getException().getLocalizedMessage(),
+                        Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     /**
-     *
+     * Create new node in maintenance request
      */
     public void createNewRequest() {
         Log.d(LOG_TAG, "createNewRequest: For user " + selectedRequest.getValue().reqType);
@@ -191,7 +214,13 @@ public class DetailsViewModel extends ViewModel {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference requestsNode = database.getReference(FirebaseDbUtils.REQUESTS_NODE_NAME);
 
-        requestsNode.push().setValue(selectedUser.getValue());
+        requestsNode.push().setValue(selectedUser.getValue()).addOnCompleteListener(task -> {
+            if(task.isCanceled()) {
+                Toast.makeText(getApplication().getApplicationContext(),
+                        "Error getting signed in user details: " + task.getException().getLocalizedMessage(),
+                        Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
 
