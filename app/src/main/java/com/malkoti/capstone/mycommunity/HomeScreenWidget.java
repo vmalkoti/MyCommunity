@@ -2,13 +2,18 @@ package com.malkoti.capstone.mycommunity;
 
 import android.app.AlarmManager;
 import android.app.IntentService;
+import android.app.Notification;
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.JobIntentService;
+import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 import android.widget.RemoteViews;
 
@@ -35,6 +40,15 @@ public class HomeScreenWidget extends AppWidgetProvider {
     private static final String LOG_TAG = "DEBUG_" + HomeScreenWidget.class.getSimpleName();
     public static final String HOMESCREEN_WIDGET_UPDATE= "com.malkoti.capstone.mycommunity.HOMESCREEN_WIDGET_UPDATE";
 
+    private static final int UPDATE_FREQ_MILLIS = 6000;
+
+
+    /**
+     *
+     * @param context
+     * @param appWidgetManager
+     * @param appWidgetId
+     */
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
 
@@ -79,7 +93,7 @@ public class HomeScreenWidget extends AppWidgetProvider {
         // Enter relevant functionality for when the first widget is created
         super.onEnabled(context);
         Log.d(LOG_TAG, "onEnabled: Setting alarm");
-        setWidgetUpdateAlarm(context, 6000);
+        setWidgetUpdateAlarm(context, UPDATE_FREQ_MILLIS);
     }
 
     @Override
@@ -150,6 +164,10 @@ public class HomeScreenWidget extends AppWidgetProvider {
         return pendingIntent;
     }
 
+    /**
+     *
+     * @return
+     */
     public static String getCurrentTimeStamp() {
         return SimpleDateFormat.getDateTimeInstance().format(new Date());
     }
@@ -157,8 +175,15 @@ public class HomeScreenWidget extends AppWidgetProvider {
     private void startUpdateService(Context context, int appWidgetId) {
         Intent intent = new Intent(context, UpdateWidgetService.class);
         intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
-        intent.setAction("DEFAULT_ACTION");
-        context.startService(intent);
+        intent.setAction(UpdateWidgetJobService.INTENT_ACTION);
+        /*
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(intent);
+        } else {
+            context.startService(intent);
+        }
+        */
+        UpdateWidgetJobService.enqueueWork(context, intent);
     }
 
     /**
@@ -168,6 +193,8 @@ public class HomeScreenWidget extends AppWidgetProvider {
 
         public UpdateWidgetService() {
             super(UpdateWidgetService.class.getSimpleName());
+            //NotificationCompat.Builder builder = NotificationCompat.Builder(this, "");
+            startForeground(1, new Notification());
         }
 
 
@@ -185,5 +212,32 @@ public class HomeScreenWidget extends AppWidgetProvider {
         }
     }
 
+    /**
+     * JobIntentService implementation for Android O compatibility
+     */
+    public static class UpdateWidgetJobService extends JobIntentService {
+        private static final int JOB_ID = 1001;
+        public static final String INTENT_ACTION = "UPDATE_WIDGET_JOB";
+
+
+        public static void enqueueWork(Context context, Intent work) {
+            enqueueWork(context, UpdateWidgetJobService.class, JOB_ID, work);
+        }
+
+        @Override
+        protected void onHandleWork(@NonNull Intent intent) {
+            Log.d(LOG_TAG, "onHandleWork: update widget with JobIntentService");
+
+            if(intent.getAction().equals(INTENT_ACTION)) {
+                AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+                int incomingAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
+                        AppWidgetManager.INVALID_APPWIDGET_ID);
+
+                if (incomingAppWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
+                    HomeScreenWidget.updateAppWidget(this, appWidgetManager, incomingAppWidgetId);
+                }
+            }
+        }
+    }
 }
 

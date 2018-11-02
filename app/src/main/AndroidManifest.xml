@@ -57,9 +57,13 @@
                 android:resource="@xml/home_screen_widget_info" />
         </receiver>
 
-        <service android:name=".HomeScreenWidget$UpdateWidgetService" />
+        <service android:name=".HomeScreenWidget$UpdateWidgetService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+
+        <service android:name=".HomeScreenWidget$UpdateWidgetJobService"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
 
 
-    </application>
+    </application>k
 
 </manifest>
