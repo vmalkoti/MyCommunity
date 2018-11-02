@@ -41,16 +41,63 @@ public class DetailsViewModel extends AndroidViewModel {
      */
     public DetailsViewModel(@NonNull Application application) {
         super(application);
-        getSignedInUser();
+        setSignedInUser();
     }
 
 
+
+    /* GETTERS */
+    public MutableLiveData<AppUser> getSelectedUser() {
+        return selectedUser;
+    }
+
+    public MutableLiveData<Apartment> getSelectedApartment() {
+        return selectedApartment;
+    }
+
+    public MutableLiveData<Community> getSelectedCommunity() {
+        return selectedCommunity;
+    }
+
+    public MutableLiveData<MaintenanceRequest> getSelectedRequest() {
+        return selectedRequest;
+    }
+
+    public MutableLiveData<AnnouncementPost> getSelectedAnnouncement() {
+        return selectedAnnouncement;
+    }
+
+    public MutableLiveData<AppUser> getSignedInUser() {
+        return signedInUser;
+    }
+
+    /* SETTERS */
+    public void setSelectedUser(AppUser user) {
+        this.selectedUser.setValue(user);
+    }
+
+    public void setSelectedApartment(Apartment apartment) {
+        this.selectedApartment.setValue(apartment);
+    }
+
+    public void setSelectedCommunity(Community community) {
+        this.selectedCommunity.setValue(community);
+    }
+
+    public void setSelectedRequest(MaintenanceRequest request) {
+        this.selectedRequest.setValue(request);
+    }
+
+    public void setSelectedAnnouncement(AnnouncementPost post) {
+        this.selectedAnnouncement.setValue(post);
+    }
+
     /**
-     * Get details of currently signed in user
+     * Set livedata with details of currently signed in user from firebase
      *
      * @return
      */
-    public MutableLiveData<AppUser> getSignedInUser() {
+    private void setSignedInUser() {
         Log.d(LOG_TAG, "getSignedInUser: get signed in user's node object for reference later");
 
         // https://stackoverflow.com/questions/39109616/should-firebasedatabase-getinstance-be-used-sparingly/39109665#39109665
@@ -75,52 +122,7 @@ public class DetailsViewModel extends AndroidViewModel {
                                 Toast.LENGTH_LONG).show();
                     }
                 });
-
-        return signedInUser;
     }
-
-    /* GETTERS */
-    public MutableLiveData<AppUser> getSelectedUser() {
-        return selectedUser;
-    }
-
-    public MutableLiveData<Apartment> getSelectedApartment() {
-        return selectedApartment;
-    }
-
-    public MutableLiveData<Community> getSelectedCommunity() {
-        return selectedCommunity;
-    }
-
-    public MutableLiveData<MaintenanceRequest> getSelectedRequest() {
-        return selectedRequest;
-    }
-
-    public MutableLiveData<AnnouncementPost> getSelectedAnnouncement() {
-        return selectedAnnouncement;
-    }
-
-    /* SETTERS */
-    public void setSelectedUser(AppUser user) {
-        this.selectedUser.setValue(user);
-    }
-
-    public void setSelectedApartment(Apartment apartment) {
-        this.selectedApartment.setValue(apartment);
-    }
-
-    public void setSelectedCommunity(Community community) {
-        this.selectedCommunity.setValue(community);
-    }
-
-    public void setSelectedRequest(MaintenanceRequest request) {
-        this.selectedRequest.setValue(request);
-    }
-
-    public void setSelectedAnnouncement(AnnouncementPost post) {
-        this.selectedAnnouncement.setValue(post);
-    }
-
 
     /*
      * Create new node in community.

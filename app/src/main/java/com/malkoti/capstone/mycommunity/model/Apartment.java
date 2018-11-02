@@ -15,6 +15,8 @@ public class Apartment implements Parcelable {
     public String communityId;
     public String aptDescription;
 
+    @Exclude
+    public String aptKey;
 
     /*
      * Parcelable implementation

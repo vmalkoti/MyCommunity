@@ -15,6 +15,10 @@ public class AnnouncementPost implements Parcelable {
     public String postDate;
     public String postDescription;
 
+    @Exclude
+    public String postKey;
+
+
     public AnnouncementPost() {
         // empty constructor
     }

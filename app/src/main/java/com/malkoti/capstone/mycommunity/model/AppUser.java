@@ -19,6 +19,9 @@ public class AppUser implements Parcelable {
     public String email;
     public String phoneNum;
 
+    @Exclude
+    public String userKey;
+
     public String mgmtId;
     public String communityId;
     public String aptId;

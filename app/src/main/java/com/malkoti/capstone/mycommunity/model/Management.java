@@ -14,6 +14,9 @@ public class Management implements Parcelable {
     public String mgmtName;
     public String mgrId;
 
+    @Exclude
+    public String mgmtKey;
+
     /*
      * Parcelable implementation
      */

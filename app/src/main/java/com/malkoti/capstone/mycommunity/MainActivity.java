@@ -1,5 +1,7 @@
 package com.malkoti.capstone.mycommunity;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
@@ -21,7 +23,11 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.auth.FirebaseAuth;
 import com.malkoti.capstone.mycommunity.databinding.ActivityMainBinding;
+import com.malkoti.capstone.mycommunity.model.Apartment;
 import com.malkoti.capstone.mycommunity.utils.FirebaseAuthUtil;
+import com.malkoti.capstone.mycommunity.viewmodels.MainViewModel;
+
+import java.util.List;
 
 public class MainActivity
         extends AppCompatActivity
@@ -37,6 +43,13 @@ public class MainActivity
     private Intent signInLaunchIntent;
 
     private ActivityMainBinding binding;
+    private MainViewModel viewModel;
+    private Observer<List<Apartment>> aptObserver = apartments -> {
+
+    };
+
+    private AHBottomNavigationAdapter bottomNavAdapter;
+    private BottomBarFragmentStatePagerAdapter pagerAdapter;
 
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener = new FirebaseAuth.AuthStateListener() {
@@ -44,17 +57,14 @@ public class MainActivity
         public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
             if (FirebaseAuthUtil.isUserSignedIn()) {
                 Log.d(LOG_TAG, "AuthListener: User logged in");
-                attachDatabaseEventListeners();
+                //attachDatabaseEventListeners();
             } else {
                 Log.d(LOG_TAG, "AuthListener: User not logged in");
-                removeDatabaseEventListeners();
+                //removeDatabaseEventListeners();
                 startActivityForResult(signInLaunchIntent, RC_SIGN_IN, null);
             }
         }
     };
-
-    private AHBottomNavigationAdapter bottomNavAdapter;
-    private BottomBarFragmentStatePagerAdapter pagerAdapter;
 
 
     @Override
@@ -108,10 +118,11 @@ public class MainActivity
 
 
     /**
-     *
+     * Initialize UI components
      */
     private void initUI() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+        viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
         setSupportActionBar(binding.toolbar);
         getSupportActionBar().setTitle("My Community App");
@@ -154,7 +165,7 @@ public class MainActivity
     }
 
     /**
-     *
+     * Initialize Admob and load ads
      */
     private void initAds() {
         MobileAds.initialize(this, getString(R.string.admob_sample_app_id));
@@ -322,10 +333,16 @@ public class MainActivity
 
 
     private void attachDatabaseEventListeners() {
-
+        viewModel.getApartments().observe(this, apartments -> {});
+        viewModel.getResidents().observe(this, residents -> {});
+        viewModel.getRequests().observe(this, requests -> {});
+        viewModel.getAnnouncements().observe(this, announcements -> {});
     }
 
     private void removeDatabaseEventListeners() {
-
+        viewModel.getApartments().removeObservers(this);
+        viewModel.getResidents().removeObservers(this);
+        viewModel.getRequests().removeObservers(this);
+        viewModel.getAnnouncements().removeObservers(this);
     }
 }

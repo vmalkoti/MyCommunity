@@ -20,6 +20,9 @@ public class Community implements Parcelable {
     public String country;
     public String phoneNum;
 
+    @Exclude
+    public String communityKey;
+
     public String mgmtId;
     public String mgrId;
 

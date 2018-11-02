@@ -17,6 +17,8 @@ public class MaintenanceRequest implements Parcelable {
     public String reqDescription;
     public String reqComments;
 
+    @Exclude
+    public String reqKey;
 
     /*
      * Parcelable implementation
