@@ -1,10 +1,14 @@
 package com.malkoti.capstone.mycommunity;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModel;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,6 +19,8 @@ import android.view.ViewGroup;
 
 import com.malkoti.capstone.mycommunity.databinding.FragmentViewResidentsListBinding;
 import com.malkoti.capstone.mycommunity.databinding.ListItemResidentBinding;
+import com.malkoti.capstone.mycommunity.model.AppUser;
+import com.malkoti.capstone.mycommunity.viewmodels.MainViewModel;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,6 +38,7 @@ public class ViewResidentsList extends Fragment {
     private OnFragmentInteractionListener interactionListener;
     private FragmentViewResidentsListBinding binding;
     private ResidentListAdapter adapter;
+    private MainViewModel viewModel;
 
     public ViewResidentsList() {
         // Required empty public constructor
@@ -102,13 +109,25 @@ public class ViewResidentsList extends Fragment {
         interactionListener = null;
     }
 
+    /**
+     *
+     */
     private void initUI() {
+        viewModel = ViewModelProviders.of(getActivity()).get(MainViewModel.class);
+
+        adapter = new ResidentListAdapter(() -> interactionListener.onFragmentInteraction(null));
+
+        viewModel.getResidents().observe(getActivity(), new Observer<List<AppUser>>() {
+            @Override
+            public void onChanged(@Nullable List<AppUser> appUsers) {
+                adapter.setData(appUsers);
+            }
+        });
         binding.residentsListRv.setHasFixedSize(true);
         binding.residentsListRv.setLayoutManager(new LinearLayoutManager(ViewResidentsList.this.getContext()));
         binding.residentsListRv.addItemDecoration(new DividerItemDecoration(getContext(),
                 DividerItemDecoration.VERTICAL));
-        adapter = new ResidentListAdapter(() -> interactionListener.onFragmentInteraction(null));
-        adapter.setData(Arrays.asList(1,2,3,4,5,6,7,8,9,10));
+        //adapter.setData(Arrays.asList(1,2,3,4,5,6,7,8,9,10));
         binding.residentsListRv.setAdapter(adapter);
     }
 
@@ -131,8 +150,11 @@ public class ViewResidentsList extends Fragment {
 }
 
 
+/**
+ *
+ */
 class ResidentListAdapter extends RecyclerView.Adapter<ResidentListAdapter.ResidentViewHolder> {
-    List<Integer> residents;
+    List<AppUser> residents;
     private OnResidentClickListener listener;
 
     /**
@@ -169,7 +191,7 @@ class ResidentListAdapter extends RecyclerView.Adapter<ResidentListAdapter.Resid
      * Method to pass data to the adapter
      * @param data
      */
-    public void setData(List<Integer> data) {
+    public void setData(List<AppUser> data) {
         this.residents = data;
     }
 
@@ -187,15 +209,21 @@ class ResidentListAdapter extends RecyclerView.Adapter<ResidentListAdapter.Resid
 
         /**
          * Bind data item to the viewholder
-         * @param val
+         * @param resident
          */
-        void bindView(int val) {
-            itemBinding.residentItemFname.setText("John");
-            itemBinding.residentItemLname.setText("Locke");
-            itemBinding.residentItemAptName.setText("Apt #" + val);
-            itemBinding.residentItemImg.setImageDrawable(itemBinding.residentItemImg
-                    .getContext().getResources()
-                    .getDrawable(R.drawable.icons8_person_male_80));
+        void bindView(AppUser resident) {
+            itemBinding.residentItemFname.setText(resident.fullName);
+            //itemBinding.residentItemLname.setText("Locke");
+            itemBinding.residentItemAptName.setText(resident.aptId);
+            if (resident.gender.toLowerCase().equals("female")) {
+                itemBinding.residentItemImg.setImageDrawable(itemBinding.residentItemImg
+                        .getContext().getResources()
+                        .getDrawable(R.drawable.icons8_person_female_80));
+            } else {
+                itemBinding.residentItemImg.setImageDrawable(itemBinding.residentItemImg
+                        .getContext().getResources()
+                        .getDrawable(R.drawable.icons8_person_male_80));
+            }
 
             // set onclick listener for item
             itemBinding.residentItemContainer.setOnClickListener(view -> listener.onClick());

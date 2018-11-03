@@ -1,10 +1,13 @@
 package com.malkoti.capstone.mycommunity;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,6 +18,8 @@ import android.view.ViewGroup;
 
 import com.malkoti.capstone.mycommunity.databinding.FragmentViewMaintenanceListBinding;
 import com.malkoti.capstone.mycommunity.databinding.ListItemRequestBinding;
+import com.malkoti.capstone.mycommunity.model.MaintenanceRequest;
+import com.malkoti.capstone.mycommunity.viewmodels.MainViewModel;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,6 +37,7 @@ public class ViewMaintenanceList extends Fragment {
     private OnFragmentInteractionListener interactionListener;
     private FragmentViewMaintenanceListBinding binding;
     private RequestsListAdapter adapter;
+    private MainViewModel viewModel;
 
     /**
      * This interface must be implemented by activities that contain this
@@ -44,7 +50,6 @@ public class ViewMaintenanceList extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
@@ -59,27 +64,14 @@ public class ViewMaintenanceList extends Fragment {
      *
      * @return A new instance of fragment ViewMaintenanceList.
      */
-    // TODO: Rename and change types and number of parameters
     public static ViewMaintenanceList newInstance() {
         ViewMaintenanceList fragment = new ViewMaintenanceList();
-        /*
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        */
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-        */
     }
 
     @Override
@@ -93,12 +85,6 @@ public class ViewMaintenanceList extends Fragment {
         return binding.getRoot();
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (interactionListener != null) {
-            interactionListener.onFragmentInteraction(uri);
-        }
-    }
 
     @Override
     public void onAttach(Context context) {
@@ -122,12 +108,21 @@ public class ViewMaintenanceList extends Fragment {
 
 
     void initUI() {
+        viewModel = ViewModelProviders.of(getActivity()).get(MainViewModel.class);
+
+        viewModel.getRequests().observe(this, new Observer<List<MaintenanceRequest>>() {
+            @Override
+            public void onChanged(@Nullable List<MaintenanceRequest> maintenanceRequests) {
+                adapter.setData(maintenanceRequests);
+            }
+        });
+
         binding.requestListRv.setHasFixedSize(true);
         binding.requestListRv.setLayoutManager(new LinearLayoutManager(ViewMaintenanceList.this.getContext()));
         binding.requestListRv.addItemDecoration(new DividerItemDecoration(getContext(),
                 DividerItemDecoration.VERTICAL));
         adapter = new RequestsListAdapter(() -> interactionListener.onFragmentInteraction(null));
-        adapter.setData(Arrays.asList(1,2,3,4,5,6,7,8,9,10));
+        //adapter.setData(Arrays.asList(1,2,3,4,5,6,7,8,9,10));
         binding.requestListRv.setAdapter(adapter);
     }
 }
@@ -137,7 +132,7 @@ public class ViewMaintenanceList extends Fragment {
  *
  */
 class RequestsListAdapter extends RecyclerView.Adapter<RequestsListAdapter.RequestViewHolder> {
-    private List<Integer> requests;
+    private List<MaintenanceRequest> requests;
     private OnMaintenanceRequestClickListener listener;
 
     /**
@@ -167,14 +162,14 @@ class RequestsListAdapter extends RecyclerView.Adapter<RequestsListAdapter.Reque
 
     @Override
     public int getItemCount() {
-        return requests==null?0:requests.size();
+        return requests==null? 0 : requests.size();
     }
 
     /**
      * Method to pass data to the adapter
      * @param data
      */
-    public void setData(List<Integer> data) {
+    public void setData(List<MaintenanceRequest> data) {
         this.requests = data;
         notifyDataSetChanged();
     }
@@ -192,12 +187,12 @@ class RequestsListAdapter extends RecyclerView.Adapter<RequestsListAdapter.Reque
 
         /**
          *
-         * @param val
+         * @param request
          */
-        void bindView(int val) {
-            itemBinding.reqItemType.setText("Some Maintenance Type");
-            itemBinding.reqItemApt.setText("Apt #");
-            itemBinding.reqItemDate.setText("10/01/2018");
+        void bindView(MaintenanceRequest request) {
+            itemBinding.reqItemType.setText(request.reqType);
+            itemBinding.reqItemApt.setText(request.reqStatus);
+            itemBinding.reqItemDate.setText(request.reqDate);
 
             // TODO: set onclick listener for item
             itemBinding.reqItemContainer.setOnClickListener(view -> listener.onClick());

@@ -1,9 +1,12 @@
 package com.malkoti.capstone.mycommunity;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.DividerItemDecoration;
@@ -15,6 +18,8 @@ import android.view.ViewGroup;
 
 import com.malkoti.capstone.mycommunity.databinding.ListItemApartmentBinding;
 import com.malkoti.capstone.mycommunity.databinding.FragmentViewApartmentsListBinding;
+import com.malkoti.capstone.mycommunity.model.Apartment;
+import com.malkoti.capstone.mycommunity.viewmodels.MainViewModel;
 
 import java.util.Arrays;
 import java.util.List;
@@ -32,19 +37,14 @@ public class ViewApartmentsList extends Fragment {
     private OnFragmentInteractionListener interactionListener;
     private FragmentViewApartmentsListBinding binding;
     private ApartmentsListAdapter adapter;
+    private MainViewModel viewModel;
 
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
+     * to the activity and potentially other fragments contained in that activity.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
@@ -60,24 +60,12 @@ public class ViewApartmentsList extends Fragment {
      */
     public static ViewApartmentsList newInstance() {
         ViewApartmentsList fragment = new ViewApartmentsList();
-        /*
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        */
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-        */
     }
 
     @Override
@@ -111,12 +99,21 @@ public class ViewApartmentsList extends Fragment {
     }
 
     private void initUI() {
+        viewModel = ViewModelProviders.of(getActivity()).get(MainViewModel.class);
+
+        viewModel.getApartments().observe(this, new Observer<List<Apartment>>() {
+            @Override
+            public void onChanged(@Nullable List<Apartment> apartments) {
+                adapter.setData(apartments);
+            }
+        });
+
         binding.apartmentsListRv.setHasFixedSize(true);
         binding.apartmentsListRv.setLayoutManager(new LinearLayoutManager(ViewApartmentsList.this.getContext()));
         binding.apartmentsListRv.addItemDecoration(new DividerItemDecoration(getContext(),
                 DividerItemDecoration.VERTICAL));
         adapter = new ApartmentsListAdapter(() -> interactionListener.onFragmentInteraction(null));
-        adapter.setData(Arrays.asList(1,2,3,4,5,6,7,8,9,10));
+        //  adapter.setData(Arrays.asList(1,2,3,4,5,6,7,8,9,10));
         binding.apartmentsListRv.setAdapter(adapter);
     }
 
@@ -128,7 +125,8 @@ public class ViewApartmentsList extends Fragment {
  * Adapter class for list of apartments
  */
 class ApartmentsListAdapter extends RecyclerView.Adapter<ApartmentsListAdapter.ApartmentViewHolder> {
-    private List<Integer> apartments;
+    //private List<Integer> apartments;
+    private List<Apartment> apartments;
     private OnApartmentClickListener listener;
 
     /**
@@ -165,7 +163,7 @@ class ApartmentsListAdapter extends RecyclerView.Adapter<ApartmentsListAdapter.A
      * Method to pass data to the adapter
      * @param data
      */
-    public void setData(List<Integer> data) {
+    public void setData(List<Apartment> data) {
         this.apartments = data;
         notifyDataSetChanged();
     }
@@ -184,11 +182,12 @@ class ApartmentsListAdapter extends RecyclerView.Adapter<ApartmentsListAdapter.A
 
         /**
          * Bind data item to the viewholder
-         * @param val
+         * @param apt
          */
-        void bindView(int val) {
-            itemBinding.aptItemPrimaryText.setText("Apartment " + val);
-            itemBinding.aptItemSecondaryText.setText("Occupied");
+        void bindView(Apartment apt) {
+            itemBinding.aptItemPrimaryText.setText(apt.aptName);
+            String secondaryText = apt.numOfBedrooms + " bedrooms, " + apt.status;
+            itemBinding.aptItemSecondaryText.setText(secondaryText);
 
             // set onclick listener for item
             itemBinding.aptItemContainer.setOnClickListener(view -> listener.onClick());

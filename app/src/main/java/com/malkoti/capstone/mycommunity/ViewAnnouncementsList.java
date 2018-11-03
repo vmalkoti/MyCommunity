@@ -1,10 +1,13 @@
 package com.malkoti.capstone.mycommunity;
 
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -15,8 +18,9 @@ import android.view.ViewGroup;
 
 import com.malkoti.capstone.mycommunity.databinding.FragmentViewAnnouncementsListBinding;
 import com.malkoti.capstone.mycommunity.databinding.ListItemAdBinding;
+import com.malkoti.capstone.mycommunity.model.AnnouncementPost;
+import com.malkoti.capstone.mycommunity.viewmodels.MainViewModel;
 
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -32,20 +36,15 @@ public class ViewAnnouncementsList extends Fragment {
     private OnFragmentInteractionListener interactionListener;
     private FragmentViewAnnouncementsListBinding binding;
     private AnnouncementsListAdapter adapter;
+    private MainViewModel viewModel;
 
 
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
+     * to the activity and potentially other fragments contained in that activity.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
 
@@ -60,7 +59,6 @@ public class ViewAnnouncementsList extends Fragment {
      *
      * @return A new instance of fragment ViewAnnouncementsList.
      */
-    // TODO: Rename and change types and number of parameters
     public static ViewAnnouncementsList newInstance() {
         ViewAnnouncementsList fragment = new ViewAnnouncementsList();
         return fragment;
@@ -103,20 +101,32 @@ public class ViewAnnouncementsList extends Fragment {
 
 
     private void initUI() {
+        viewModel = ViewModelProviders.of(getActivity()).get(MainViewModel.class);
+
+        viewModel.getAnnouncements().observe(this, new Observer<List<AnnouncementPost>>() {
+            @Override
+            public void onChanged(@Nullable List<AnnouncementPost> announcementPosts) {
+                adapter.setData(announcementPosts);
+            }
+        });
+
         binding.adsListRv.setHasFixedSize(true);
         binding.adsListRv.setLayoutManager(new LinearLayoutManager(ViewAnnouncementsList.this.getContext()));
         binding.adsListRv.addItemDecoration(new DividerItemDecoration(getContext(),
                 DividerItemDecoration.VERTICAL));
         adapter = new AnnouncementsListAdapter(() -> interactionListener.onFragmentInteraction(null));
-        adapter.setData(Arrays.asList(1,2,3,4,5,6,7,8,9,10));
+        //adapter.setData(Arrays.asList(1,2,3,4,5,6,7,8,9,10));
         binding.adsListRv.setAdapter(adapter);
     }
 
 }
 
 
+/**
+ *
+ */
 class AnnouncementsListAdapter extends RecyclerView.Adapter<AnnouncementsListAdapter.AdsViewHolder> {
-    private List<Integer> ads;
+    private List<AnnouncementPost> announcements;
     private OnAdsItemClickListener listener;
 
     /**
@@ -142,20 +152,20 @@ class AnnouncementsListAdapter extends RecyclerView.Adapter<AnnouncementsListAda
 
     @Override
     public void onBindViewHolder(@NonNull AdsViewHolder viewHolder, int i) {
-        viewHolder.bindView(ads.get(i));
+        viewHolder.bindView(announcements.get(i));
     }
 
     @Override
     public int getItemCount() {
-        return ads==null? 0: ads.size();
+        return announcements ==null? 0: announcements.size();
     }
 
     /**
      *
-     * @param ads
+     * @param posts
      */
-    public void setData(List<Integer> ads) {
-        this.ads = ads;
+    public void setData(List<AnnouncementPost> posts) {
+        this.announcements = posts;
         notifyDataSetChanged();
     }
 
@@ -171,10 +181,10 @@ class AnnouncementsListAdapter extends RecyclerView.Adapter<AnnouncementsListAda
             this.itemBinding = binding;
         }
 
-        void bindView(int position) {
-            itemBinding.adItemTitleTv.setText("Fitness center renovation");
-            itemBinding.adItemByTv.setText("Management Management");
-            itemBinding.adItemDateTv.setText("10-01-2018");
+        void bindView(AnnouncementPost post) {
+            itemBinding.adItemTitleTv.setText(post.announcementTitle);
+            //itemBinding.adItemByTv.setText("Management Management");
+            itemBinding.adItemDateTv.setText(post.postDate);
 
             itemBinding.adItemContainer.setOnClickListener(view -> listener.onItemClick());
 
