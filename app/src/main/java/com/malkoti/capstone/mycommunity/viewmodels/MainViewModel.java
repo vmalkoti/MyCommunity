@@ -25,6 +25,7 @@ import com.malkoti.capstone.mycommunity.model.MaintenanceRequest;
 import com.malkoti.capstone.mycommunity.utils.FirebaseAuthUtil;
 import com.malkoti.capstone.mycommunity.utils.FirebaseDbUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -49,6 +50,7 @@ public class MainViewModel extends AndroidViewModel {
     public MainViewModel(@NonNull Application application) {
         super(application);
         setSignedInUser();
+        initializeLists();
         initializeListeners();
     }
 
@@ -72,33 +74,64 @@ public class MainViewModel extends AndroidViewModel {
         return signedInUser;
     }
 
+
+    /**
+     * initialize mutable data with blank lists
+     */
+    private void initializeLists() {
+        residents.setValue(new ArrayList<>());
+        apartments.setValue(new ArrayList<>());
+        requests.setValue(new ArrayList<>());
+        announcements.setValue(new ArrayList<>());
+    }
+
     /**
      * Set livedata with details of currently signed in user from firebase
      *
      * @return
      */
     private void setSignedInUser() {
-        Log.d(LOG_TAG, "getSignedInUser: get signed in user's node object for reference later");
+        Log.d(LOG_TAG, "setSignedInUser: get signed in user's node object for reference later");
 
         // https://stackoverflow.com/questions/39109616/should-firebasedatabase-getinstance-be-used-sparingly/39109665#39109665
         FirebaseDatabase database = FirebaseDatabase.getInstance();
 
         String userEmailId = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        Log.d(LOG_TAG, "setSignedInUser: Email id = " + userEmailId);
 
         database.getReference(FirebaseDbUtils.USERS_NODE_NAME)
                 .orderByChild("email")
                 .equalTo(userEmailId)
-                .addListenerForSingleValueEvent(new ValueEventListener() {
+                .addChildEventListener(new ChildEventListener() {
                     @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        Log.d(LOG_TAG, "setSignedInUser: User info recieved for " + dataSnapshot.getKey());
+
                         signedInUserId.setValue(dataSnapshot.getKey());
                         signedInUser.setValue(dataSnapshot.getValue(AppUser.class));
                         signedInUser.getValue().userKey = dataSnapshot.getKey();
+
+                        if (signedInUser.getValue().isManager) {
+                            initializeManagerViewLists();
+                        } else {
+                            initializeResidentViewLists();
+                        }
+                    }
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) { }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.e(LOG_TAG, "createNewApartment: Error getting user object",
+                        Log.e(LOG_TAG, "setSignedInUser: Error getting user object",
                                 databaseError.toException());
                         Toast.makeText(getApplication().getApplicationContext(),
                                 "Error getting signed in user details: " + databaseError.getMessage(),
@@ -118,9 +151,10 @@ public class MainViewModel extends AndroidViewModel {
         // https://stackoverflow.com/questions/39109616/should-firebasedatabase-getinstance-be-used-sparingly/39109665#39109665
         FirebaseDatabase database = FirebaseDatabase.getInstance();
 
-        String mgmtId = signedInUser.getValue().mgmtId;
         String communityId = signedInUser.getValue().communityId;
         // database.getReference(FirebaseDbUtils.USERS_NODE_NAME).child(uid).child("communityId").toString();
+
+        Log.d(LOG_TAG, "initializeManagerViewLists: Reading database to nodes for community " + communityId);
 
         DatabaseReference aptsNode = database.getReference(FirebaseDbUtils.APTS_NODE_NAME);
         DatabaseReference residentsNode = database.getReference(FirebaseDbUtils.USERS_NODE_NAME);
@@ -143,9 +177,7 @@ public class MainViewModel extends AndroidViewModel {
     public void initializeResidentViewLists() {
         Log.d(LOG_TAG, "initializeResidentViewLists: Reading database to get lists for resident");
 
-        String userEmailId = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-        String mgmtId = signedInUser.getValue().mgmtId;
-        String aptId = signedInUser.getValue().aptId;
+        String userId = signedInUser.getValue().userKey;
         String communityId = signedInUser.getValue().communityId;
 
         // https://stackoverflow.com/questions/39109616/should-firebasedatabase-getinstance-be-used-sparingly/39109665#39109665
@@ -154,7 +186,7 @@ public class MainViewModel extends AndroidViewModel {
         DatabaseReference requestsNode = database.getReference(FirebaseDbUtils.REQUESTS_NODE_NAME);
         DatabaseReference announcementsNode = database.getReference(FirebaseDbUtils.ANNOUNCEMENTS_NODE_NAME);
 
-        Query requestsQuery = requestsNode.orderByChild("residentId").equalTo(signedInUserId.getValue());
+        Query requestsQuery = requestsNode.orderByChild("residentId").equalTo(userId);
         requestsQuery.addChildEventListener(requestListener);
         Query announcementsQuery = announcementsNode.orderByChild("communityId").equalTo(communityId);
         announcementsQuery.addChildEventListener(announcementListener);
@@ -173,6 +205,7 @@ public class MainViewModel extends AndroidViewModel {
                 Apartment newApt = dataSnapshot.getValue(Apartment.class);
                 newApt.aptKey = dataSnapshot.getKey();
                 apartments.getValue().add(newApt);
+                Log.d(LOG_TAG, "aptListener: apt added " + newApt.aptName);
             }
 
             @Override
@@ -199,6 +232,7 @@ public class MainViewModel extends AndroidViewModel {
                 AppUser newResident = dataSnapshot.getValue(AppUser.class);
                 newResident.userKey = dataSnapshot.getKey();
                 residents.getValue().add(newResident);
+                Log.d(LOG_TAG, "residentListener: resident added " + newResident.fullName);
             }
 
             @Override
@@ -225,6 +259,7 @@ public class MainViewModel extends AndroidViewModel {
                 MaintenanceRequest newRequest = dataSnapshot.getValue(MaintenanceRequest.class);
                 newRequest.reqKey = dataSnapshot.getKey();
                 requests.getValue().add(newRequest);
+                Log.d(LOG_TAG, "requestListener: request added " + newRequest.reqType);
             }
 
             @Override
@@ -251,6 +286,7 @@ public class MainViewModel extends AndroidViewModel {
                 AnnouncementPost newAnnouncement = dataSnapshot.getValue(AnnouncementPost.class);
                 newAnnouncement.postKey = dataSnapshot.getKey();
                 announcements.getValue().add(newAnnouncement);
+                Log.d(LOG_TAG, "announcementListener: announcement added " + newAnnouncement.announcementTitle);
             }
 
             @Override
