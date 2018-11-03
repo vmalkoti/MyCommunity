@@ -13,6 +13,7 @@ public class MaintenanceRequest implements Parcelable {
     public String communityId;
     public String aptId;
     public String residentId; // do we need this?
+    public String reqDate;
     public String reqStatus;
     public String reqDescription;
     public String reqComments;
@@ -46,11 +47,13 @@ public class MaintenanceRequest implements Parcelable {
     }
 
     public MaintenanceRequest(String reqType, String communityId, String aptId, String residentId,
+                              String reqDate,
                               String reqStatus, String reqDescription, String reqComments) {
         this.reqType = reqType;
         this.communityId = communityId;
         this.aptId = aptId;
         this.residentId = residentId;
+        this.reqDate = reqDate;
         this.reqStatus = reqStatus;
         this.reqDescription = reqDescription;
         this.reqComments = reqComments;
@@ -64,6 +67,7 @@ public class MaintenanceRequest implements Parcelable {
         communityId = in.readString();
         aptId = in.readString();
         residentId = in.readString();
+        reqDate = in.readString();
         reqStatus = in.readString();
         reqDescription = in.readString();
         reqComments = in.readString();
@@ -78,6 +82,7 @@ public class MaintenanceRequest implements Parcelable {
         dest.writeString(communityId);
         dest.writeString(aptId);
         dest.writeString(residentId);
+        dest.writeString(reqDate);
         dest.writeString(reqStatus);
         dest.writeString(reqDescription);
         dest.writeString(reqComments);
@@ -97,6 +102,7 @@ public class MaintenanceRequest implements Parcelable {
         result.put("communityId", communityId);
         result.put("aptId", aptId);
         result.put("residentId", residentId);
+        result.put("reqDate", reqDate);
         result.put("reqStatus", reqStatus);
         result.put("reqDescription", reqDescription);
         result.put("reqComments", reqComments);
@@ -105,6 +111,6 @@ public class MaintenanceRequest implements Parcelable {
     }
 
     public static MaintenanceRequest getDummyObject() {
-        return new MaintenanceRequest("", "", "", "", "", "", "");
+        return new MaintenanceRequest("", "", "", "", "", "", "", "");
     }
 }
