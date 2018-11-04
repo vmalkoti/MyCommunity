@@ -18,9 +18,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
+import com.google.firebase.database.ValueEventListener;
 import com.malkoti.capstone.mycommunity.model.AnnouncementPost;
 import com.malkoti.capstone.mycommunity.model.Apartment;
 import com.malkoti.capstone.mycommunity.model.AppUser;
+import com.malkoti.capstone.mycommunity.model.Community;
 import com.malkoti.capstone.mycommunity.model.MaintenanceRequest;
 import com.malkoti.capstone.mycommunity.utils.FirebaseAuthUtil;
 import com.malkoti.capstone.mycommunity.utils.FirebaseDbUtils;
@@ -34,6 +36,7 @@ import java.util.List;
 public class MainViewModel extends AndroidViewModel {
     private static final String LOG_TAG = "DEBUG_" + MainViewModel.class.getSimpleName();
 
+    private final MutableLiveData<Community> community = new MutableLiveData<>();
     private final MutableLiveData<List<AppUser>> residents = new MutableLiveData<>();
     private final MutableLiveData<List<Apartment>> apartments = new MutableLiveData<>();
     private final MutableLiveData<List<MaintenanceRequest>> requests = new MutableLiveData<>();
@@ -42,6 +45,7 @@ public class MainViewModel extends AndroidViewModel {
     private final MutableLiveData<AppUser> signedInUser = new MutableLiveData<>();
     private final MutableLiveData<String> signedInUserId = new MutableLiveData<>();
 
+    private ChildEventListener communityListener;
     private ChildEventListener residentListener;
     private ChildEventListener aptListener;
     private ChildEventListener requestListener;
@@ -54,6 +58,9 @@ public class MainViewModel extends AndroidViewModel {
         initializeListeners();
     }
 
+    public MutableLiveData<Community> getCommunity() {
+        return community;
+    }
     public MutableLiveData<List<AppUser>> getResidents() {
         return residents;
     }
@@ -156,10 +163,26 @@ public class MainViewModel extends AndroidViewModel {
 
         Log.d(LOG_TAG, "initializeManagerViewLists: Reading database to nodes for community " + communityId);
 
+        DatabaseReference communityNode = database.getReference(FirebaseDbUtils.COMMUNITY_NODE_NAME);
         DatabaseReference aptsNode = database.getReference(FirebaseDbUtils.APTS_NODE_NAME);
         DatabaseReference residentsNode = database.getReference(FirebaseDbUtils.USERS_NODE_NAME);
         DatabaseReference requestsNode = database.getReference(FirebaseDbUtils.REQUESTS_NODE_NAME);
         DatabaseReference announcementsNode = database.getReference(FirebaseDbUtils.ANNOUNCEMENTS_NODE_NAME);
+
+        communityNode.child(communityId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Community c = dataSnapshot.getValue(Community.class);
+                community.setValue(c);
+                Log.d(LOG_TAG, "initializeManagerViewLists: community " + c.name);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(LOG_TAG, "initializeManagerViewLists: error getting community.", databaseError.toException());
+            }
+        });
+
 
         Query aptsQuery = aptsNode.orderByChild("communityId").equalTo(communityId);
         aptsQuery.addChildEventListener(aptListener);
@@ -183,9 +206,34 @@ public class MainViewModel extends AndroidViewModel {
         // https://stackoverflow.com/questions/39109616/should-firebasedatabase-getinstance-be-used-sparingly/39109665#39109665
         FirebaseDatabase database = FirebaseDatabase.getInstance();
 
+        DatabaseReference communityNode = database.getReference(FirebaseDbUtils.COMMUNITY_NODE_NAME);
+        DatabaseReference aptsNode = database.getReference(FirebaseDbUtils.APTS_NODE_NAME);
+        DatabaseReference residentsNode = database.getReference(FirebaseDbUtils.USERS_NODE_NAME);
         DatabaseReference requestsNode = database.getReference(FirebaseDbUtils.REQUESTS_NODE_NAME);
         DatabaseReference announcementsNode = database.getReference(FirebaseDbUtils.ANNOUNCEMENTS_NODE_NAME);
 
+        communityNode.child(communityId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Community c = dataSnapshot.getValue(Community.class);
+                community.setValue(c);
+                Log.d(LOG_TAG, "initializeResidentViewLists: community " + c.name);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(LOG_TAG, "initializeResidentViewLists: error getting community.", databaseError.toException());
+            }
+        });
+
+
+        /*
+        // modify to get only those nodes that are related to the resident
+        Query aptsQuery = aptsNode.orderByChild("communityId").equalTo(communityId);
+        aptsQuery.addChildEventListener(aptListener);
+        Query residentsQuery = residentsNode.orderByChild("communityId").equalTo(communityId);
+        residentsQuery.addChildEventListener(residentListener);
+        */
         Query requestsQuery = requestsNode.orderByChild("residentId").equalTo(userId);
         requestsQuery.addChildEventListener(requestListener);
         Query announcementsQuery = announcementsNode.orderByChild("communityId").equalTo(communityId);
@@ -194,7 +242,7 @@ public class MainViewModel extends AndroidViewModel {
     }
 
     /**
-     *
+     * Initialize childeventlisteners for firebase node queries
      */
     private void initializeListeners() {
         // Listener for apartment node
