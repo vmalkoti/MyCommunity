@@ -57,10 +57,10 @@ public class MainActivity
         public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
             if (FirebaseAuthUtil.isUserSignedIn()) {
                 Log.d(LOG_TAG, "AuthListener: User logged in");
-                attachDatabaseEventListeners();
+                //attachDatabaseEventListeners();
             } else {
                 Log.d(LOG_TAG, "AuthListener: User not logged in");
-                removeDatabaseEventListeners();
+                //removeDatabaseEventListeners();
                 startActivityForResult(signInLaunchIntent, RC_SIGN_IN, null);
             }
         }
@@ -83,7 +83,7 @@ public class MainActivity
             Log.d(LOG_TAG, "onCreate: Use Signed in");
             initUI();
             initAds();
-            attachDatabaseEventListeners();
+            //attachDatabaseEventListeners();
         }
     }
 
@@ -158,7 +158,7 @@ public class MainActivity
                     return;
             }
             // creating new item; so no key to pass
-            showDetailsScreenForItem(screenType, null);
+            showDetailsScreenForItem(screenType, null, null);
         });
     }
 
@@ -258,16 +258,6 @@ public class MainActivity
     }
 
 
-    private void showDetailsScreenForItem(DetailsActivity.DetailsScreenType screenType, String key) {
-        Intent intent = new Intent(this, DetailsActivity.class);
-        intent.putExtra(DetailsActivity.DISPLAY_SCREEN_TYPE, screenType);
-        intent.putExtra(DetailsActivity.DISPLAY_ITEM_KEY, key);
-
-        intent.putExtra(DetailsActivity.DISPLAY_ITEM_DETAILS, (Parcelable) null);
-
-        startActivity(intent);
-    }
-
     /**
      * Create a notification badge on BottomNavigationBar item
      *
@@ -299,67 +289,96 @@ public class MainActivity
         return ContextCompat.getColor(this, colorResource);
     }
 
+    @Override
+    public void onFragmentInteraction(Parcelable selectedItem) {
+        Log.d(LOG_TAG, "onFragmentInteraction: showing details for parcelable");
 
+        int position = binding.bottomNavigation.getCurrentItem();
+
+        switch (position) {
+            case 0:
+                showDetailsScreenForItem(DetailsActivity.DetailsScreenType.APARTMENT_DETAILS,
+                        "apt1234", selectedItem);
+                break;
+            case 1:
+                showDetailsScreenForItem(DetailsActivity.DetailsScreenType.RESIDENT_DETAILS,
+                        "res1234", selectedItem);
+                break;
+            case 2:
+                showDetailsScreenForItem(DetailsActivity.DetailsScreenType.MAINTENANCE_REQ_DETAILS,
+                        "req1234", selectedItem);
+                break;
+            case 3:
+                showDetailsScreenForItem(DetailsActivity.DetailsScreenType.ANNOUNCEMENT_DETAILS,
+                        "ads1234", selectedItem);
+                break;
+            case 4:
+                // if manager, show community details screen
+                showDetailsScreenForItem(DetailsActivity.DetailsScreenType.COMMUNITY_DETAILS,
+                        "bldg1234", selectedItem);
+                // if resident, show resident details screen
+                // showDetailsScreenForItem(DetailsActivity.DetailsScreenType.RESIDENT_DETAILS,
+                // "res1234", null);
+            default:
+                Log.e(LOG_TAG, "Unknown fragment listener");
+        }
+    }
+
+    /*
     @Override
     public void onFragmentInteraction(Uri uri) {
+        Log.d(LOG_TAG, "onFragmentInteraction: showing details for uri");
+
         int position = binding.bottomNavigation.getCurrentItem();
 
 
         switch (position) {
             case 0:
-                showDetailsScreenForItem(DetailsActivity.DetailsScreenType.APARTMENT_DETAILS, "apt1234");
+                showDetailsScreenForItem(DetailsActivity.DetailsScreenType.APARTMENT_DETAILS,
+                        "apt1234", null);
                 break;
             case 1:
-                showDetailsScreenForItem(DetailsActivity.DetailsScreenType.RESIDENT_DETAILS, "res1234");
+                showDetailsScreenForItem(DetailsActivity.DetailsScreenType.RESIDENT_DETAILS,
+                        "res1234", null);
                 break;
             case 2:
-                showDetailsScreenForItem(DetailsActivity.DetailsScreenType.MAINTENANCE_REQ_DETAILS, "req1234");
+                showDetailsScreenForItem(DetailsActivity.DetailsScreenType.MAINTENANCE_REQ_DETAILS,
+                        "req1234", null);
                 break;
             case 3:
-                showDetailsScreenForItem(DetailsActivity.DetailsScreenType.ANNOUNCEMENT_DETAILS, "ads1234");
+                showDetailsScreenForItem(DetailsActivity.DetailsScreenType.ANNOUNCEMENT_DETAILS,
+                        "ads1234", null);
                 break;
             case 4:
                 // if manager, show community details screen
-                showDetailsScreenForItem(DetailsActivity.DetailsScreenType.COMMUNITY_DETAILS, "bldg1234");
+                showDetailsScreenForItem(DetailsActivity.DetailsScreenType.COMMUNITY_DETAILS,
+                        "bldg1234", null);
                 // if resident, show resident details screen
-                // showDetailsScreenForItem(DetailsActivity.DetailsScreenType.RESIDENT_DETAILS, "res1234");
+                // showDetailsScreenForItem(DetailsActivity.DetailsScreenType.RESIDENT_DETAILS,
+                // "res1234", null);
             default:
                 Log.e(LOG_TAG, "Unknown fragment listener");
         }
 
     }
+    */
 
     /**
      *
+     * @param screenType
+     * @param key
      */
-    private void attachDatabaseEventListeners() {
-        Log.d(LOG_TAG, "attachDatabaseEventListeners: attaching observers");
+    private void showDetailsScreenForItem(DetailsActivity.DetailsScreenType screenType,
+                                          String key, Parcelable selectedItemObject) {
+        Log.d(LOG_TAG, "showDetailsScreenForItem: showing details for dummy key=" + key);
 
-        viewModel.getApartments().observe(this, apartments -> {
-            Log.d(LOG_TAG, "attachDatabaseEventListeners: apartments list changed " + apartments.size());
-        });
-        viewModel.getResidents().observe(this, residents -> {
-            Log.d(LOG_TAG, "attachDatabaseEventListeners: residents list changed " + residents.size());
-        });
-        viewModel.getRequests().observe(this, requests -> {
-            Log.d(LOG_TAG, "attachDatabaseEventListeners: requests list changed " + requests.size());
-        });
-        viewModel.getAnnouncements().observe(this, announcements -> {
-            Log.d(LOG_TAG, "attachDatabaseEventListeners: announcements list changed " + announcements.size());
-        });
+        Intent intent = new Intent(this, DetailsActivity.class);
+        intent.putExtra(DetailsActivity.DISPLAY_SCREEN_TYPE, screenType);
+        intent.putExtra(DetailsActivity.DISPLAY_ITEM_KEY, key);
+        intent.putExtra(DetailsActivity.DISPLAY_ITEM_DETAILS, selectedItemObject);
+        //intent.putExtra(DetailsActivity.DISPLAY_ITEM_DETAILS, (Parcelable) null);
 
+        startActivity(intent);
     }
 
-    /**
-     *
-     */
-    private void removeDatabaseEventListeners() {
-        Log.d(LOG_TAG, "removeDatabaseEventListeners: removing observers");
-
-        viewModel.getApartments().removeObservers(this);
-        viewModel.getResidents().removeObservers(this);
-        viewModel.getRequests().removeObservers(this);
-        viewModel.getAnnouncements().removeObservers(this);
-
-    }
 }
