@@ -12,6 +12,7 @@ import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 
 import com.crashlytics.android.Crashlytics;
+import com.malkoti.capstone.mycommunity.model.AppUser;
 import com.malkoti.capstone.mycommunity.model.Community;
 import com.malkoti.capstone.mycommunity.utils.FirebaseAuthUtil;
 import com.malkoti.capstone.mycommunity.viewmodels.MainViewModel;
@@ -92,8 +93,13 @@ public class AppPreferences extends PreferenceFragmentCompat {
 
         if(profileButton != null) {
             profileButton.setOnPreferenceClickListener(preference -> {
-                Community community = viewModel.getCommunity().getValue();
-                interactionListener.onFragmentInteraction(community);
+                AppUser currentUser = viewModel.getSignedInUser().getValue();
+                if(currentUser.isManager) {
+                    Community community = viewModel.getCommunity().getValue();
+                    interactionListener.onFragmentInteraction(community);
+                } else {
+                    interactionListener.onFragmentInteraction(currentUser);
+                }
                 return true;
             });
         }

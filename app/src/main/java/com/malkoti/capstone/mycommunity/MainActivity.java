@@ -24,6 +24,7 @@ import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.auth.FirebaseAuth;
 import com.malkoti.capstone.mycommunity.databinding.ActivityMainBinding;
 import com.malkoti.capstone.mycommunity.model.Apartment;
+import com.malkoti.capstone.mycommunity.model.AppUser;
 import com.malkoti.capstone.mycommunity.utils.FirebaseAuthUtil;
 import com.malkoti.capstone.mycommunity.viewmodels.MainViewModel;
 
@@ -79,7 +80,7 @@ public class MainActivity
 
         //if(savedInstanceState != null) return;
 
-        if(FirebaseAuthUtil.isUserSignedIn()) {
+        if (FirebaseAuthUtil.isUserSignedIn()) {
             Log.d(LOG_TAG, "onCreate: Use Signed in");
             initUI();
             initAds();
@@ -231,7 +232,6 @@ public class MainActivity
 
 
     /**
-     *
      * @param bottomNavSelectedItemPosition
      */
     private void setFabVisibility(int bottomNavSelectedItemPosition) {
@@ -313,12 +313,15 @@ public class MainActivity
                         "ads1234", selectedItem);
                 break;
             case 4:
-                // if manager, show community details screen
-                showDetailsScreenForItem(DetailsActivity.DetailsScreenType.COMMUNITY_DETAILS,
-                        "bldg1234", selectedItem);
-                // if resident, show resident details screen
-                // showDetailsScreenForItem(DetailsActivity.DetailsScreenType.RESIDENT_DETAILS,
-                // "res1234", null);
+                if (viewModel.getSignedInUser().getValue().isManager) {
+                    // if manager, show community details screen
+                    showDetailsScreenForItem(DetailsActivity.DetailsScreenType.COMMUNITY_DETAILS,
+                            "bldg1234", selectedItem);
+                } else {
+                    // if resident, show resident details screen
+                    showDetailsScreenForItem(DetailsActivity.DetailsScreenType.RESIDENT_DETAILS,
+                            "res1234", selectedItem);
+                }
             default:
                 Log.e(LOG_TAG, "Unknown fragment listener");
         }
@@ -364,7 +367,6 @@ public class MainActivity
     */
 
     /**
-     *
      * @param screenType
      * @param key
      */
