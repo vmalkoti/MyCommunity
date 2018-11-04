@@ -1,12 +1,10 @@
 package com.malkoti.capstone.mycommunity;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.DividerItemDecoration;
@@ -22,7 +20,6 @@ import com.malkoti.capstone.mycommunity.databinding.FragmentViewApartmentsListBi
 import com.malkoti.capstone.mycommunity.model.Apartment;
 import com.malkoti.capstone.mycommunity.viewmodels.MainViewModel;
 
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -47,7 +44,7 @@ public class ViewApartmentsList extends Fragment {
      * to the activity and potentially other fragments contained in that activity.
      */
     public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
+        void onFragmentInteraction(Parcelable selectedItem);
     }
 
     // Required empty public constructor
@@ -105,7 +102,7 @@ public class ViewApartmentsList extends Fragment {
      * Initialize UI components
      */
     private void initUI() {
-        adapter = new ApartmentsListAdapter(() -> interactionListener.onFragmentInteraction(null));
+        adapter = new ApartmentsListAdapter((apt) -> interactionListener.onFragmentInteraction(apt));
 
         viewModel.getApartments().observe(getActivity(), apartments -> adapter.setData(apartments));
 
@@ -131,7 +128,7 @@ class ApartmentsListAdapter extends RecyclerView.Adapter<ApartmentsListAdapter.A
      * Interface for click events on items shown by the adapter
      */
     interface OnApartmentClickListener {
-        void onClick();
+        void onItemClick(Apartment apartment);
     }
 
     ApartmentsListAdapter(OnApartmentClickListener listener) {
@@ -192,7 +189,7 @@ class ApartmentsListAdapter extends RecyclerView.Adapter<ApartmentsListAdapter.A
             itemBinding.aptItemSecondaryText.setText(secondaryText);
 
             // set onclick listener for item
-            itemBinding.aptItemContainer.setOnClickListener(view -> listener.onClick());
+            itemBinding.aptItemContainer.setOnClickListener(view -> listener.onItemClick(apt));
 
             itemBinding.executePendingBindings();
         }

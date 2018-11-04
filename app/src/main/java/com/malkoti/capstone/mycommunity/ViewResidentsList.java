@@ -1,14 +1,12 @@
 package com.malkoti.capstone.mycommunity;
 
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,7 +21,6 @@ import com.malkoti.capstone.mycommunity.databinding.ListItemResidentBinding;
 import com.malkoti.capstone.mycommunity.model.AppUser;
 import com.malkoti.capstone.mycommunity.viewmodels.MainViewModel;
 
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -36,6 +33,8 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class ViewResidentsList extends Fragment {
+    private static final String LOG_TAG = "DEBUG_" + ViewResidentsList.class.getSimpleName();
+
     private OnFragmentInteractionListener interactionListener;
     private FragmentViewResidentsListBinding binding;
     private ResidentListAdapter adapter;
@@ -47,7 +46,7 @@ public class ViewResidentsList extends Fragment {
      * to the activity and potentially other fragments contained in that activity.
      */
     public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
+        void onFragmentInteraction(Parcelable selectedItem);
     }
 
 
@@ -83,13 +82,6 @@ public class ViewResidentsList extends Fragment {
         return binding.getRoot();
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-        if (interactionListener != null) {
-            interactionListener.onFragmentInteraction(uri);
-        }
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -113,7 +105,7 @@ public class ViewResidentsList extends Fragment {
      * Initialize UI components
      */
     private void initUI() {
-        adapter = new ResidentListAdapter(() -> interactionListener.onFragmentInteraction(null));
+        adapter = new ResidentListAdapter((resident) -> interactionListener.onFragmentInteraction(resident));
 
         viewModel.getResidents().observe(getActivity(), residents -> adapter.setData(residents));
 
@@ -139,7 +131,7 @@ class ResidentListAdapter extends RecyclerView.Adapter<ResidentListAdapter.Resid
      * Interface for click events on items shown by the adapter
      */
     interface OnResidentClickListener {
-        void onClick();
+        void onItemClick(AppUser resident);
     }
 
     ResidentListAdapter(OnResidentClickListener listener) {
@@ -196,6 +188,9 @@ class ResidentListAdapter extends RecyclerView.Adapter<ResidentListAdapter.Resid
             itemBinding.residentItemFname.setText(resident.fullName);
             //itemBinding.residentItemLname.setText("Locke");
             itemBinding.residentItemAptName.setText(resident.aptId);
+
+            // static image for now
+            // future implementation - show images uploaded to firebase storage
             if (resident.gender.toLowerCase().equals("female")) {
                 itemBinding.residentItemImg.setImageDrawable(itemBinding.residentItemImg
                         .getContext().getResources()
@@ -207,7 +202,7 @@ class ResidentListAdapter extends RecyclerView.Adapter<ResidentListAdapter.Resid
             }
 
             // set onclick listener for item
-            itemBinding.residentItemContainer.setOnClickListener(view -> listener.onClick());
+            itemBinding.residentItemContainer.setOnClickListener(view -> listener.onItemClick(resident));
 
             itemBinding.executePendingBindings();
         }

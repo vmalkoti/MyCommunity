@@ -6,6 +6,7 @@ import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -46,7 +47,7 @@ public class ViewAnnouncementsList extends Fragment {
      * to the activity and potentially other fragments contained in that activity.
      */
     public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
+        void onFragmentInteraction(Parcelable selectedItem);
     }
 
     // Required empty public constructor
@@ -104,7 +105,7 @@ public class ViewAnnouncementsList extends Fragment {
      * Initialize UI components
      */
     private void initUI() {
-        adapter = new AnnouncementsListAdapter(() -> interactionListener.onFragmentInteraction(null));
+        adapter = new AnnouncementsListAdapter((post) -> interactionListener.onFragmentInteraction(post));
 
         viewModel.getAnnouncements().observe(getActivity(), posts -> adapter.setData(posts));
 
@@ -130,7 +131,7 @@ class AnnouncementsListAdapter extends RecyclerView.Adapter<AnnouncementsListAda
      *
      */
     interface OnAdsItemClickListener {
-        void onItemClick();
+        void onItemClick(AnnouncementPost post);
     }
 
 
@@ -184,7 +185,7 @@ class AnnouncementsListAdapter extends RecyclerView.Adapter<AnnouncementsListAda
             //itemBinding.adItemByTv.setText("Management Management");
             itemBinding.adItemDateTv.setText(post.postDate);
 
-            itemBinding.adItemContainer.setOnClickListener(view -> listener.onItemClick());
+            itemBinding.adItemContainer.setOnClickListener(view -> listener.onItemClick(post));
 
             itemBinding.executePendingBindings();
         }

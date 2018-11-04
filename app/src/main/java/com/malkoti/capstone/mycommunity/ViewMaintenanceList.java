@@ -1,13 +1,11 @@
 package com.malkoti.capstone.mycommunity;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
-import android.net.Uri;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -22,7 +20,6 @@ import com.malkoti.capstone.mycommunity.databinding.ListItemRequestBinding;
 import com.malkoti.capstone.mycommunity.model.MaintenanceRequest;
 import com.malkoti.capstone.mycommunity.viewmodels.MainViewModel;
 
-import java.util.Arrays;
 import java.util.List;
 
 
@@ -35,6 +32,8 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class ViewMaintenanceList extends Fragment {
+    private static final String LOG_TAG = "DEBUG_" + ViewMaintenanceList.class.getSimpleName();
+
     private OnFragmentInteractionListener interactionListener;
     private FragmentViewMaintenanceListBinding binding;
     private RequestsListAdapter adapter;
@@ -43,15 +42,10 @@ public class ViewMaintenanceList extends Fragment {
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
+     * to the activity and potentially other fragments contained in that activity.
      */
     public interface OnFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
+        void onFragmentInteraction(Parcelable selectedItem);
     }
 
 
@@ -111,7 +105,7 @@ public class ViewMaintenanceList extends Fragment {
      * Initialize UI components
      */
     private void initUI() {
-        adapter = new RequestsListAdapter(() -> interactionListener.onFragmentInteraction(null));
+        adapter = new RequestsListAdapter((request) -> interactionListener.onFragmentInteraction(request));
 
         viewModel.getRequests().observe(getActivity(), requests -> adapter.setData(requests));
 
@@ -137,7 +131,7 @@ class RequestsListAdapter extends RecyclerView.Adapter<RequestsListAdapter.Reque
      * Interface for click events on items shown by the adapter
      */
     interface OnMaintenanceRequestClickListener {
-        void onClick();
+        void onItemClick(MaintenanceRequest request);
     }
 
     RequestsListAdapter(OnMaintenanceRequestClickListener listener) {
@@ -194,7 +188,7 @@ class RequestsListAdapter extends RecyclerView.Adapter<RequestsListAdapter.Reque
             itemBinding.reqItemApt.setText(request.reqStatus);
             itemBinding.reqItemDate.setText(request.reqDate);
 
-            itemBinding.reqItemContainer.setOnClickListener(view -> listener.onClick());
+            itemBinding.reqItemContainer.setOnClickListener(view -> listener.onItemClick(request));
 
             itemBinding.executePendingBindings();
         }
