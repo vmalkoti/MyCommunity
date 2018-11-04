@@ -17,7 +17,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
+
 import com.malkoti.capstone.mycommunity.model.AnnouncementPost;
 import com.malkoti.capstone.mycommunity.model.Apartment;
 import com.malkoti.capstone.mycommunity.model.AppUser;
@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * Viewmodel class for MainActivity
  */
 public class MainViewModel extends AndroidViewModel {
     private static final String LOG_TAG = "DEBUG_" + MainViewModel.class.getSimpleName();
@@ -205,6 +205,8 @@ public class MainViewModel extends AndroidViewModel {
                 Apartment newApt = dataSnapshot.getValue(Apartment.class);
                 newApt.aptKey = dataSnapshot.getKey();
                 apartments.getValue().add(newApt);
+                // to fire observers
+                apartments.setValue(apartments.getValue());
                 Log.d(LOG_TAG, "aptListener: apt added " + newApt.aptName);
             }
 
@@ -212,6 +214,9 @@ public class MainViewModel extends AndroidViewModel {
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                 Apartment removedApt = dataSnapshot.getValue(Apartment.class);
                 apartments.getValue().remove(removedApt);
+                // to fire observers
+                apartments.setValue(apartments.getValue());
+                Log.d(LOG_TAG, "aptListener: apt removed " + removedApt.aptName);
             }
 
             @Override
@@ -230,15 +235,22 @@ public class MainViewModel extends AndroidViewModel {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 AppUser newResident = dataSnapshot.getValue(AppUser.class);
-                newResident.userKey = dataSnapshot.getKey();
-                residents.getValue().add(newResident);
-                Log.d(LOG_TAG, "residentListener: resident added " + newResident.fullName);
+                if (!newResident.isManager) {
+                    newResident.userKey = dataSnapshot.getKey();
+                    residents.getValue().add(newResident);
+                    // to fire observers
+                    residents.setValue(residents.getValue());
+                    Log.d(LOG_TAG, "residentListener: resident added " + newResident.fullName);
+                }
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                 AppUser removedResident = dataSnapshot.getValue(AppUser.class);
                 residents.getValue().remove(removedResident);
+                // to fire observers
+                residents.setValue(residents.getValue());
+                Log.d(LOG_TAG, "requestListener: request removed " + removedResident.fullName);
             }
 
             @Override
@@ -259,6 +271,9 @@ public class MainViewModel extends AndroidViewModel {
                 MaintenanceRequest newRequest = dataSnapshot.getValue(MaintenanceRequest.class);
                 newRequest.reqKey = dataSnapshot.getKey();
                 requests.getValue().add(newRequest);
+                // to fire observers
+                requests.setValue(requests.getValue());
+
                 Log.d(LOG_TAG, "requestListener: request added " + newRequest.reqType);
             }
 
@@ -266,6 +281,10 @@ public class MainViewModel extends AndroidViewModel {
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                 MaintenanceRequest removedRequest = dataSnapshot.getValue(MaintenanceRequest.class);
                 requests.getValue().remove(removedRequest);
+                // to fire observers
+                requests.setValue(requests.getValue());
+
+                Log.d(LOG_TAG, "requestListener: request removed " + removedRequest.reqType);
             }
 
             @Override
@@ -286,6 +305,8 @@ public class MainViewModel extends AndroidViewModel {
                 AnnouncementPost newAnnouncement = dataSnapshot.getValue(AnnouncementPost.class);
                 newAnnouncement.postKey = dataSnapshot.getKey();
                 announcements.getValue().add(newAnnouncement);
+                // to fire observers
+                announcements.setValue(announcements.getValue());
                 Log.d(LOG_TAG, "announcementListener: announcement added " + newAnnouncement.announcementTitle);
             }
 
@@ -293,6 +314,9 @@ public class MainViewModel extends AndroidViewModel {
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                 AnnouncementPost removedAnnouncement = dataSnapshot.getValue(AnnouncementPost.class);
                 announcements.getValue().remove(removedAnnouncement);
+                // to fire observers
+                announcements.setValue(announcements.getValue());
+                Log.d(LOG_TAG, "announcementListener: announcement removed " + removedAnnouncement.announcementTitle);
             }
 
             @Override
