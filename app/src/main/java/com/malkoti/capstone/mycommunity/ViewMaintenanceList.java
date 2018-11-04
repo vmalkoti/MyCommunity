@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -72,6 +73,7 @@ public class ViewMaintenanceList extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        viewModel = ViewModelProviders.of(getActivity()).get(MainViewModel.class);
     }
 
     @Override
@@ -105,33 +107,29 @@ public class ViewMaintenanceList extends Fragment {
         interactionListener = null;
     }
 
+    /**
+     * Initialize UI components
+     */
+    private void initUI() {
+        adapter = new RequestsListAdapter(() -> interactionListener.onFragmentInteraction(null));
 
-
-    void initUI() {
-        viewModel = ViewModelProviders.of(getActivity()).get(MainViewModel.class);
-
-        viewModel.getRequests().observe(this, new Observer<List<MaintenanceRequest>>() {
-            @Override
-            public void onChanged(@Nullable List<MaintenanceRequest> maintenanceRequests) {
-                adapter.setData(maintenanceRequests);
-            }
-        });
+        viewModel.getRequests().observe(getActivity(), requests -> adapter.setData(requests));
 
         binding.requestListRv.setHasFixedSize(true);
         binding.requestListRv.setLayoutManager(new LinearLayoutManager(ViewMaintenanceList.this.getContext()));
         binding.requestListRv.addItemDecoration(new DividerItemDecoration(getContext(),
                 DividerItemDecoration.VERTICAL));
-        adapter = new RequestsListAdapter(() -> interactionListener.onFragmentInteraction(null));
-        //adapter.setData(Arrays.asList(1,2,3,4,5,6,7,8,9,10));
         binding.requestListRv.setAdapter(adapter);
     }
 }
 
 
 /**
- *
+ * Adapter class for maintenance request recyclerview
  */
 class RequestsListAdapter extends RecyclerView.Adapter<RequestsListAdapter.RequestViewHolder> {
+    private static final String LOG_TAG = "DEBUG_" + RequestsListAdapter.class.getSimpleName();
+
     private List<MaintenanceRequest> requests;
     private OnMaintenanceRequestClickListener listener;
 
@@ -170,6 +168,8 @@ class RequestsListAdapter extends RecyclerView.Adapter<RequestsListAdapter.Reque
      * @param data
      */
     public void setData(List<MaintenanceRequest> data) {
+        Log.d(LOG_TAG, "setData: New data received: " + (data==null ? -1: data.size()));
+
         this.requests = data;
         notifyDataSetChanged();
     }
@@ -194,7 +194,6 @@ class RequestsListAdapter extends RecyclerView.Adapter<RequestsListAdapter.Reque
             itemBinding.reqItemApt.setText(request.reqStatus);
             itemBinding.reqItemDate.setText(request.reqDate);
 
-            // TODO: set onclick listener for item
             itemBinding.reqItemContainer.setOnClickListener(view -> listener.onClick());
 
             itemBinding.executePendingBindings();

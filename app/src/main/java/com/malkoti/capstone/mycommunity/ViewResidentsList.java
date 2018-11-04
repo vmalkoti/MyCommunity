@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,6 +41,16 @@ public class ViewResidentsList extends Fragment {
     private ResidentListAdapter adapter;
     private MainViewModel viewModel;
 
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that activity.
+     */
+    public interface OnFragmentInteractionListener {
+        void onFragmentInteraction(Uri uri);
+    }
+
+
     public ViewResidentsList() {
         // Required empty public constructor
     }
@@ -52,24 +63,13 @@ public class ViewResidentsList extends Fragment {
      */
     public static ViewResidentsList newInstance() {
         ViewResidentsList fragment = new ViewResidentsList();
-        /*
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        */
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-        */
+        viewModel = ViewModelProviders.of(getActivity()).get(MainViewModel.class);
     }
 
     @Override
@@ -110,51 +110,29 @@ public class ViewResidentsList extends Fragment {
     }
 
     /**
-     *
+     * Initialize UI components
      */
     private void initUI() {
-        viewModel = ViewModelProviders.of(getActivity()).get(MainViewModel.class);
-
         adapter = new ResidentListAdapter(() -> interactionListener.onFragmentInteraction(null));
 
-        viewModel.getResidents().observe(getActivity(), new Observer<List<AppUser>>() {
-            @Override
-            public void onChanged(@Nullable List<AppUser> appUsers) {
-                adapter.setData(appUsers);
-            }
-        });
+        viewModel.getResidents().observe(getActivity(), residents -> adapter.setData(residents));
+
         binding.residentsListRv.setHasFixedSize(true);
         binding.residentsListRv.setLayoutManager(new LinearLayoutManager(ViewResidentsList.this.getContext()));
         binding.residentsListRv.addItemDecoration(new DividerItemDecoration(getContext(),
                 DividerItemDecoration.VERTICAL));
-        //adapter.setData(Arrays.asList(1,2,3,4,5,6,7,8,9,10));
         binding.residentsListRv.setAdapter(adapter);
     }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }
-
-
 }
 
 
 /**
- *
+ * Adapter class for resident list recyclerview
  */
 class ResidentListAdapter extends RecyclerView.Adapter<ResidentListAdapter.ResidentViewHolder> {
-    List<AppUser> residents;
+    private static final String LOG_TAG = "DEBUG_" + ResidentListAdapter.class.getSimpleName();
+
+    private List<AppUser> residents;
     private OnResidentClickListener listener;
 
     /**
@@ -192,7 +170,10 @@ class ResidentListAdapter extends RecyclerView.Adapter<ResidentListAdapter.Resid
      * @param data
      */
     public void setData(List<AppUser> data) {
+        Log.d(LOG_TAG, "setData: New data received: " + (data==null ? -1: data.size()));
+
         this.residents = data;
+        notifyDataSetChanged();
     }
 
 

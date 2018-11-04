@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,9 +49,8 @@ public class ViewAnnouncementsList extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-
+    // Required empty public constructor
     public ViewAnnouncementsList() {
-        // Required empty public constructor
     }
 
     /**
@@ -67,6 +67,7 @@ public class ViewAnnouncementsList extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        viewModel = ViewModelProviders.of(getActivity()).get(MainViewModel.class);
     }
 
     @Override
@@ -74,11 +75,11 @@ public class ViewAnnouncementsList extends Fragment {
                              Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_view_announcements_list,
                 container, false);
+
         initUI();
 
         return binding.getRoot();
     }
-
 
     @Override
     public void onAttach(Context context) {
@@ -99,33 +100,29 @@ public class ViewAnnouncementsList extends Fragment {
         interactionListener = null;
     }
 
-
+    /**
+     * Initialize UI components
+     */
     private void initUI() {
-        viewModel = ViewModelProviders.of(getActivity()).get(MainViewModel.class);
+        adapter = new AnnouncementsListAdapter(() -> interactionListener.onFragmentInteraction(null));
 
-        viewModel.getAnnouncements().observe(this, new Observer<List<AnnouncementPost>>() {
-            @Override
-            public void onChanged(@Nullable List<AnnouncementPost> announcementPosts) {
-                adapter.setData(announcementPosts);
-            }
-        });
+        viewModel.getAnnouncements().observe(getActivity(), posts -> adapter.setData(posts));
 
         binding.adsListRv.setHasFixedSize(true);
         binding.adsListRv.setLayoutManager(new LinearLayoutManager(ViewAnnouncementsList.this.getContext()));
         binding.adsListRv.addItemDecoration(new DividerItemDecoration(getContext(),
                 DividerItemDecoration.VERTICAL));
-        adapter = new AnnouncementsListAdapter(() -> interactionListener.onFragmentInteraction(null));
-        //adapter.setData(Arrays.asList(1,2,3,4,5,6,7,8,9,10));
         binding.adsListRv.setAdapter(adapter);
     }
-
 }
 
 
 /**
- *
+ * Adapter class for announcement list recyclerview
  */
 class AnnouncementsListAdapter extends RecyclerView.Adapter<AnnouncementsListAdapter.AdsViewHolder> {
+    private static final String LOG_TAG = "DEBUG_" + AnnouncementsListAdapter.class.getSimpleName();
+
     private List<AnnouncementPost> announcements;
     private OnAdsItemClickListener listener;
 
@@ -157,14 +154,15 @@ class AnnouncementsListAdapter extends RecyclerView.Adapter<AnnouncementsListAda
 
     @Override
     public int getItemCount() {
-        return announcements ==null? 0: announcements.size();
+        return announcements == null ? 0 : announcements.size();
     }
 
     /**
-     *
      * @param posts
      */
     public void setData(List<AnnouncementPost> posts) {
+        Log.d(LOG_TAG, "setData: New data received: " + (posts==null ? -1: posts.size()));
+
         this.announcements = posts;
         notifyDataSetChanged();
     }

@@ -12,6 +12,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,6 +40,7 @@ public class ViewApartmentsList extends Fragment {
     private ApartmentsListAdapter adapter;
     private MainViewModel viewModel;
 
+
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -48,9 +50,9 @@ public class ViewApartmentsList extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-
     // Required empty public constructor
-    public ViewApartmentsList() { }
+    public ViewApartmentsList() {
+    }
 
     /**
      * Use this factory method to create a new instance of
@@ -66,6 +68,7 @@ public class ViewApartmentsList extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        viewModel = ViewModelProviders.of(getActivity()).get(MainViewModel.class);
     }
 
     @Override
@@ -98,34 +101,29 @@ public class ViewApartmentsList extends Fragment {
         interactionListener = null;
     }
 
+    /**
+     * Initialize UI components
+     */
     private void initUI() {
-        viewModel = ViewModelProviders.of(getActivity()).get(MainViewModel.class);
+        adapter = new ApartmentsListAdapter(() -> interactionListener.onFragmentInteraction(null));
 
-        viewModel.getApartments().observe(this, new Observer<List<Apartment>>() {
-            @Override
-            public void onChanged(@Nullable List<Apartment> apartments) {
-                adapter.setData(apartments);
-            }
-        });
+        viewModel.getApartments().observe(getActivity(), apartments -> adapter.setData(apartments));
 
         binding.apartmentsListRv.setHasFixedSize(true);
         binding.apartmentsListRv.setLayoutManager(new LinearLayoutManager(ViewApartmentsList.this.getContext()));
         binding.apartmentsListRv.addItemDecoration(new DividerItemDecoration(getContext(),
                 DividerItemDecoration.VERTICAL));
-        adapter = new ApartmentsListAdapter(() -> interactionListener.onFragmentInteraction(null));
-        //  adapter.setData(Arrays.asList(1,2,3,4,5,6,7,8,9,10));
         binding.apartmentsListRv.setAdapter(adapter);
     }
-
-
 }
 
 
 /**
- * Adapter class for list of apartments
+ * Adapter class for apartments list recyclerview
  */
 class ApartmentsListAdapter extends RecyclerView.Adapter<ApartmentsListAdapter.ApartmentViewHolder> {
-    //private List<Integer> apartments;
+    private static final String LOG_TAG = "DEBUG_" + ApartmentsListAdapter.class.getSimpleName();
+
     private List<Apartment> apartments;
     private OnApartmentClickListener listener;
 
@@ -156,14 +154,17 @@ class ApartmentsListAdapter extends RecyclerView.Adapter<ApartmentsListAdapter.A
 
     @Override
     public int getItemCount() {
-        return apartments==null? 0: apartments.size();
+        return apartments == null ? 0 : apartments.size();
     }
 
     /**
      * Method to pass data to the adapter
+     *
      * @param data
      */
     public void setData(List<Apartment> data) {
+        Log.d(LOG_TAG, "setData: New data received: " + (data==null ? -1: data.size()));
+
         this.apartments = data;
         notifyDataSetChanged();
     }
@@ -182,6 +183,7 @@ class ApartmentsListAdapter extends RecyclerView.Adapter<ApartmentsListAdapter.A
 
         /**
          * Bind data item to the viewholder
+         *
          * @param apt
          */
         void bindView(Apartment apt) {
