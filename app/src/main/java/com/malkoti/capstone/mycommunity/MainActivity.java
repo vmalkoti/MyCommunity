@@ -57,10 +57,10 @@ public class MainActivity
         public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
             if (FirebaseAuthUtil.isUserSignedIn()) {
                 Log.d(LOG_TAG, "AuthListener: User logged in");
-                //attachDatabaseEventListeners();
+                attachDatabaseEventListeners();
             } else {
                 Log.d(LOG_TAG, "AuthListener: User not logged in");
-                //removeDatabaseEventListeners();
+                removeDatabaseEventListeners();
                 startActivityForResult(signInLaunchIntent, RC_SIGN_IN, null);
             }
         }
@@ -83,6 +83,7 @@ public class MainActivity
             Log.d(LOG_TAG, "onCreate: Use Signed in");
             initUI();
             initAds();
+            attachDatabaseEventListeners();
         }
     }
 
@@ -125,12 +126,9 @@ public class MainActivity
         viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
         setSupportActionBar(binding.toolbar);
-        getSupportActionBar().setTitle("My Community App");
+        getSupportActionBar().setTitle(getString(R.string.app_name));
 
         setupViewPager();
-        /*
-        binding.bottomAppBar.replaceMenu(R.menu.bottomappbar_menu);
-        */
         setupBottomNavBar();
 
         // show bottom navigation bar
@@ -331,18 +329,37 @@ public class MainActivity
 
     }
 
-
+    /**
+     *
+     */
     private void attachDatabaseEventListeners() {
-        viewModel.getApartments().observe(this, apartments -> {});
-        viewModel.getResidents().observe(this, residents -> {});
-        viewModel.getRequests().observe(this, requests -> {});
-        viewModel.getAnnouncements().observe(this, announcements -> {});
+        Log.d(LOG_TAG, "attachDatabaseEventListeners: attaching observers");
+
+        viewModel.getApartments().observe(this, apartments -> {
+            Log.d(LOG_TAG, "attachDatabaseEventListeners: apartments list changed " + apartments.size());
+        });
+        viewModel.getResidents().observe(this, residents -> {
+            Log.d(LOG_TAG, "attachDatabaseEventListeners: residents list changed " + residents.size());
+        });
+        viewModel.getRequests().observe(this, requests -> {
+            Log.d(LOG_TAG, "attachDatabaseEventListeners: requests list changed " + requests.size());
+        });
+        viewModel.getAnnouncements().observe(this, announcements -> {
+            Log.d(LOG_TAG, "attachDatabaseEventListeners: announcements list changed " + announcements.size());
+        });
+
     }
 
+    /**
+     *
+     */
     private void removeDatabaseEventListeners() {
+        Log.d(LOG_TAG, "removeDatabaseEventListeners: removing observers");
+
         viewModel.getApartments().removeObservers(this);
         viewModel.getResidents().removeObservers(this);
         viewModel.getRequests().removeObservers(this);
         viewModel.getAnnouncements().removeObservers(this);
+
     }
 }
