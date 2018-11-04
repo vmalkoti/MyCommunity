@@ -1,39 +1,31 @@
 package com.malkoti.capstone.mycommunity;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.malkoti.capstone.mycommunity.databinding.FragmentViewAnnouncementInfoBinding;
+import com.malkoti.capstone.mycommunity.model.AnnouncementPost;
+import com.malkoti.capstone.mycommunity.viewmodels.DetailsViewModel;
 
 
 /**
  * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link ViewAnnouncementInfo.OnFragmentInteractionListener} interface
- * to handle interaction events.
  * Use the {@link ViewAnnouncementInfo#newInstance} factory method to
  * create an instance of this fragment.
  */
 public class ViewAnnouncementInfo extends Fragment {
-    private OnFragmentInteractionListener interactionListener;
-    private FragmentViewAnnouncementInfoBinding binding;
+    private static final String LOG_TAG = "DEBUG_" + ViewAnnouncementInfo.class.getSimpleName();
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
-    }
+    private FragmentViewAnnouncementInfoBinding binding;
+    private DetailsViewModel viewModel;
+
 
     public ViewAnnouncementInfo() {
         // Required empty public constructor
@@ -53,6 +45,7 @@ public class ViewAnnouncementInfo extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        viewModel = ViewModelProviders.of(getActivity()).get(DetailsViewModel.class);
     }
 
     @Override
@@ -60,7 +53,8 @@ public class ViewAnnouncementInfo extends Fragment {
                              Bundle savedInstanceState) {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_view_announcement_info,
                 container, false);
-        populateDummyData();
+
+        initUI();
 
         return binding.getRoot();
     }
@@ -69,32 +63,38 @@ public class ViewAnnouncementInfo extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
+        /*
         if (context instanceof OnFragmentInteractionListener) {
             interactionListener = (OnFragmentInteractionListener) context;
         } else {
-            /*
+
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
-            */
         }
+        */
     }
 
     @Override
     public void onDetach() {
         super.onDetach();
-        interactionListener = null;
+        //interactionListener = null;
     }
 
     /**
-     *
+     * Initialize UI controls
      */
-    private void populateDummyData() {
-        binding.adPostTitleTv.setText("Fitness center renovation");
-        binding.adPostResidentTv.setText("Management Management");
-        binding.adPostDateTv.setText("10-15-2018");
-        binding.adPostDescTv.setText("The gym will be closed for repair and renovation work "
-                + "from 10/01/2018 to 10/31/2018 to service machines, replace carpeting and mirrors, "
-                + "and for safety inspection of all machines.");
-
+    private void initUI() {
+        AnnouncementPost post = viewModel.getSelectedAnnouncement().getValue();
+        if (post != null) {
+            Log.d(LOG_TAG, "initUI: populating views with viewmodel data");
+            binding.adPostTitleTv.setText(post.announcementTitle);
+            // for future implementation - set visible and show management name
+            binding.adPostResidentTv.setVisibility(View.GONE);
+            binding.adPostDateTv.setText(post.postDate);
+            binding.adPostDescTv.setText(post.postDescription);
+        } else {
+            Log.d(LOG_TAG, "initUI: viewmodel data is null");
+        }
     }
+
 }
