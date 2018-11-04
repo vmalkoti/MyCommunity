@@ -47,8 +47,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:textSize="16sp"
-                app:layout_constraintLeft_toLeftOf="@id/ad_post_resident_tv"
-                app:layout_constraintRight_toRightOf="@id/ad_post_resident_tv"
+                app:layout_constraintLeft_toLeftOf="@id/ad_post_title_tv"
+                app:layout_constraintRight_toRightOf="@id/ad_post_title_tv"
                 app:layout_constraintTop_toBottomOf="@id/ad_post_resident_tv"
                 tools:text="@tools:sample/date/mmddyy" />
 
