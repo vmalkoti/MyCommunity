@@ -4,6 +4,8 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -39,6 +41,7 @@ public class DetailsActivity extends AppCompatActivity
 
     private DetailsScreenType type;
     private String itemKey;
+    private Parcelable item;
 
     private DetailsViewModel viewModel;
 
@@ -64,11 +67,11 @@ public class DetailsActivity extends AppCompatActivity
         viewModel = ViewModelProviders.of(this).get(DetailsViewModel.class);
         //viewModel.getSignedInUser();
 
-        // item = getIntent().getParcelableExtra(DISPLAY_ITEM_DETAILS);
+        item = getIntent().getParcelableExtra(DISPLAY_ITEM_DETAILS);
 
         // attach onclick listener to floating action button
         binding.fabEditDetails.setOnClickListener(v -> {
-            Log.d("DetailsActivity_LOG", "Showing edit screen");
+            Log.d(LOG_TAG, "Showing edit screen");
             showItemEditableFragment(type, itemKey);
         });
 
@@ -77,13 +80,13 @@ public class DetailsActivity extends AppCompatActivity
         if (savedInstanceState != null) return;
 
         // else create and show appropriate fragment
-        Log.d("DetailsActivity_LOG", "key received: " + itemKey);
+        Log.d(LOG_TAG, "key received: " + itemKey);
         // check if a key was passed
         if (itemKey != null) {
-            Log.d("DetailsActivity_LOG", "Showing info screen");
+            Log.d(LOG_TAG, "Showing info screen");
             showItemInfoFragment(type);
         } else {
-            Log.d("DetailsActivity_LOG", "Showing edit screen");
+            Log.d(LOG_TAG, "Showing edit screen");
             showItemEditableFragment(type, null);
         }
 
@@ -134,21 +137,57 @@ public class DetailsActivity extends AppCompatActivity
 
         switch (type) {
             case COMMUNITY_DETAILS:
+                if(item!= null) {
+                    Log.d(LOG_TAG, "showItemInfoFragment: setting viewmodel community "
+                            + ((Community) item).name);
+                    viewModel.setSelectedCommunity((Community) item);
+                } else {
+                    Log.d(LOG_TAG, "showItemInfoFragment: received community item is null");
+                }
                 fragment = ViewCommunityInfo.newInstance();
                 break;
             case APARTMENT_DETAILS:
+                if(item != null) {
+                    Log.d(LOG_TAG, "showItemInfoFragment: setting viewmodel apartment "
+                            + ((Apartment) item).aptName);
+                    viewModel.setSelectedApartment((Apartment) item);
+                } else {
+                    Log.d(LOG_TAG, "showItemInfoFragment: received  apartment item is null");
+                }
                 fragment = ViewApartmentInfo.newInstance();
                 break;
             case RESIDENT_DETAILS:
+                if(item != null) {
+                    Log.d(LOG_TAG, "showItemInfoFragment: setting viewmodel resident "
+                            + ((AppUser) item).fullName);
+                    viewModel.setSelectedUser((AppUser) item);
+                } else {
+                    Log.d(LOG_TAG, "showItemInfoFragment: received resident item is null");
+                }
                 fragment = ViewResidentInfo.newInstance();
                 break;
             case MAINTENANCE_REQ_DETAILS:
+                if(item != null) {
+                    Log.d(LOG_TAG, "showItemInfoFragment: setting viewmodel request "
+                            + ((MaintenanceRequest) item).reqType);
+                    viewModel.setSelectedRequest((MaintenanceRequest) item);
+                } else {
+                    Log.d(LOG_TAG, "showItemInfoFragment: received request item is null");
+                }
                 fragment = ViewMaintenanceReqInfo.newInstance();
                 break;
             case ANNOUNCEMENT_DETAILS:
+                if(item != null) {
+                    Log.d(LOG_TAG, "showItemInfoFragment: setting viewmodel announcement "
+                            + ((AnnouncementPost) item).announcementTitle);
+                    viewModel.setSelectedAnnouncement((AnnouncementPost) item);
+                } else {
+                    Log.d(LOG_TAG, "showItemInfoFragment: received announcement item is null");
+                }
                 fragment = ViewAnnouncementInfo.newInstance();
                 break;
             default:
+                Log.d(LOG_TAG, "showItemInfoFragment: unknown fragment type");
                 return;
         }
 
@@ -173,30 +212,41 @@ public class DetailsActivity extends AppCompatActivity
             case COMMUNITY_DETAILS:
                 if (key==null || key.trim().equals("")) {
                     viewModel.setSelectedCommunity(Community.getDummyObject());
+                } else if(item != null) {
+                    viewModel.setSelectedCommunity((Community) item);
                 }
                 fragment = EditCommunityDetails.newInstance();
                 break;
             case APARTMENT_DETAILS:
                 if (key==null || key.trim().equals("")) {
                     viewModel.setSelectedApartment(Apartment.getDummyObject());
+                } else if(item != null) {
+                    viewModel.setSelectedApartment((Apartment) item);
                 }
                 fragment = EditApartmentDetails.newInstance();
                 break;
             case RESIDENT_DETAILS:
                 if (key==null || key.trim().equals("")) {
                     viewModel.setSelectedUser(AppUser.getDummyObject());
+                } else if(item != null) {
+                    viewModel.setSelectedUser((AppUser) item);
                 }
                 fragment = EditResidentDetails.newInstance();
                 break;
             case MAINTENANCE_REQ_DETAILS:
                 if (key==null || key.trim().equals("")) {
                     viewModel.setSelectedRequest(MaintenanceRequest.getDummyObject());
+                } else if(item != null) {
+                    viewModel.setSelectedRequest((MaintenanceRequest) item);
                 }
                 fragment = EditMaintenanceDetails.newInstance(true);
                 break;
             case ANNOUNCEMENT_DETAILS:
                 if (key==null || key.trim().equals("")) {
                     viewModel.setSelectedAnnouncement(AnnouncementPost.getDummyObject());
+                } else if(item != null) {
+                    Log.d(LOG_TAG, "showItemEditableFragment: setting viewmodel announcement " + ((AnnouncementPost) item).announcementTitle);
+                    viewModel.setSelectedAnnouncement((AnnouncementPost) item);
                 }
                 fragment = EditAnnouncementDetails.newInstance();
                 break;
