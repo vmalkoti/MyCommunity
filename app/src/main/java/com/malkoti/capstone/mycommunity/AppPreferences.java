@@ -1,36 +1,37 @@
 package com.malkoti.capstone.mycommunity;
 
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.preference.Preference;
 import android.support.v7.preference.PreferenceFragmentCompat;
 
 import com.crashlytics.android.Crashlytics;
+import com.malkoti.capstone.mycommunity.model.Community;
 import com.malkoti.capstone.mycommunity.utils.FirebaseAuthUtil;
+import com.malkoti.capstone.mycommunity.viewmodels.MainViewModel;
 
 /**
  * Preferences screen for the app
  */
 public class AppPreferences extends PreferenceFragmentCompat {
+    private static final String LOG_TAG = "DEBUG_" + AppPreferences.class.getSimpleName();
+
     private OnFragmentInteractionListener interactionListener;
+    private MainViewModel viewModel;
 
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
+     * to the activity and potentially other fragments contained in that activity.
      */
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onFragmentInteraction(Parcelable selectedItem);
     }
 
 
@@ -41,6 +42,8 @@ public class AppPreferences extends PreferenceFragmentCompat {
     @Override
     public void onCreatePreferences(Bundle bundle, String rootKey) {
         setPreferencesFromResource(R.xml.preferences, rootKey);
+
+        viewModel = ViewModelProviders.of(getActivity()).get(MainViewModel.class);
 
         setUpPrefListeners();
     }
@@ -89,7 +92,8 @@ public class AppPreferences extends PreferenceFragmentCompat {
 
         if(profileButton != null) {
             profileButton.setOnPreferenceClickListener(preference -> {
-                interactionListener.onFragmentInteraction(null);
+                Community community = viewModel.getCommunity().getValue();
+                interactionListener.onFragmentInteraction(community);
                 return true;
             });
         }
