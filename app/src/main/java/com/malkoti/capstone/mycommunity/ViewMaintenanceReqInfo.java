@@ -1,9 +1,11 @@
 package com.malkoti.capstone.mycommunity;
 
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,6 +14,7 @@ import android.view.ViewGroup;
 
 
 import com.malkoti.capstone.mycommunity.databinding.FragmentViewMaintenanceReqInfoBinding;
+import com.malkoti.capstone.mycommunity.model.AppUser;
 import com.malkoti.capstone.mycommunity.model.MaintenanceRequest;
 import com.malkoti.capstone.mycommunity.viewmodels.DetailsViewModel;
 
@@ -87,14 +90,18 @@ public class ViewMaintenanceReqInfo extends Fragment {
      */
     private void initUI() {
         MaintenanceRequest request = viewModel.getSelectedRequest().getValue();
-        if(request != null) {
+        if (request != null) {
             Log.d(LOG_TAG, "initUI: populating views with viewmodel data");
             binding.requestTitleTv.setText(request.reqType);
-            binding.requestUnitTv.setText(request.aptId);
-            binding.requestResidentTv.setText(request.residentId);
             binding.requestStatusTv.setText(request.reqStatus);
             binding.requestDescTv.setText(request.reqDescription);
             binding.requestCommentsTv.setText(request.reqComments);
+
+            viewModel.getApartmentById(request.aptId)
+                    .observe(this, apt -> binding.requestUnitTv.setText(apt.aptName));
+            viewModel.getResidentById(request.residentId)
+                    .observe(this,
+                            appUser -> binding.requestResidentTv.setText(appUser.fullName));
         } else {
             Log.d(LOG_TAG, "initUI: viewmodel data is null");
         }

@@ -88,10 +88,12 @@ public class ViewAnnouncementInfo extends Fragment {
         if (post != null) {
             Log.d(LOG_TAG, "initUI: populating views with viewmodel data");
             binding.adPostTitleTv.setText(post.announcementTitle);
-            // for future implementation - set visible and show management name
-            binding.adPostResidentTv.setVisibility(View.GONE);
             binding.adPostDateTv.setText(post.postDate);
             binding.adPostDescTv.setText(post.postDescription);
+
+            viewModel.getResidentById(post.managerId).observe(this,
+                    user -> binding.adPostResidentTv.setText(user.fullName));
+
         } else {
             Log.d(LOG_TAG, "initUI: viewmodel data is null");
         }

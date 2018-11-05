@@ -102,6 +102,9 @@ public class ViewResidentInfo extends Fragment {
                 binding.residentPhoto.setImageDrawable(this.getResources()
                         .getDrawable(R.drawable.icons8_person_male_80));
             }
+
+            viewModel.getApartmentById(resident.aptId)
+                    .observe(this, apartment -> binding.residentAptTv.setText(apartment.aptName));
         } else {
             Log.d(LOG_TAG, "initUI: viewmodel data is null");
         }
