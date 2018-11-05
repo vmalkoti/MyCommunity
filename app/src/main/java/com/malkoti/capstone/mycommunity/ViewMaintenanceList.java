@@ -1,5 +1,8 @@
 package com.malkoti.capstone.mycommunity;
 
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleOwner;
+import android.arch.lifecycle.LifecycleRegistry;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
@@ -105,7 +108,8 @@ public class ViewMaintenanceList extends Fragment {
      * Initialize UI components
      */
     private void initUI() {
-        adapter = new RequestsListAdapter((request) -> interactionListener.onFragmentInteraction(request));
+        adapter = new RequestsListAdapter(viewModel,
+                (request) -> interactionListener.onFragmentInteraction(request));
 
         viewModel.getRequests().observe(getActivity(), requests -> adapter.setData(requests));
 
@@ -126,6 +130,7 @@ class RequestsListAdapter extends RecyclerView.Adapter<RequestsListAdapter.Reque
 
     private List<MaintenanceRequest> requests;
     private OnMaintenanceRequestClickListener listener;
+    private MainViewModel viewModel;
 
     /**
      * Interface for click events on items shown by the adapter
@@ -134,7 +139,8 @@ class RequestsListAdapter extends RecyclerView.Adapter<RequestsListAdapter.Reque
         void onItemClick(MaintenanceRequest request);
     }
 
-    RequestsListAdapter(OnMaintenanceRequestClickListener listener) {
+    RequestsListAdapter(MainViewModel viewModel, OnMaintenanceRequestClickListener listener) {
+        this.viewModel = viewModel;
         this.listener = listener;
     }
 
@@ -171,12 +177,17 @@ class RequestsListAdapter extends RecyclerView.Adapter<RequestsListAdapter.Reque
     /**
      * ViewHolder class for list of maintenance requests
      */
-    class RequestViewHolder extends RecyclerView.ViewHolder {
-        ListItemRequestBinding itemBinding;
+    class RequestViewHolder extends RecyclerView.ViewHolder implements LifecycleOwner {
+        private ListItemRequestBinding itemBinding;
+        private LifecycleRegistry lifecycleRegistry;
+
 
         RequestViewHolder(ListItemRequestBinding binding) {
             super(binding.getRoot());
             this.itemBinding = binding;
+
+            lifecycleRegistry = new LifecycleRegistry(this);
+            lifecycleRegistry.markState(Lifecycle.State.CREATED);
         }
 
         /**
@@ -184,13 +195,23 @@ class RequestsListAdapter extends RecyclerView.Adapter<RequestsListAdapter.Reque
          * @param request
          */
         void bindView(MaintenanceRequest request) {
+            lifecycleRegistry.markState(Lifecycle.State.CREATED);
+
             itemBinding.reqItemType.setText(request.reqType);
-            itemBinding.reqItemApt.setText(request.reqStatus);
             itemBinding.reqItemDate.setText(request.reqDate);
+
+            viewModel.getApartmentById(request.aptId)
+                    .observe(this, apt -> itemBinding.reqItemApt.setText(apt.aptName));
 
             itemBinding.reqItemContainer.setOnClickListener(view -> listener.onItemClick(request));
 
             itemBinding.executePendingBindings();
+        }
+
+        @NonNull
+        @Override
+        public Lifecycle getLifecycle() {
+            return lifecycleRegistry;
         }
     }
 }

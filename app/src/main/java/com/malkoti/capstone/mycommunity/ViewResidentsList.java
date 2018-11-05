@@ -1,5 +1,8 @@
 package com.malkoti.capstone.mycommunity;
 
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleOwner;
+import android.arch.lifecycle.LifecycleRegistry;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
@@ -18,6 +21,7 @@ import android.view.ViewGroup;
 
 import com.malkoti.capstone.mycommunity.databinding.FragmentViewResidentsListBinding;
 import com.malkoti.capstone.mycommunity.databinding.ListItemResidentBinding;
+import com.malkoti.capstone.mycommunity.model.Apartment;
 import com.malkoti.capstone.mycommunity.model.AppUser;
 import com.malkoti.capstone.mycommunity.viewmodels.MainViewModel;
 
@@ -105,7 +109,8 @@ public class ViewResidentsList extends Fragment {
      * Initialize UI components
      */
     private void initUI() {
-        adapter = new ResidentListAdapter((resident) -> interactionListener.onFragmentInteraction(resident));
+        adapter = new ResidentListAdapter(viewModel,
+                (resident) -> interactionListener.onFragmentInteraction(resident));
 
         viewModel.getResidents().observe(getActivity(), residents -> adapter.setData(residents));
 
@@ -126,6 +131,7 @@ class ResidentListAdapter extends RecyclerView.Adapter<ResidentListAdapter.Resid
 
     private List<AppUser> residents;
     private OnResidentClickListener listener;
+    private MainViewModel viewModel;
 
     /**
      * Interface for click events on items shown by the adapter
@@ -134,7 +140,8 @@ class ResidentListAdapter extends RecyclerView.Adapter<ResidentListAdapter.Resid
         void onItemClick(AppUser resident);
     }
 
-    ResidentListAdapter(OnResidentClickListener listener) {
+    ResidentListAdapter(MainViewModel viewModel, OnResidentClickListener listener) {
+        this.viewModel = viewModel;
         this.listener = listener;
     }
 
@@ -149,6 +156,7 @@ class ResidentListAdapter extends RecyclerView.Adapter<ResidentListAdapter.Resid
 
     @Override
     public void onBindViewHolder(@NonNull ResidentViewHolder viewHolder, int i) {
+
         viewHolder.bindView(residents.get(i));
     }
 
@@ -170,14 +178,19 @@ class ResidentListAdapter extends RecyclerView.Adapter<ResidentListAdapter.Resid
 
 
     /**
-     * ViewHolder class for list of apartments
+     * ViewHolder class for list of apartments.
+     * Implements LifeCycleOwner to observe apartment livedata.
      */
-    class ResidentViewHolder extends RecyclerView.ViewHolder {
+    class ResidentViewHolder extends RecyclerView.ViewHolder implements LifecycleOwner {
         private ListItemResidentBinding itemBinding;
+        private LifecycleRegistry lifecycleRegistry;
 
         ResidentViewHolder(ListItemResidentBinding binding) {
             super(binding.getRoot());
             this.itemBinding = binding;
+
+            lifecycleRegistry = new LifecycleRegistry(this);
+            lifecycleRegistry.markState(Lifecycle.State.CREATED);
         }
 
         /**
@@ -185,9 +198,14 @@ class ResidentListAdapter extends RecyclerView.Adapter<ResidentListAdapter.Resid
          * @param resident
          */
         void bindView(AppUser resident) {
+            lifecycleRegistry.markState(Lifecycle.State.STARTED);
+
             itemBinding.residentItemFname.setText(resident.fullName);
             //itemBinding.residentItemLname.setText("Locke");
-            itemBinding.residentItemAptName.setText(resident.aptId);
+
+
+            viewModel.getApartmentById(resident.aptId)
+                    .observe(this, apt -> itemBinding.residentItemAptName.setText(apt.aptName));
 
             // static image for now
             // future implementation - show images uploaded to firebase storage
@@ -205,6 +223,12 @@ class ResidentListAdapter extends RecyclerView.Adapter<ResidentListAdapter.Resid
             itemBinding.residentItemContainer.setOnClickListener(view -> listener.onItemClick(resident));
 
             itemBinding.executePendingBindings();
+        }
+
+        @NonNull
+        @Override
+        public Lifecycle getLifecycle() {
+            return lifecycleRegistry;
         }
     }
 }

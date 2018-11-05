@@ -1,5 +1,8 @@
 package com.malkoti.capstone.mycommunity;
 
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleOwner;
+import android.arch.lifecycle.LifecycleRegistry;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -126,6 +129,7 @@ class AnnouncementsListAdapter extends RecyclerView.Adapter<AnnouncementsListAda
 
     private List<AnnouncementPost> announcements;
     private OnAdsItemClickListener listener;
+    //private MainViewModel viewModel;
 
     /**
      *
@@ -136,6 +140,7 @@ class AnnouncementsListAdapter extends RecyclerView.Adapter<AnnouncementsListAda
 
 
     public AnnouncementsListAdapter(OnAdsItemClickListener listener) {
+        //this.viewModel = viewModel;
         this.listener = listener;
     }
 
@@ -162,7 +167,7 @@ class AnnouncementsListAdapter extends RecyclerView.Adapter<AnnouncementsListAda
      * @param posts
      */
     public void setData(List<AnnouncementPost> posts) {
-        Log.d(LOG_TAG, "setData: New data received: " + (posts==null ? -1: posts.size()));
+        Log.d(LOG_TAG, "setData: New data received: " + (posts == null ? -1 : posts.size()));
 
         this.announcements = posts;
         notifyDataSetChanged();
@@ -172,22 +177,41 @@ class AnnouncementsListAdapter extends RecyclerView.Adapter<AnnouncementsListAda
     /**
      *
      */
-    public class AdsViewHolder extends RecyclerView.ViewHolder {
-        ListItemAdBinding itemBinding;
+    public class AdsViewHolder extends RecyclerView.ViewHolder /* implements LifecycleOwner */ {
+        private ListItemAdBinding itemBinding;
+        //private LifecycleRegistry lifecycleRegistry;
 
         public AdsViewHolder(ListItemAdBinding binding) {
             super(binding.getRoot());
             this.itemBinding = binding;
+
+            //lifecycleRegistry = new LifecycleRegistry(this);
+            //lifecycleRegistry.markState(Lifecycle.State.CREATED);
         }
 
         void bindView(AnnouncementPost post) {
+            //lifecycleRegistry.markState(Lifecycle.State.CREATED);
+
             itemBinding.adItemTitleTv.setText(post.announcementTitle);
-            //itemBinding.adItemByTv.setText("Management Management");
-            itemBinding.adItemDateTv.setText(post.postDate);
+
+            int index = post.postDate.indexOf(" ");
+            String postDate = post.postDate.substring(0, index);
+            itemBinding.adItemDateTv.setText(postDate);
+
+            // we don't want to display this for now; for future implementation
+            //viewModel.getResidentById(post.managerId).observe(this, user -> itemBinding.adItemByTv.setText(user.fullName));
 
             itemBinding.adItemContainer.setOnClickListener(view -> listener.onItemClick(post));
 
             itemBinding.executePendingBindings();
         }
+
+        /*
+        @NonNull
+        @Override
+        public Lifecycle getLifecycle() {
+            return null;
+        }
+        */
     }
 }
