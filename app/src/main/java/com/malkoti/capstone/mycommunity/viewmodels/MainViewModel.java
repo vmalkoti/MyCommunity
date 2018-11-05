@@ -5,6 +5,7 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.MutableLiveData;
 
+import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -285,6 +286,7 @@ public class MainViewModel extends AndroidViewModel {
                 AppUser newResident = dataSnapshot.getValue(AppUser.class);
                 if (!newResident.isManager) {
                     newResident.userKey = dataSnapshot.getKey();
+                    //getApartmentById(newResident.aptId).observe(this, apt -> newResident.aptName = apt.aptName);
                     residents.getValue().add(newResident);
                     // to fire observers
                     residents.setValue(residents.getValue());
@@ -377,4 +379,65 @@ public class MainViewModel extends AndroidViewModel {
             public void onCancelled(@NonNull DatabaseError databaseError) { }
         };
     }
+
+
+    /**
+     * Retrieve user from database using id
+     * @param firebaseKey Firebase push id key value for user node
+     * @return LiveData object
+     */
+    public MutableLiveData<AppUser> getResidentById(String firebaseKey) {
+        MutableLiveData<AppUser> user = new MutableLiveData<>();
+
+        Log.d(LOG_TAG, "getResidentById: For resident " + firebaseKey);
+
+        // https://stackoverflow.com/questions/39109616/should-firebasedatabase-getinstance-be-used-sparingly/39109665#39109665
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference userNode = database.getReference(FirebaseDbUtils.USERS_NODE_NAME).child(firebaseKey);
+        userNode.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.d(LOG_TAG, "getResidentById: Value retrieved");
+                user.setValue(dataSnapshot.getValue(AppUser.class));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(LOG_TAG, "getResidentById: Error getting value.", databaseError.toException());
+            }
+        });
+
+        return user;
+    }
+
+
+    /**
+     * Retrieve apartment from database using id
+     *  @param firebaseKey Firebase push id key value for apartment node
+     *  @return LiveData object
+     */
+    public MutableLiveData<Apartment> getApartmentById(String firebaseKey) {
+        MutableLiveData<Apartment> apartment = new MutableLiveData<>();
+
+        Log.d(LOG_TAG, "getApartmentById: For apartment " + firebaseKey);
+
+        // https://stackoverflow.com/questions/39109616/should-firebasedatabase-getinstance-be-used-sparingly/39109665#39109665
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference aptNode = database.getReference(FirebaseDbUtils.APTS_NODE_NAME).child(firebaseKey);
+        aptNode.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Log.d(LOG_TAG, "getApartmentById: Value retrieved");
+                apartment.setValue(dataSnapshot.getValue(Apartment.class));
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(LOG_TAG, "getApartmentById: Error getting value.", databaseError.toException());
+            }
+        });
+
+        return apartment;
+    }
+
 }
