@@ -4,10 +4,13 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.firebase.database.Exclude;
+import com.google.firebase.database.IgnoreExtraProperties;
 
 import java.util.HashMap;
 import java.util.Map;
 
+
+@IgnoreExtraProperties
 public class MaintenanceRequest implements Parcelable {
     public String reqType;
     public String communityId;
@@ -21,14 +24,7 @@ public class MaintenanceRequest implements Parcelable {
     @Exclude
     public String reqKey;
 
-    /*
-     * Parcelable implementation
-     */
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
+    @Exclude
     public static final Creator<MaintenanceRequest> CREATOR = new Creator<MaintenanceRequest>() {
         @Override
         public MaintenanceRequest createFromParcel(Parcel in) {
@@ -76,6 +72,7 @@ public class MaintenanceRequest implements Parcelable {
     /*
      * Parcelable implementation
      */
+    @Exclude
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(reqType);
@@ -86,6 +83,15 @@ public class MaintenanceRequest implements Parcelable {
         dest.writeString(reqStatus);
         dest.writeString(reqDescription);
         dest.writeString(reqComments);
+    }
+
+    /*
+     * Parcelable implementation
+     */
+    @Exclude
+    @Override
+    public int describeContents() {
+        return 0;
     }
 
 
@@ -110,6 +116,7 @@ public class MaintenanceRequest implements Parcelable {
         return  result;
     }
 
+    @Exclude
     public static MaintenanceRequest getDummyObject() {
         return new MaintenanceRequest("", "", "", "", "", "", "", "");
     }

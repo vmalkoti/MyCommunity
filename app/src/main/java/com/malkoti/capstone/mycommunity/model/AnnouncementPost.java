@@ -4,10 +4,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.firebase.database.Exclude;
+import com.google.firebase.database.IgnoreExtraProperties;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@IgnoreExtraProperties
 public class AnnouncementPost implements Parcelable {
     public String announcementTitle;
     public String managerId;
@@ -17,6 +19,32 @@ public class AnnouncementPost implements Parcelable {
 
     @Exclude
     public String postKey;
+
+
+    /*
+     * Parcelable implementation
+     */
+    @Exclude
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    /*
+     * Parcelable implementation
+     */
+    @Exclude
+    public static final Creator<AnnouncementPost> CREATOR = new Creator<AnnouncementPost>() {
+        @Override
+        public AnnouncementPost createFromParcel(Parcel in) {
+            return new AnnouncementPost(in);
+        }
+
+        @Override
+        public AnnouncementPost[] newArray(int size) {
+            return new AnnouncementPost[size];
+        }
+    };
 
 
     public AnnouncementPost() {
@@ -33,7 +61,7 @@ public class AnnouncementPost implements Parcelable {
     }
 
     /*
-     * Parcelable implementation
+     * Parcelable implementation constructor
      */
     protected AnnouncementPost(Parcel in) {
         announcementTitle = in.readString();
@@ -47,6 +75,7 @@ public class AnnouncementPost implements Parcelable {
     /*
      * Parcelable implementation
      */
+    @Exclude
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(announcementTitle);
@@ -56,28 +85,7 @@ public class AnnouncementPost implements Parcelable {
         dest.writeString(postDescription);
     }
 
-    /*
-     * Parcelable implementation
-     */
-    @Override
-    public int describeContents() {
-        return 0;
-    }
 
-    /*
-     * Parcelable implementation
-     */
-    public static final Creator<AnnouncementPost> CREATOR = new Creator<AnnouncementPost>() {
-        @Override
-        public AnnouncementPost createFromParcel(Parcel in) {
-            return new AnnouncementPost(in);
-        }
-
-        @Override
-        public AnnouncementPost[] newArray(int size) {
-            return new AnnouncementPost[size];
-        }
-    };
 
     /**
      * To be used when implementing Firebase realtime db fan-out approach.
@@ -97,8 +105,9 @@ public class AnnouncementPost implements Parcelable {
         return result;
     }
 
-
+    @Exclude
     public static AnnouncementPost getDummyObject() {
-        return new AnnouncementPost("", "", "", "", "");
+        String emptyString = "";
+        return new AnnouncementPost(emptyString, emptyString, emptyString, emptyString, emptyString);
     }
 }

@@ -4,10 +4,12 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.firebase.database.Exclude;
+import com.google.firebase.database.IgnoreExtraProperties;
 
 import java.util.HashMap;
 import java.util.Map;
 
+@IgnoreExtraProperties
 public class Apartment implements Parcelable {
     public String aptName;
     public int numOfBedrooms;
@@ -21,6 +23,7 @@ public class Apartment implements Parcelable {
     /*
      * Parcelable implementation
      */
+    @Exclude
     public static final Creator<Apartment> CREATOR = new Creator<Apartment>() {
         @Override
         public Apartment createFromParcel(Parcel in) {
@@ -60,6 +63,7 @@ public class Apartment implements Parcelable {
     /*
      * Parcelable implementation
      */
+    @Exclude
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(aptName);
@@ -72,6 +76,7 @@ public class Apartment implements Parcelable {
     /*
      * Parcelable implementation
      */
+    @Exclude
     @Override
     public int describeContents() {
         return 0;
@@ -96,7 +101,15 @@ public class Apartment implements Parcelable {
         return result;
     }
 
+    @Exclude
     public static Apartment getDummyObject() {
-        return new Apartment("", 1, "","","");
+        String emptyString = "";
+        return new Apartment(emptyString, 0, emptyString,emptyString,emptyString);
+    }
+
+    @Exclude
+    @Override
+    public String toString() {
+        return this.aptName;
     }
 }

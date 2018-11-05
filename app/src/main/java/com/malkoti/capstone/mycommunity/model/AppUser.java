@@ -19,12 +19,33 @@ public class AppUser implements Parcelable {
     public String email;
     public String phoneNum;
 
-    @Exclude
-    public String userKey;
-
     public String mgmtId;
     public String communityId;
     public String aptId;
+
+    /* Used only for displaying info on UI, keys are already stored */
+    @Exclude
+    public String userKey;
+    @Exclude
+    public String aptName;
+
+
+    /*
+     * Parcelable implementation
+     */
+    @Exclude
+    public static final Creator<AppUser> CREATOR = new Creator<AppUser>() {
+        @Override
+        public AppUser createFromParcel(Parcel in) {
+            return new AppUser(in);
+        }
+
+        @Override
+        public AppUser[] newArray(int size) {
+            return new AppUser[size];
+        }
+    };
+
 
     public AppUser() {
         // empty constructor
@@ -49,7 +70,7 @@ public class AppUser implements Parcelable {
     }
 
     /*
-     * Parcelable implementation
+     * Parcelable implementation constructor
      */
     protected AppUser(Parcel in) {
         fullName = in.readString();
@@ -62,13 +83,10 @@ public class AppUser implements Parcelable {
         aptId = in.readString();
     }
 
-    public static AppUser getDummyObject() {
-        return new AppUser("", false, "", "", "", "", "", "");
-    }
-
     /*
      * Parcelable implementation
      */
+    @Exclude
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(fullName);
@@ -84,25 +102,12 @@ public class AppUser implements Parcelable {
     /*
      * Parcelable implementation
      */
+    @Exclude
     @Override
     public int describeContents() {
         return 0;
     }
 
-    /*
-     * Parcelable implementation
-     */
-    public static final Creator<AppUser> CREATOR = new Creator<AppUser>() {
-        @Override
-        public AppUser createFromParcel(Parcel in) {
-            return new AppUser(in);
-        }
-
-        @Override
-        public AppUser[] newArray(int size) {
-            return new AppUser[size];
-        }
-    };
 
     /**
      * To be used when implementing Firebase realtime db fan-out approach.
@@ -125,4 +130,14 @@ public class AppUser implements Parcelable {
 
         return result;
     }
+
+
+    @Exclude
+    public static AppUser getDummyObject() {
+        String emptyString = "";
+        return new AppUser(emptyString, false, emptyString,
+                emptyString, emptyString, emptyString, emptyString, emptyString);
+    }
+
+
 }

@@ -30,6 +30,7 @@ public class Community implements Parcelable {
     /*
      * Parcelable implementation
      */
+    @Exclude
     public static final Creator<Community> CREATOR = new Creator<Community>() {
         @Override
         public Community createFromParcel(Parcel in) {
@@ -60,7 +61,7 @@ public class Community implements Parcelable {
     }
 
     /*
-     * Parcelable implementation
+     * Parcelable implementation constructor
      */
     protected Community(Parcel in) {
         name = in.readString();
@@ -80,6 +81,7 @@ public class Community implements Parcelable {
     /*
      * Parcelable implementation
      */
+    @Exclude
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);
@@ -97,6 +99,7 @@ public class Community implements Parcelable {
     /*
      * Parcelable implementation
      */
+    @Exclude
     @Override
     public int describeContents() {
         return 0;
@@ -126,8 +129,10 @@ public class Community implements Parcelable {
         return  result;
     }
 
-
+    @Exclude
     public static Community getDummyObject() {
-        return new Community("", "", "", "", "", "", "", "");
+        String emptyString = "";
+        return new Community(emptyString, emptyString, emptyString,
+                emptyString, emptyString, emptyString, emptyString, emptyString);
     }
 }

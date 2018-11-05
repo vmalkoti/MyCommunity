@@ -20,6 +20,7 @@ public class Management implements Parcelable {
     /*
      * Parcelable implementation
      */
+    @Exclude
     public static final Creator<Management> CREATOR = new Creator<Management>() {
         @Override
         public Management createFromParcel(Parcel in) {
@@ -53,6 +54,7 @@ public class Management implements Parcelable {
     /*
      * Parcelable implementation
      */
+    @Exclude
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mgmtName);
@@ -62,6 +64,7 @@ public class Management implements Parcelable {
     /*
      * Parcelable implementation
      */
+    @Exclude
     @Override
     public int describeContents() {
         return 0;
