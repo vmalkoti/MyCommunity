@@ -3,16 +3,20 @@ package com.malkoti.capstone.mycommunity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.malkoti.capstone.mycommunity.databinding.FragmentEditResidentDetailsBinding;
+import com.malkoti.capstone.mycommunity.model.Apartment;
 import com.malkoti.capstone.mycommunity.viewmodels.DetailsViewModel;
 
 import java.util.ArrayList;
@@ -28,9 +32,12 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class EditResidentDetails extends Fragment {
+    private static final String LOG_TAG = "DEBUG_" + EditResidentDetails.class.getSimpleName();
+
     private OnFragmentInteractionListener mListener;
     private FragmentEditResidentDetailsBinding binding;
     private DetailsViewModel viewModel;
+    private List<Apartment> apartmentsList = new ArrayList<>();
 
     /**
      * This interface must be implemented by activities that contain this
@@ -98,7 +105,7 @@ public class EditResidentDetails extends Fragment {
     private void initUI() {
         viewModel = ViewModelProviders.of(getActivity()).get(DetailsViewModel.class);
 
-        populateAptDropdown();
+        viewModel.getSignedInUser().observe(this, appUser -> populateAptDropdown(appUser.communityId));
 
         binding.addResidentBtn.setOnClickListener(view -> {
             if(fieldsVerified()) {
@@ -127,18 +134,16 @@ public class EditResidentDetails extends Fragment {
             binding.residentLnameEt.setError("Required");
             return false;
         }
-        /*
-        blank spinners
 
-        if (gender.equals("")) {
+        if (gender==null || gender.equals("")) {
             ((TextView) binding.residentGenderSpn.getSelectedView()).setError("Required");
             return false;
         }
-        if(apt.equals("")) {
+        if(apt==null || apt.equals("")) {
             ((TextView) binding.residentAptSpn.getSelectedView()).setError("Required");
             return false;
         }
-        */
+
         if (email.equals("")) {
             binding.residentEmailIdEt.setError("Required");
             return false;
@@ -157,7 +162,8 @@ public class EditResidentDetails extends Fragment {
         viewModel.getSelectedUser().getValue().phoneNum = phone;
 
         // need to get apt id
-        viewModel.getSelectedUser().getValue().aptId = apt;
+        viewModel.getSelectedUser().getValue().aptId = apartmentsList
+                .get(binding.residentAptSpn.getSelectedItemPosition()).aptKey;
 
         // set new resident's community id to manager's community
         viewModel.getSelectedUser().getValue().communityId = viewModel.getSignedInUser().getValue().communityId;
@@ -170,16 +176,27 @@ public class EditResidentDetails extends Fragment {
     /**
      *
      */
-    private void populateAptDropdown() {
-        List<String> aptList = new ArrayList<>();
-        aptList.add("");
-        aptList.add("101");
-        aptList.add("102");
-        aptList.add("103");
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, aptList);
+    private void populateAptDropdown(String communityId) {
+        viewModel.getApartmentListOfCommunity(communityId).observe(this, apartments -> {
+            //apartmentsList.clear();
+            apartmentsList = apartments;
+        });
+        ArrayAdapter<Apartment> adapter = new ArrayAdapter<>(getActivity(),
+                android.R.layout.simple_spinner_item, apartmentsList);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         binding.residentAptSpn.setAdapter(adapter);
-        binding.residentAptSpn.setPrompt("Select an apartment");
+        binding.residentAptSpn.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                ((TextView) view).setTextColor(Color.BLACK);
+                Log.d(LOG_TAG, "populateAptDropdown: item selected " + position);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                Log.d(LOG_TAG, "populateAptDropdown: nothing selected");
+            }
+        });
     }
 
 }

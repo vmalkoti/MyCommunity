@@ -4,13 +4,16 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.MutableLiveData;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.malkoti.capstone.mycommunity.model.AnnouncementPost;
 import com.malkoti.capstone.mycommunity.model.Apartment;
@@ -20,6 +23,9 @@ import com.malkoti.capstone.mycommunity.model.MaintenanceRequest;
 import com.malkoti.capstone.mycommunity.model.Management;
 import com.malkoti.capstone.mycommunity.utils.FirebaseAuthUtil;
 import com.malkoti.capstone.mycommunity.utils.FirebaseDbUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -313,5 +319,51 @@ public class DetailsViewModel extends AndroidViewModel {
 
 
         return  mgmt;
+    }
+
+
+    /**
+     * Retrieve list of apartments using community id
+     * @param communityId Firebase push id key value for community node
+     * @return LiveData object
+     */
+    public MutableLiveData<List<Apartment>> getApartmentListOfCommunity(String communityId) {
+        MutableLiveData<List<Apartment>> apartments = new MutableLiveData<>();
+        apartments.setValue(new ArrayList<>());
+
+        Log.d(LOG_TAG, "getApartmentListOfCommunity: Reading database to get apartment list");
+
+        // https://stackoverflow.com/questions/39109616/should-firebasedatabase-getinstance-be-used-sparingly/39109665#39109665
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+        //String communityId = signedInUser.getValue().communityId;
+
+        DatabaseReference aptsNode = database.getReference(FirebaseDbUtils.APTS_NODE_NAME);
+        Query aptsQuery = aptsNode.orderByChild("communityId").equalTo(communityId);
+        aptsQuery.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                Apartment newApt = dataSnapshot.getValue(Apartment.class);
+                newApt.aptKey = dataSnapshot.getKey();
+                apartments.getValue().add(newApt);
+                // to fire observers
+                apartments.setValue(apartments.getValue());
+                Log.d(LOG_TAG, "getApartmentListOfCommunity : aptListener: apt added " + newApt.aptName);
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {  }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) { }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
+        });
+
+        return apartments;
     }
 }
