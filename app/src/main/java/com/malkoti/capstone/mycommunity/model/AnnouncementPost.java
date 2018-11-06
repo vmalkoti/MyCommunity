@@ -110,4 +110,16 @@ public class AnnouncementPost implements Parcelable {
         String emptyString = "";
         return new AnnouncementPost(emptyString, emptyString, emptyString, emptyString, emptyString);
     }
+
+    @Exclude
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) return false;
+
+        if (!(obj instanceof AnnouncementPost)) return false;
+
+        AnnouncementPost post = (AnnouncementPost) obj;
+
+        return (this.postKey.equals(post.postKey));
+    }
 }

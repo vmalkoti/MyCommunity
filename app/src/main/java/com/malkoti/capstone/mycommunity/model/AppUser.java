@@ -140,4 +140,16 @@ public class AppUser implements Parcelable {
     }
 
 
+    @Exclude
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) return false;
+
+        if (!(obj instanceof AppUser)) return false;
+
+        AppUser user = (AppUser) obj;
+
+        return (this.userKey.equals(user.userKey));
+    }
+
 }

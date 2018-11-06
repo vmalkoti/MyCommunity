@@ -120,4 +120,16 @@ public class MaintenanceRequest implements Parcelable {
     public static MaintenanceRequest getDummyObject() {
         return new MaintenanceRequest("", "", "", "", "", "", "", "");
     }
+
+    @Exclude
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) return false;
+
+        if (!(obj instanceof MaintenanceRequest)) return false;
+
+        MaintenanceRequest req = (MaintenanceRequest) obj;
+
+        return (this.reqKey.equals(req.reqKey));
+    }
 }

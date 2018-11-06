@@ -2,6 +2,7 @@ package com.malkoti.capstone.mycommunity.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.google.firebase.database.Exclude;
 import com.google.firebase.database.IgnoreExtraProperties;
@@ -111,5 +112,18 @@ public class Apartment implements Parcelable {
     @Override
     public String toString() {
         return this.aptName;
+    }
+
+    @Exclude
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) return false;
+
+        if (!(obj instanceof Apartment)) return false;
+
+        Apartment apt = (Apartment) obj;
+
+        Log.d("DEBUG_Apartment", "Key of this=" + this.aptKey + ", passed object key=" + apt.aptKey);
+        return (this.aptKey.equals(apt.aptKey));
     }
 }
