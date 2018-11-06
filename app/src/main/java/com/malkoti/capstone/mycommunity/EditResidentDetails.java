@@ -161,9 +161,10 @@ public class EditResidentDetails extends Fragment {
         viewModel.getSelectedUser().getValue().email = email;
         viewModel.getSelectedUser().getValue().phoneNum = phone;
 
+
         // need to get apt id
-        viewModel.getSelectedUser().getValue().aptId = apartmentsList
-                .get(binding.residentAptSpn.getSelectedItemPosition()).aptKey;
+        viewModel.getSelectedUser().getValue().aptId =
+                ((Apartment) binding.residentAptSpn.getSelectedItem()).aptKey;
 
         // set new resident's community id to manager's community
         viewModel.getSelectedUser().getValue().communityId = viewModel.getSignedInUser().getValue().communityId;
@@ -180,11 +181,14 @@ public class EditResidentDetails extends Fragment {
         viewModel.getApartmentListOfCommunity(communityId).observe(this, apartments -> {
             //apartmentsList.clear();
             apartmentsList = apartments;
+
+            ArrayAdapter<Apartment> adapter = new ArrayAdapter<>(getActivity(),
+                    android.R.layout.simple_spinner_item, apartmentsList);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            binding.residentAptSpn.setAdapter(adapter);
+
         });
-        ArrayAdapter<Apartment> adapter = new ArrayAdapter<>(getActivity(),
-                android.R.layout.simple_spinner_item, apartmentsList);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        binding.residentAptSpn.setAdapter(adapter);
+
         binding.residentAptSpn.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
