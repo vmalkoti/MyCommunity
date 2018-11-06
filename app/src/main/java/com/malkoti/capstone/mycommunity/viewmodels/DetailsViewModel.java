@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -105,24 +106,42 @@ public class DetailsViewModel extends AndroidViewModel {
      * @return
      */
     private void setSignedInUser() {
-        Log.d(LOG_TAG, "getSignedInUser: get signed in user's node object for reference later");
+        Log.d(LOG_TAG, "initSignedInUserData: get signed in user's node object for reference later");
 
         // https://stackoverflow.com/questions/39109616/should-firebasedatabase-getinstance-be-used-sparingly/39109665#39109665
         FirebaseDatabase database = FirebaseDatabase.getInstance();
 
-        // for managers
+        String userEmailId = FirebaseAuth.getInstance().getCurrentUser().getEmail();
+        Log.d(LOG_TAG, "initSignedInUserData: Email id = " + userEmailId);
+
         database.getReference(FirebaseDbUtils.USERS_NODE_NAME)
-                .child(FirebaseAuthUtil.getSignedInUserId())
-                .addListenerForSingleValueEvent(new ValueEventListener() {
+                .orderByChild("email")
+                .equalTo(userEmailId)
+                .addChildEventListener(new ChildEventListener() {
                     @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                        Log.d(LOG_TAG, "initSignedInUserData: User info recieved for " + dataSnapshot.getKey());
+
                         signedInUserId.setValue(dataSnapshot.getKey());
                         signedInUser.setValue(dataSnapshot.getValue(AppUser.class));
+                        signedInUser.getValue().userKey = dataSnapshot.getKey();
+
+                    }
+
+                    @Override
+                    public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
+
+                    @Override
+                    public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) { }
+
+                    @Override
+                    public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
                     }
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.e(LOG_TAG, "createNewApartment: Error getting user object",
+                        Log.e(LOG_TAG, "initSignedInUserData: Error getting user object",
                                 databaseError.toException());
                         Toast.makeText(getApplication().getApplicationContext(),
                                 "Error getting signed in user details: " + databaseError.getMessage(),
@@ -217,13 +236,13 @@ public class DetailsViewModel extends AndroidViewModel {
      * Create new node in maintenance request
      */
     public void createNewRequest() {
-        Log.d(LOG_TAG, "createNewRequest: For user " + selectedRequest.getValue().reqType);
+        Log.d(LOG_TAG, "createNewRequest: For request " + selectedRequest.getValue().reqType);
 
         // https://stackoverflow.com/questions/39109616/should-firebasedatabase-getinstance-be-used-sparingly/39109665#39109665
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference requestsNode = database.getReference(FirebaseDbUtils.REQUESTS_NODE_NAME);
 
-        requestsNode.push().setValue(selectedUser.getValue()).addOnCompleteListener(task -> {
+        requestsNode.push().setValue(selectedRequest.getValue()).addOnCompleteListener(task -> {
             if(task.isCanceled()) {
                 Toast.makeText(getApplication().getApplicationContext(),
                         "Error getting signed in user details: " + task.getException().getLocalizedMessage(),

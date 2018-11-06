@@ -5,7 +5,6 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.MutableLiveData;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -55,7 +54,7 @@ public class MainViewModel extends AndroidViewModel {
 
     public MainViewModel(@NonNull Application application) {
         super(application);
-        setSignedInUser();
+        initSignedInUserData();
         initializeLists();
         initializeListeners();
     }
@@ -83,6 +82,16 @@ public class MainViewModel extends AndroidViewModel {
         return signedInUser;
     }
 
+    public void setSignedInUser(AppUser user) {
+        signedInUser.setValue(user);
+        if(user!=null) {
+            signedInUserId.setValue(user.userKey);
+        } else {
+            signedInUserId.setValue(null);
+        }
+        initializeLists();
+    }
+
 
     /**
      * initialize mutable data with blank lists
@@ -99,14 +108,38 @@ public class MainViewModel extends AndroidViewModel {
      *
      * @return
      */
-    private void setSignedInUser() {
-        Log.d(LOG_TAG, "setSignedInUser: get signed in user's node object for reference later");
+    public void initSignedInUserData() {
+        Log.d(LOG_TAG, "initSignedInUserData: get signed in user's node object for reference later");
+
+        Log.d(LOG_TAG, "initSignedInUserData: is user logged in? " + FirebaseAuthUtil.isUserSignedIn());
+        if(!FirebaseAuthUtil.isUserSignedIn()) return;
+
+        String userEmailId = FirebaseAuth.getInstance().getCurrentUser().getEmail();
 
         // https://stackoverflow.com/questions/39109616/should-firebasedatabase-getinstance-be-used-sparingly/39109665#39109665
         FirebaseDatabase database = FirebaseDatabase.getInstance();
 
-        String userEmailId = FirebaseAuth.getInstance().getCurrentUser().getEmail();
-        Log.d(LOG_TAG, "setSignedInUser: Email id = " + userEmailId);
+        Log.d(LOG_TAG, "initSignedInUserData: Email id = " + userEmailId);
+
+        /*
+        database.getReference().child("users")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.getValue() == null) {
+                            Log.d(LOG_TAG, "initSignedInUserData: valueEventListener : No data received");
+                        } else {
+                            Log.d(LOG_TAG, "initSignedInUserData: valueEventListener : Data received " + dataSnapshot.getKey());
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        Log.d(LOG_TAG, "initSignedInUserData: valueEventListener : error!", databaseError.toException());
+                    }
+                });
+        */
 
         database.getReference(FirebaseDbUtils.USERS_NODE_NAME)
                 .orderByChild("email")
@@ -114,7 +147,7 @@ public class MainViewModel extends AndroidViewModel {
                 .addChildEventListener(new ChildEventListener() {
                     @Override
                     public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                        Log.d(LOG_TAG, "setSignedInUser: User info recieved for " + dataSnapshot.getKey());
+                        Log.d(LOG_TAG, "initSignedInUserData: User info recieved for " + dataSnapshot.getKey());
 
                         signedInUserId.setValue(dataSnapshot.getKey());
                         signedInUser.setValue(dataSnapshot.getValue(AppUser.class));
@@ -140,7 +173,7 @@ public class MainViewModel extends AndroidViewModel {
 
                     @Override
                     public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Log.e(LOG_TAG, "setSignedInUser: Error getting user object",
+                        Log.e(LOG_TAG, "initSignedInUserData: Error getting user object",
                                 databaseError.toException());
                         Toast.makeText(getApplication().getApplicationContext(),
                                 "Error getting signed in user details: " + databaseError.getMessage(),
@@ -250,7 +283,7 @@ public class MainViewModel extends AndroidViewModel {
         Query residentsQuery = residentsNode.orderByChild("aptId").equalTo(aptId);
         residentsQuery.addChildEventListener(residentListener);
 
-        Query requestsQuery = requestsNode.orderByChild("residentId").equalTo(userId);
+        Query requestsQuery = requestsNode.orderByChild("aptId").equalTo(aptId);
         requestsQuery.addChildEventListener(requestListener);
         Query announcementsQuery = announcementsNode.orderByChild("communityId").equalTo(communityId);
         announcementsQuery.addChildEventListener(announcementListener);
@@ -268,10 +301,12 @@ public class MainViewModel extends AndroidViewModel {
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 Apartment newApt = dataSnapshot.getValue(Apartment.class);
                 newApt.aptKey = dataSnapshot.getKey();
-                apartments.getValue().add(newApt);
-                // to fire observers
-                apartments.setValue(apartments.getValue());
-                Log.d(LOG_TAG, "aptListener: apt added " + newApt.aptName);
+                if(!apartments.getValue().contains(newApt)) {
+                    apartments.getValue().add(newApt);
+                    // to fire observers
+                    apartments.setValue(apartments.getValue());
+                    Log.d(LOG_TAG, "aptListener: apt added " + newApt.aptName);
+                }
             }
 
             @Override
@@ -302,10 +337,12 @@ public class MainViewModel extends AndroidViewModel {
                 if (!newResident.isManager) {
                     newResident.userKey = dataSnapshot.getKey();
                     //getApartmentById(newResident.aptId).observe(this, apt -> newResident.aptName = apt.aptName);
-                    residents.getValue().add(newResident);
-                    // to fire observers
-                    residents.setValue(residents.getValue());
-                    Log.d(LOG_TAG, "residentListener: resident added " + newResident.fullName);
+                    if(!residents.getValue().contains(newResident)) {
+                        residents.getValue().add(newResident);
+                        // to fire observers
+                        residents.setValue(residents.getValue());
+                        Log.d(LOG_TAG, "residentListener: resident added " + newResident.fullName);
+                    }
                 }
             }
 
@@ -335,11 +372,13 @@ public class MainViewModel extends AndroidViewModel {
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 MaintenanceRequest newRequest = dataSnapshot.getValue(MaintenanceRequest.class);
                 newRequest.reqKey = dataSnapshot.getKey();
-                requests.getValue().add(newRequest);
-                // to fire observers
-                requests.setValue(requests.getValue());
+                if(!requests.getValue().contains(newRequest)) {
+                    requests.getValue().add(newRequest);
+                    // to fire observers
+                    requests.setValue(requests.getValue());
 
-                Log.d(LOG_TAG, "requestListener: request added " + newRequest.reqType);
+                    Log.d(LOG_TAG, "requestListener: request added " + newRequest.reqType);
+                }
             }
 
             @Override
@@ -369,10 +408,13 @@ public class MainViewModel extends AndroidViewModel {
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 AnnouncementPost newAnnouncement = dataSnapshot.getValue(AnnouncementPost.class);
                 newAnnouncement.postKey = dataSnapshot.getKey();
-                announcements.getValue().add(newAnnouncement);
-                // to fire observers
-                announcements.setValue(announcements.getValue());
-                Log.d(LOG_TAG, "announcementListener: announcement added " + newAnnouncement.announcementTitle);
+
+                if (!announcements.getValue().contains(newAnnouncement)) {
+                    announcements.getValue().add(newAnnouncement);
+                    // to fire observers
+                    announcements.setValue(announcements.getValue());
+                    Log.d(LOG_TAG, "announcementListener: announcement added " + newAnnouncement.announcementTitle);
+                }
             }
 
             @Override
