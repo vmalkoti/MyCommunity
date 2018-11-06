@@ -108,7 +108,7 @@ public class LoginActivity extends AppCompatActivity
 
 
     @Override
-    public void onSignUpScreenSubmitAction() {
+    public void onSignUpScreenSubmitAction(UserSignup.SignupType type) {
         Log.d(LOG_TAG, "onSignUpScreenSubmitAction: started");
 
         binding.loginProgressbar.show();
@@ -155,8 +155,10 @@ public class LoginActivity extends AppCompatActivity
                 Log.d(LOG_TAG, "onSignUpScreenSubmitAction: In signup success, uid is " +
                     FirebaseAuth.getInstance().getCurrentUser().getUid());
 
-                // Create new management and building nodes
-                createNewManagerInDb(FirebaseAuthUtil.getSignedInUserId());
+                if(type == UserSignup.SignupType.FOR_MANAGER) {
+                    // Create new management and building nodes
+                    createNewManagerInDb(FirebaseAuthUtil.getSignedInUserId());
+                }
 
                 Log.d(LOG_TAG, "Closing Login Activity");
 

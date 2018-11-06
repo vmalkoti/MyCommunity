@@ -46,7 +46,7 @@ public class UserSignup extends Fragment {
      * activity.
      */
     public interface OnFragmentInteractionListener {
-        void onSignUpScreenSubmitAction();
+        void onSignUpScreenSubmitAction(SignupType type);
     }
 
     public UserSignup() {
@@ -152,7 +152,7 @@ public class UserSignup extends Fragment {
 
         if(isVerified) {
             // call fragment listener
-            interactionListener.onSignUpScreenSubmitAction();
+            interactionListener.onSignUpScreenSubmitAction(type);
         }
     }
 
