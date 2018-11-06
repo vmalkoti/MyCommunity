@@ -218,11 +218,13 @@ public class DetailsViewModel extends AndroidViewModel {
     public void createNewAnnouncement() {
         Log.d(LOG_TAG, "createNewAnnouncement: For announcement " + selectedAnnouncement.getValue().announcementTitle);
 
+        selectedAnnouncement.getValue().managerId = signedInUser.getValue().userKey;
+        selectedAnnouncement.getValue().communityId = signedInUser.getValue().communityId;
+
         // https://stackoverflow.com/questions/39109616/should-firebasedatabase-getinstance-be-used-sparingly/39109665#39109665
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference announcementsNode = database.getReference(FirebaseDbUtils.ANNOUNCEMENTS_NODE_NAME);
-        selectedAnnouncement.getValue().managerId = signedInUserId.getValue();
-        selectedAnnouncement.getValue().communityId = signedInUser.getValue().communityId;
+
         announcementsNode.push().setValue(selectedAnnouncement.getValue()).addOnCompleteListener(task -> {
             if(task.isCanceled()) {
                 Toast.makeText(getApplication().getApplicationContext(),
@@ -237,6 +239,8 @@ public class DetailsViewModel extends AndroidViewModel {
      */
     public void createNewRequest() {
         Log.d(LOG_TAG, "createNewRequest: For request " + selectedRequest.getValue().reqType);
+
+        selectedRequest.getValue().residentId = signedInUser.getValue().userKey;
 
         // https://stackoverflow.com/questions/39109616/should-firebasedatabase-getinstance-be-used-sparingly/39109665#39109665
         FirebaseDatabase database = FirebaseDatabase.getInstance();

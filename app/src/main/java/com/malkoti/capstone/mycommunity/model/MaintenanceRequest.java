@@ -15,7 +15,7 @@ public class MaintenanceRequest implements Parcelable {
     public String reqType;
     public String communityId;
     public String aptId;
-    public String residentId; // do we need this?
+    public String residentId;
     public String reqDate;
     public String reqStatus;
     public String reqDescription;
@@ -43,8 +43,7 @@ public class MaintenanceRequest implements Parcelable {
     }
 
     public MaintenanceRequest(String reqType, String communityId, String aptId, String residentId,
-                              String reqDate,
-                              String reqStatus, String reqDescription, String reqComments) {
+                              String reqDate, String reqStatus, String reqDescription, String reqComments) {
         this.reqType = reqType;
         this.communityId = communityId;
         this.aptId = aptId;

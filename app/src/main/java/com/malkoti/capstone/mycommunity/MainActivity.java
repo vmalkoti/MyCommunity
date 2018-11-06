@@ -111,7 +111,11 @@ public class MainActivity
         firebaseAuth.addAuthStateListener(authStateListener);
 
         if (FirebaseAuthUtil.isUserSignedIn()) {
-            // set the visibility of FAB - required to show/hide after rotation
+            // set the visibility of FAB - required to show/hide after rotatio
+            Log.d(LOG_TAG, "onResume: Currently selected bottom nav item: "
+                    + binding.bottomNavigation.getCurrentItem());
+            int position = binding.bottomNavigation.getCurrentItem();
+            binding.viewpager.setCurrentItem(position, false);
             setFabVisibility(binding.bottomNavigation.getCurrentItem());
         }
     }
@@ -234,7 +238,7 @@ public class MainActivity
         // hide bottomNavBar on scroll?
         binding.bottomNavigation.setBehaviorTranslationEnabled(true);
         // show first item of the tab
-        binding.bottomNavigation.setCurrentItem(0);
+        //binding.bottomNavigation.setCurrentItem(0);
         setFabVisibility(binding.bottomNavigation.getCurrentItem());
     }
 
