@@ -14,7 +14,9 @@ import com.malkoti.capstone.mycommunity.databinding.FragmentEditMaintenanceDetai
 import com.malkoti.capstone.mycommunity.model.AppUser;
 import com.malkoti.capstone.mycommunity.viewmodels.DetailsViewModel;
 
+import java.text.DateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 
@@ -27,8 +29,10 @@ import java.util.List;
  * create an instance of this fragment.
  */
 public class EditMaintenanceDetails extends Fragment {
+    private static final String LOG_TAG = "DEBUG_" + EditMaintenanceDetails.class.getSimpleName();
+
     private OnFragmentInteractionListener mListener;
-    private FragmentEditMaintenanceDetailsBinding maintenanceDetailsBinding;
+    private FragmentEditMaintenanceDetailsBinding binding;
     private DetailsViewModel viewModel;
 
     private boolean isNewRequest;
@@ -69,20 +73,20 @@ public class EditMaintenanceDetails extends Fragment {
         if (getArguments() != null) {
             isNewRequest = getArguments().getBoolean(ARG_PARAM1);
         }
-        //maintenanceDetailsBinding = DataBindingUtil.setContentView(this.getActivity(), R.layout.fragment_edit_maintenance_details);
+        //binding = DataBindingUtil.setContentView(this.getActivity(), R.layout.fragment_edit_maintenance_details);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        maintenanceDetailsBinding = DataBindingUtil.inflate(inflater,
+        binding = DataBindingUtil.inflate(inflater,
                 R.layout.fragment_edit_maintenance_details,
                 container, false);
 
         //populateDummyData();
         initUI();
 
-        return maintenanceDetailsBinding.getRoot();
+        return binding.getRoot();
     }
 
 
@@ -107,51 +111,85 @@ public class EditMaintenanceDetails extends Fragment {
 
 
     /**
-     *
+     * Initialize UI components
      */
     private void initUI() {
         viewModel = ViewModelProviders.of(getActivity()).get(DetailsViewModel.class);
 
-        maintenanceDetailsBinding.newReqGroup.setEnabled(isNewRequest);
-        maintenanceDetailsBinding.existingReqGroup.setEnabled(!isNewRequest);
+        binding.newReqGroup.setEnabled(isNewRequest);
+        binding.existingReqGroup.setEnabled(!isNewRequest);
 
         // disable fields to be automatically populated by code
-        maintenanceDetailsBinding.requestStatus.setEnabled(false);
-        //maintenanceDetailsBinding.requestUnitEt.setEnabled(false);
-        maintenanceDetailsBinding.requestResidentEt.setEnabled(false);
+        binding.requestStatus.setEnabled(false);
+        //binding.requestUnitEt.setEnabled(false);
+        binding.requestResidentEt.setEnabled(false);
 
         // extra field for future implementation
-        maintenanceDetailsBinding.requestCommentsEt.setVisibility(View.GONE);
+        binding.requestCommentsEt.setVisibility(View.GONE);
 
-        maintenanceDetailsBinding.requestSubmitBtn.setOnClickListener(view -> {
+        binding.requestSubmitBtn.setOnClickListener(view -> {
             if(fieldsVerified()) {
                 mListener.onFragmentInteraction(null);
             }
         });
+
+        autopopulateDefaults();
     }
 
+
+
     /**
-     *
-     * @return
+     * Autopopulate fields with default values
+     */
+    private void autopopulateDefaults() {
+        // autopopulated via code
+        binding.requestResidentEt.setEnabled(false);
+        binding.requestUnitEt.setEnabled(false);
+
+        // for future implementation - get apt name
+        viewModel.getSignedInUser().observe(this, appUser -> {
+            binding.requestResidentEt.setText(appUser.fullName);
+            viewModel.getSelectedRequest().getValue().residentId = appUser.userKey;
+            viewModel.getSelectedRequest().getValue().aptId = appUser.aptId;
+            viewModel.getSelectedRequest().getValue().communityId = appUser.communityId;
+
+            viewModel.getApartmentById(appUser.aptId).observe(EditMaintenanceDetails.this, apartment -> {
+                binding.requestUnitEt.setText(apartment.aptName);
+            });
+        });
+
+    }
+
+
+    /**
+     * Verify field inputs
+     * @return True if all fields have valid values, else false
      */
     private boolean fieldsVerified() {
-        String type = maintenanceDetailsBinding.requestTitleEt.getText().toString().trim();
-        String unit = maintenanceDetailsBinding.requestUnitEt.getText().toString().trim();
-        String desc = maintenanceDetailsBinding.requestDescEt.getText().toString().trim();
+        String type = binding.requestTitleEt.getText().toString().trim();
+        String unit = binding.requestUnitEt.getText().toString().trim();
+        String desc = binding.requestDescEt.getText().toString().trim();
+
+        String reqFieldMsg = getString(R.string.required_field_error_msg);
 
         if(type.equals("")) {
-            maintenanceDetailsBinding.requestTitleEt.setError("Required");
+            binding.requestTitleEt.setError(reqFieldMsg);
             return false;
         }
         if(unit.equals("")) {
-            maintenanceDetailsBinding.requestUnitEt.setError("Required");
+            binding.requestUnitEt.setError(reqFieldMsg);
             return false;
         }
         if(desc.equals("")) {
-            maintenanceDetailsBinding.requestDescEt.setError("Required");
+            binding.requestDescEt.setError(reqFieldMsg);
             return false;
         }
 
+        String date = DateFormat
+                .getDateTimeInstance(DateFormat.SHORT, DateFormat.FULL)
+                .format(Calendar.getInstance().getTime());
+
+        viewModel.getSelectedRequest().getValue().reqDate = date;
         viewModel.getSelectedRequest().getValue().reqType = type;
         viewModel.getSelectedRequest().getValue().reqDescription = desc;
 
@@ -159,27 +197,20 @@ public class EditMaintenanceDetails extends Fragment {
     }
 
 
-    private void autopopulateDefaults() {
-        AppUser user = viewModel.getSignedInUser().getValue();
-        // populate resident name
-        maintenanceDetailsBinding.requestResidentEt.setText(user.fullName);
-
-        // for future implementation - get apt name
-    }
 
     /**
      * Test method to provide dummy data for initial testing
      */
     private void populateDummyData() {
-        maintenanceDetailsBinding.requestTitleEt.setText("Electrical appliance not working");
-        maintenanceDetailsBinding.requestUnitEt.setText("Apt #123");
-        maintenanceDetailsBinding.requestResidentEt.setText("George Michael");
-        maintenanceDetailsBinding.requestDescEt.setText("The fridge is not cooling. Tried plugging out and back in but that made no difference.");
-        maintenanceDetailsBinding.requestCommentsEt.setText("Contacted Samsung for repairs.");
+        binding.requestTitleEt.setText("Electrical appliance not working");
+        binding.requestUnitEt.setText("Apt #123");
+        binding.requestResidentEt.setText("George Michael");
+        binding.requestDescEt.setText("The fridge is not cooling. Tried plugging out and back in but that made no difference.");
+        binding.requestCommentsEt.setText("Contacted Samsung for repairs.");
 
         List<String> statusList = Arrays.asList(getResources().getStringArray(R.array.request_status_list));
         String status = getString(R.string.req_status_vendor);
-        maintenanceDetailsBinding.requestStatus.setSelection(statusList.indexOf(status));
+        binding.requestStatus.setSelection(statusList.indexOf(status));
     }
 
 }
