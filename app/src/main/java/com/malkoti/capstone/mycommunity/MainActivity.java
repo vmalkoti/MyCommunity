@@ -1,10 +1,8 @@
 package com.malkoti.capstone.mycommunity;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.net.Uri;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
@@ -23,12 +21,8 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.MobileAds;
 import com.google.firebase.auth.FirebaseAuth;
 import com.malkoti.capstone.mycommunity.databinding.ActivityMainBinding;
-import com.malkoti.capstone.mycommunity.model.Apartment;
-import com.malkoti.capstone.mycommunity.model.AppUser;
 import com.malkoti.capstone.mycommunity.utils.FirebaseAuthUtil;
 import com.malkoti.capstone.mycommunity.viewmodels.MainViewModel;
-
-import java.util.List;
 
 public class MainActivity
         extends AppCompatActivity
@@ -45,9 +39,6 @@ public class MainActivity
 
     private ActivityMainBinding binding;
     private MainViewModel viewModel;
-    private Observer<List<Apartment>> aptObserver = apartments -> {
-
-    };
 
     private AHBottomNavigationAdapter bottomNavAdapter;
     private BottomBarFragmentStatePagerAdapter pagerAdapter;
@@ -58,10 +49,16 @@ public class MainActivity
         public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
             if (FirebaseAuthUtil.isUserSignedIn()) {
                 Log.d(LOG_TAG, "AuthListener: User logged in");
+                if(viewModel.getSignedInUser().getValue()==null) {
+                    viewModel.initSignedInUserData();
+                }
+                initUI();
+                initAds();
                 //attachDatabaseEventListeners();
             } else {
                 Log.d(LOG_TAG, "AuthListener: User not logged in");
                 //removeDatabaseEventListeners();
+                viewModel.setSignedInUser(null);
                 startActivityForResult(signInLaunchIntent, RC_SIGN_IN, null);
             }
         }
@@ -77,31 +74,48 @@ public class MainActivity
         signInLaunchIntent = new Intent(MainActivity.this, LoginActivity.class);
 
         firebaseAuth = FirebaseAuth.getInstance();
+        viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
         //if(savedInstanceState != null) return;
 
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
+
+
         if (FirebaseAuthUtil.isUserSignedIn()) {
             Log.d(LOG_TAG, "onCreate: Use Signed in");
+
             initUI();
             initAds();
             //attachDatabaseEventListeners();
+        } else {
+            Log.d(LOG_TAG, "onCreate: Not signed in");
+            //startActivityForResult(signInLaunchIntent, RC_SIGN_IN, null);
         }
+
+
     }
 
 
     @Override
     protected void onPause() {
         super.onPause();
+        Log.d(LOG_TAG, "onPause: removing auth state listener");
         firebaseAuth.removeAuthStateListener(authStateListener);
     }
+
 
     @Override
     protected void onResume() {
         super.onResume();
+        Log.d(LOG_TAG, "onResume: adding auth state listener");
         firebaseAuth.addAuthStateListener(authStateListener);
-        // set the visibility of FAB - required to show/hide after rotation
-        setFabVisibility(binding.bottomNavigation.getCurrentItem());
+
+        if (FirebaseAuthUtil.isUserSignedIn()) {
+            // set the visibility of FAB - required to show/hide after rotation
+            setFabVisibility(binding.bottomNavigation.getCurrentItem());
+        }
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -113,6 +127,7 @@ public class MainActivity
                 Log.d(LOG_TAG, "onActivityResult: Cancelled");
                 finish();
             } else {
+                Log.d(LOG_TAG, "onActivityResult: Sign in successful");
                 Toast.makeText(this, "Sign in successful", Toast.LENGTH_SHORT).show();
             }
         }
@@ -123,8 +138,7 @@ public class MainActivity
      * Initialize UI components
      */
     private void initUI() {
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
-        viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        //viewModel.initSignedInUserData();
 
         setSupportActionBar(binding.toolbar);
         getSupportActionBar().setTitle(getString(R.string.app_name));
@@ -206,12 +220,6 @@ public class MainActivity
             }
             setFabVisibility(position);
 
-            // if manager
-            //
-
-            // if resident
-            //
-
             return true;
         });
 
@@ -235,14 +243,34 @@ public class MainActivity
      * @param bottomNavSelectedItemPosition
      */
     private void setFabVisibility(int bottomNavSelectedItemPosition) {
+        if(bottomNavAdapter == null) {
+            Log.d(LOG_TAG, "setupBottomNavBar: bottom nav bar adapter is null");
+            return;
+        }
+
         String title = binding.bottomNavigation.getItem(bottomNavSelectedItemPosition).getTitle(this);
         Log.d(LOG_TAG, "setupBottomNavBar: Setting up FAB visibility for item " + title);
 
-        if (bottomNavSelectedItemPosition == 2 || bottomNavSelectedItemPosition == 4) {
-            // manager - hide on maintenance request and settings screen
-            binding.bottomFab.hide();
+        if (viewModel.getSignedInUser().getValue() == null) {
+            Log.d(LOG_TAG, "setupBottomNavBar: No signedinuse in viewmodel");
+            return;
+        }
+
+        boolean isManager = viewModel.getSignedInUser().getValue().isManager;
+        if (isManager) {
+            if(bottomNavSelectedItemPosition == 2 || bottomNavSelectedItemPosition == 4) {
+                // manager - hide on maintenance request and settings screen
+                binding.bottomFab.hide();
+            } else {
+                binding.bottomFab.show();
+            }
         } else {
-            binding.bottomFab.show();
+            if(bottomNavSelectedItemPosition == 2) {
+                // resident - show only on maintenance request screen
+                binding.bottomFab.show();
+            } else {
+                binding.bottomFab.hide();
+            }
         }
     }
 
@@ -327,44 +355,6 @@ public class MainActivity
         }
     }
 
-    /*
-    @Override
-    public void onFragmentInteraction(Uri uri) {
-        Log.d(LOG_TAG, "onFragmentInteraction: showing details for uri");
-
-        int position = binding.bottomNavigation.getCurrentItem();
-
-
-        switch (position) {
-            case 0:
-                showDetailsScreenForItem(DetailsActivity.DetailsScreenType.APARTMENT_DETAILS,
-                        "apt1234", null);
-                break;
-            case 1:
-                showDetailsScreenForItem(DetailsActivity.DetailsScreenType.RESIDENT_DETAILS,
-                        "res1234", null);
-                break;
-            case 2:
-                showDetailsScreenForItem(DetailsActivity.DetailsScreenType.MAINTENANCE_REQ_DETAILS,
-                        "req1234", null);
-                break;
-            case 3:
-                showDetailsScreenForItem(DetailsActivity.DetailsScreenType.ANNOUNCEMENT_DETAILS,
-                        "ads1234", null);
-                break;
-            case 4:
-                // if manager, show community details screen
-                showDetailsScreenForItem(DetailsActivity.DetailsScreenType.COMMUNITY_DETAILS,
-                        "bldg1234", null);
-                // if resident, show resident details screen
-                // showDetailsScreenForItem(DetailsActivity.DetailsScreenType.RESIDENT_DETAILS,
-                // "res1234", null);
-            default:
-                Log.e(LOG_TAG, "Unknown fragment listener");
-        }
-
-    }
-    */
 
     /**
      * @param screenType
