@@ -11,7 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.malkoti.capstone.mycommunity.databinding.FragmentEditApartmentDetailsBinding;
-import com.malkoti.capstone.mycommunity.model.Apartment;
 import com.malkoti.capstone.mycommunity.viewmodels.DetailsViewModel;
 
 
@@ -121,12 +120,15 @@ public class EditApartmentDetails extends Fragment {
         String status = binding.aptStatusSp.getSelectedItem().toString();
         String notes = binding.aptNotesEt.getText().toString().trim();
 
+        String reqFieldMsg = getString(R.string.required_field_error_msg);
+        String invalidValMsg = getString(R.string.invalid_input_error_msg);
+
         if(name.equals("")) {
-            binding.aptNameEt.setError("Required");
+            binding.aptNameEt.setError(reqFieldMsg);
             return false;
         }
         if(rooms<=0) {
-            binding.aptNumRoomsEt.setError("Invalid");
+            binding.aptNumRoomsEt.setError(invalidValMsg);
             return false;
         }
         // notes is optional

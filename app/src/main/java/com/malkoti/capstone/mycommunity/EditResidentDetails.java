@@ -115,8 +115,8 @@ public class EditResidentDetails extends Fragment {
     }
 
     /**
-     *
-     * @return
+     * Verify field inputs
+     * @return True if all fields have valid values, else false
      */
     private boolean fieldsVerified() {
         String fname = binding.residentFnameEt.getText().toString().trim();
@@ -126,26 +126,28 @@ public class EditResidentDetails extends Fragment {
         String email = binding.residentEmailIdEt.getText().toString().trim();
         String phone = binding.residentPhoneEt.getText().toString().trim();
 
+        String errorMessage = getString(R.string.required_field_error_msg);
+
         if(fname.equals("")) {
-            binding.residentFnameEt.setError("Required");
+            binding.residentFnameEt.setError(errorMessage);
             return false;
         }
         if (lName.equals("")) {
-            binding.residentLnameEt.setError("Required");
+            binding.residentLnameEt.setError(errorMessage);
             return false;
         }
 
         if (gender==null || gender.equals("")) {
-            ((TextView) binding.residentGenderSpn.getSelectedView()).setError("Required");
+            ((TextView) binding.residentGenderSpn.getSelectedView()).setError(errorMessage);
             return false;
         }
         if(apt==null || apt.equals("")) {
-            ((TextView) binding.residentAptSpn.getSelectedView()).setError("Required");
+            ((TextView) binding.residentAptSpn.getSelectedView()).setError(errorMessage);
             return false;
         }
 
         if (email.equals("")) {
-            binding.residentEmailIdEt.setError("Required");
+            binding.residentEmailIdEt.setError(errorMessage);
             return false;
         }
         if(phone.equals("")) {

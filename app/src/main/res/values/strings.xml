@@ -38,10 +38,8 @@
 
     <string name="resident_signup_alert">Currently, new residents can only be added by the building manager. Please contact your building manager.</string>
 
-
+    <!-- sample ad ids provided by Google for testing -->
     <string name="admob_sample_unit_id">ca-app-pub-3940256099942544~3347511713</string>
-
-
     <string name="admob_sample_app_id">ca-app-pub-3940256099942544~3347511713</string>
     <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
     <string name="interstitial_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
@@ -61,6 +59,9 @@
 
     <string name="signup_id_hint_mgmt">Use an email ID that is associated with your management</string>
     <string name="signup_id_hint_resident">Use email ID that you provided to the management</string>
+
+    <string name="required_field_error_msg">Required!</string>
+    <string name="invalid_input_error_msg">Invalid</string>
 
 
 </resources>

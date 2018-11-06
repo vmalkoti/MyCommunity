@@ -14,9 +14,7 @@ import com.malkoti.capstone.mycommunity.databinding.FragmentEditAnnouncementDeta
 import com.malkoti.capstone.mycommunity.viewmodels.DetailsViewModel;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 
 /**
@@ -107,16 +105,22 @@ public class EditAnnouncementDetails extends Fragment {
         });
     }
 
+    /**
+     * Verify field inputs
+     * @return True if all fields have valid values, else false
+     */
     private boolean fieldsVerified() {
         String title = binding.adPostTitleEt.getText().toString().trim();
         String desc = binding.requestDescEt.getText().toString().trim();
 
+        String errorMessage = getString(R.string.required_field_error_msg);
+
         if(title.equals("")) {
-            binding.adPostTitleEt.setError("Required");
+            binding.adPostTitleEt.setError(errorMessage);
             return false;
         }
         if (desc.equals("")) {
-            binding.requestDescEt.setError("Required");
+            binding.requestDescEt.setError(errorMessage);
             return false;
         }
 

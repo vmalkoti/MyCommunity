@@ -2,7 +2,6 @@ package com.malkoti.capstone.mycommunity;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.database.DatabaseUtils;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
@@ -29,13 +28,6 @@ public class EditCommunityDetails extends Fragment {
     private DetailsViewModel viewModel;
 
 
-    /*
-    public void setBehavior(BottomSheetBehavior behavior) {
-        this.bottomSheetBehavior = behavior;
-        behavior.setBottomSheetCallback(bottomSheetCallback);
-    }
-    */
-
     /**
      * This interface must be implemented by activities that contain this
      * fragment to allow an interaction in this fragment to be communicated
@@ -45,23 +37,6 @@ public class EditCommunityDetails extends Fragment {
         void onFragmentInteraction(Uri uri);
     }
 
-
-    /*
-    private BottomSheetBehavior bottomSheetBehavior;
-    private BottomSheetBehavior.BottomSheetCallback bottomSheetCallback  = new BottomSheetBehavior.BottomSheetCallback() {
-        @Override
-        public void onStateChanged(@NonNull View view, int newState) {
-            if(newState == BottomSheetBehavior.STATE_HIDDEN) {
-                dismiss();
-            }
-        }
-
-        @Override
-        public void onSlide(@NonNull View view, float v) {
-            // nothing
-        }
-    };
-    */
 
     public EditCommunityDetails() {
         // Required empty public constructor
@@ -76,24 +51,12 @@ public class EditCommunityDetails extends Fragment {
     // TODO: Rename and change types and number of parameters
     public static EditCommunityDetails newInstance() {
         EditCommunityDetails fragment = new EditCommunityDetails();
-        /*
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        */
         return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        /*
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-        */
     }
 
     @Override
@@ -140,8 +103,8 @@ public class EditCommunityDetails extends Fragment {
     }
 
     /**
-     *
-     * @return
+     * Verify field inputs
+     * @return True if all fields have valid values, else false
      */
     private boolean fieldsVerified() {
         final String name = binding.editCommunityEntryFields.communityNameEt.getText().toString().trim();
@@ -153,28 +116,30 @@ public class EditCommunityDetails extends Fragment {
         final String country = binding.editCommunityEntryFields.communityCountryEt.getText().toString().trim();
         final String phone = binding.editCommunityEntryFields.communityPhoneEt.getText().toString().trim();
 
+        String reqFieldMsg = getString(R.string.required_field_error_msg);
+
         if (name.equals("")) {
-            binding.editCommunityEntryFields.communityNameEt.setError("Required");
+            binding.editCommunityEntryFields.communityNameEt.setError(reqFieldMsg);
             return false;
         }
         if (streetAddress.equals("")) {
-            binding.editCommunityEntryFields.communityStreetAddressEt.setError("Required");
+            binding.editCommunityEntryFields.communityStreetAddressEt.setError(reqFieldMsg);
             return false;
         }
         if (city.equals("")) {
-            binding.editCommunityEntryFields.communityCityEt.setError("Required");
+            binding.editCommunityEntryFields.communityCityEt.setError(reqFieldMsg);
             return false;
         }
         if (state.equals("")) {
-            binding.editCommunityEntryFields.communityStateEt.setError("Required");
+            binding.editCommunityEntryFields.communityStateEt.setError(reqFieldMsg);
             return false;
         }
         if (zip.equals("")) {
-            binding.editCommunityEntryFields.communityZipEt.setError("Required");
+            binding.editCommunityEntryFields.communityZipEt.setError(reqFieldMsg);
             return false;
         }
         if (phone.equals("")) {
-            binding.editCommunityEntryFields.communityPhoneEt.setError("Required");
+            binding.editCommunityEntryFields.communityPhoneEt.setError(reqFieldMsg);
             return false;
         }
         // description and country are optional
