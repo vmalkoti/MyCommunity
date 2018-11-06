@@ -29,6 +29,7 @@ import com.malkoti.capstone.mycommunity.utils.FirebaseAuthUtil;
 import com.malkoti.capstone.mycommunity.utils.FirebaseDbUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -203,6 +204,7 @@ public class MainViewModel extends AndroidViewModel {
 
         String userId = signedInUser.getValue().userKey;
         String communityId = signedInUser.getValue().communityId;
+        String aptId = signedInUser.getValue().aptId;
 
         // https://stackoverflow.com/questions/39109616/should-firebasedatabase-getinstance-be-used-sparingly/39109665#39109665
         FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -228,13 +230,26 @@ public class MainViewModel extends AndroidViewModel {
         });
 
 
-        /*
-        // modify to get only those nodes that are related to the resident
-        Query aptsQuery = aptsNode.orderByChild("communityId").equalTo(communityId);
-        aptsQuery.addChildEventListener(aptListener);
-        Query residentsQuery = residentsNode.orderByChild("communityId").equalTo(communityId);
+        // get only those nodes that are related to the resident
+        Query aptsQuery = aptsNode.child(aptId);
+        aptsQuery.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                Apartment newApt = dataSnapshot.getValue(Apartment.class);
+                newApt.aptKey = dataSnapshot.getKey();
+                apartments.setValue(Arrays.asList(newApt));
+                Log.d(LOG_TAG, "aptValueEventListener: apt added " + newApt.aptName);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(LOG_TAG, "aptValueEventListener: error!",  databaseError.toException());
+            }
+        });
+
+        Query residentsQuery = residentsNode.orderByChild("aptId").equalTo(aptId);
         residentsQuery.addChildEventListener(residentListener);
-        */
+
         Query requestsQuery = requestsNode.orderByChild("residentId").equalTo(userId);
         requestsQuery.addChildEventListener(requestListener);
         Query announcementsQuery = announcementsNode.orderByChild("communityId").equalTo(communityId);
