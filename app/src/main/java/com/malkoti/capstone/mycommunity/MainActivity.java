@@ -110,6 +110,9 @@ public class MainActivity
         Log.d(LOG_TAG, "onResume: adding auth state listener");
         firebaseAuth.addAuthStateListener(authStateListener);
 
+        // need to fix issue - show correct fragment in viewpage after rotation
+        // https://stackoverflow.com/questions/27619610/android-viewpager-with-tab-not-maintaining-state-after-screen-rotation
+
         if (FirebaseAuthUtil.isUserSignedIn()) {
             // set the visibility of FAB - required to show/hide after rotatio
             Log.d(LOG_TAG, "onResume: Currently selected bottom nav item: "
