@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
 import com.malkoti.capstone.mycommunity.databinding.FragmentViewResidentsListBinding;
 import com.malkoti.capstone.mycommunity.databinding.ListItemResidentBinding;
 import com.malkoti.capstone.mycommunity.model.Apartment;
@@ -209,15 +210,17 @@ class ResidentListAdapter extends RecyclerView.Adapter<ResidentListAdapter.Resid
 
             // static image for now
             // future implementation - show images uploaded to firebase storage
+            int img;
             if (resident.gender.toLowerCase().equals("female")) {
-                itemBinding.residentItemImg.setImageDrawable(itemBinding.residentItemImg
-                        .getContext().getResources()
-                        .getDrawable(R.drawable.icons8_person_female_80));
+                img = R.drawable.icons8_person_female_80;
+                //itemBinding.residentItemImg.setImageDrawable(itemBinding.residentItemImg.getContext().getResources().getDrawable(R.drawable.icons8_person_female_80));
             } else {
-                itemBinding.residentItemImg.setImageDrawable(itemBinding.residentItemImg
-                        .getContext().getResources()
-                        .getDrawable(R.drawable.icons8_person_male_80));
+                img = R.drawable.icons8_person_male_80;
+                //itemBinding.residentItemImg.setImageDrawable(itemBinding.residentItemImg.getContext().getResources().getDrawable(R.drawable.icons8_person_male_80));
             }
+            Glide.with(itemBinding.residentItemImg.getContext())
+                    .load(img)
+                    .into(itemBinding.residentItemImg);
 
             // set onclick listener for item
             itemBinding.residentItemContainer.setOnClickListener(view -> listener.onItemClick(resident));

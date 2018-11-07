@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
 import com.malkoti.capstone.mycommunity.databinding.FragmentViewResidentInfoBinding;
 import com.malkoti.capstone.mycommunity.model.AppUser;
 import com.malkoti.capstone.mycommunity.viewmodels.DetailsViewModel;
@@ -95,13 +96,15 @@ public class ViewResidentInfo extends Fragment {
 
             // static image for now
             // future implementation - show images uploaded to firebase storage
+            int img;
             if (resident.gender.toLowerCase().equals("female")) {
-                binding.residentPhoto.setImageDrawable(this.getResources()
-                        .getDrawable(R.drawable.icons8_person_female_80));
+                img = R.drawable.icons8_person_female_80;
+                //binding.residentPhoto.setImageDrawable(this.getResources().getDrawable(R.drawable.icons8_person_female_80));
             } else {
-                binding.residentPhoto.setImageDrawable(this.getResources()
-                        .getDrawable(R.drawable.icons8_person_male_80));
+                img = R.drawable.icons8_person_male_80;
+                //binding.residentPhoto.setImageDrawable(this.getResources().getDrawable(R.drawable.icons8_person_male_80));
             }
+            Glide.with(binding.residentPhoto).load(img).into(binding.residentPhoto);
 
             viewModel.getApartmentById(resident.aptId)
                     .observe(this, apartment -> binding.residentAptTv.setText(apartment.aptName));
