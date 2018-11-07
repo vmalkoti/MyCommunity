@@ -40,6 +40,9 @@ public class MainActivity
     private ActivityMainBinding binding;
     private MainViewModel viewModel;
 
+    private int index = 0;
+    private boolean uiInitialized = false;
+
     private AHBottomNavigationAdapter bottomNavAdapter;
     private BottomBarFragmentStatePagerAdapter pagerAdapter;
 
@@ -52,8 +55,10 @@ public class MainActivity
                 if(viewModel.getSignedInUser().getValue()==null) {
                     viewModel.initSignedInUserData();
                 }
-                initUI();
-                initAds();
+                if(!uiInitialized) {
+                    initUI();
+                    initAds();
+                }
                 //attachDatabaseEventListeners();
             } else {
                 Log.d(LOG_TAG, "AuthListener: User not logged in");
@@ -76,10 +81,11 @@ public class MainActivity
         firebaseAuth = FirebaseAuth.getInstance();
         viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
-        //if(savedInstanceState != null) return;
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main);
 
+        // fixes issue of wrong fragment being displayed after rotation
+        if(savedInstanceState != null) return;
 
         if (FirebaseAuthUtil.isUserSignedIn()) {
             Log.d(LOG_TAG, "onCreate: Use Signed in");
@@ -115,9 +121,8 @@ public class MainActivity
 
         if (FirebaseAuthUtil.isUserSignedIn()) {
             // set the visibility of FAB - required to show/hide after rotatio
-            Log.d(LOG_TAG, "onResume: Currently selected bottom nav item: "
-                    + binding.bottomNavigation.getCurrentItem());
             int position = binding.bottomNavigation.getCurrentItem();
+            Log.d(LOG_TAG, "onResume: Currently selected bottom nav item: " + position);
             binding.viewpager.setCurrentItem(position, false);
             setFabVisibility(binding.bottomNavigation.getCurrentItem());
         }
@@ -140,11 +145,21 @@ public class MainActivity
         }
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+    }
 
     /**
      * Initialize UI components
      */
     private void initUI() {
+        uiInitialized = true;
         //viewModel.initSignedInUserData();
 
         setSupportActionBar(binding.toolbar);
@@ -224,6 +239,7 @@ public class MainActivity
             if (!wasSelected) {
                 Log.d(LOG_TAG, "Navbar button clicked =" + position);
                 binding.viewpager.setCurrentItem(position, false);
+                index = position;
             }
             setFabVisibility(position);
 
