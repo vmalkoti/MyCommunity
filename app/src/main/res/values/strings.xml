@@ -62,6 +62,42 @@
 
     <string name="required_field_error_msg">Required!</string>
     <string name="invalid_input_error_msg">Invalid</string>
+    <string name="hint_post_title">Title</string>
+    <string name="hint_resident_name">Resident Name</string>
+    <string name="hint_post_desc">Description of the announcement post</string>
+    <string name="hint_apt_name">Apartment Name</string>
+    <string name="hint_num_rooms">Number of rooms</string>
+    <string name="hint_apt_notes">Notes</string>
+    <string name="btn_txt_submit">Submit</string>
+    <string name="btn_txt_update">Update</string>
+    <string name="btn_txt_add">Add</string>
+    <string name="hint_request_title">Maintenance Request Title/Type</string>
+    <string name="hint_req_apt">Apartment Name</string>
+    <string name="hint_req_resident_name">Resident Name</string>
+    <string name="hint_req_desc">Enter description of issue and/or maintenance request required</string>
+    <string name="hint_req_comments">Comments</string>
+    <string name="btn_txt_cancel">Cancel</string>
+    <string name="hint_fname">First Name</string>
+    <string name="hint_lname">Last Name</string>
+    <string name="hint_resident_email">Email ID</string>
+    <string name="hint_phone">Phone</string>
+    <string name="hint_login_email">Email ID</string>
+    <string name="hint_login_password">Password</string>
+    <string name="btn_txt_login">Log In</string>
+    <string name="btn_txt_new_resident">New Resident Sign-Up</string>
+    <string name="btn_txt_new_mgmt">New Management Sign Up</string>
+    <string name="header_new_cred">New Login Credentials</string>
+    <string name="hint_passwd">Password</string>
+    <string name="hint_confirm_passwd">Re-type password</string>
+    <string name="header_new_community">New Community Information</string>
+    <string name="btn_txt_signup">Sign Up</string>
+    <string name="hint_community_name">Community Name</string>
+    <string name="hint_community_desc">Enter some information about your community</string>
+    <string name="hint_st_address">Street Address</string>
+    <string name="hint_city">City</string>
+    <string name="hint_state">State</string>
+    <string name="hint_zip">Zip</string>
+    <string name="hint_country">Country</string>
 
 
 </resources>

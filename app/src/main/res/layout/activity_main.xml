@@ -14,7 +14,7 @@
         <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:elevation="4dp">
+            android:elevation="@dimen/appbar_elevation">
 
             <View
                 android:id="@+id/push_toolbar_view"
@@ -33,7 +33,7 @@
         <com.google.android.gms.ads.AdView
             android:id="@+id/adview"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
+            android:layout_height="@dimen/adview_height"
             android:layout_gravity="top|center_horizontal"
             ads:adSize="BANNER"
             ads:adUnitId="@string/banner_ad_unit_id"
@@ -41,7 +41,7 @@
 
         <com.malkoti.capstone.mycommunity.NoSwipeViewPager
             android:id="@+id/viewpager"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="@dimen/adview_height"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:fitsSystemWindows="true"
@@ -53,10 +53,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right|bottom"
-            android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
+            android:layout_marginEnd="@dimen/fab_margin"
+            android:layout_marginRight="@dimen/fab_margin"
             android:layout_marginBottom="@dimen/fab_margin_bottom_navbar_opaque"
-            android:elevation="6dp"
+            android:elevation="@dimen/fab_elevation"
             android:src="@drawable/ic_baseline_add_24px"
             app:fabSize="normal" />
 

@@ -18,10 +18,7 @@
             android:id="@+id/community_name_txtInLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginRight="16dp"
+            android:layout_margin="@dimen/edittext_margin"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -31,7 +28,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@{community.name}"
-                android:hint="Community Name" />
+                android:hint="@string/hint_community_name" />
 
         </android.support.design.widget.TextInputLayout>
 
@@ -40,10 +37,7 @@
             android:id="@+id/community_desc_txtInLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginRight="16dp"
+            android:layout_margin="@dimen/edittext_margin"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/community_name_txtInLayout">
@@ -53,7 +47,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@{community.description}"
-                android:hint="Enter some information about your community"
+                android:hint="@string/hint_community_desc"
                 android:maxLines="5" />
 
         </android.support.design.widget.TextInputLayout>
@@ -63,10 +57,7 @@
             android:id="@+id/community_st_address_txtInLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginRight="16dp"
+            android:layout_margin="@dimen/edittext_margin"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/community_desc_txtInLayout">
@@ -76,7 +67,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@{community.streetAddress}"
-                android:hint="Street Address" />
+                android:hint="@string/hint_st_address" />
 
         </android.support.design.widget.TextInputLayout>
 
@@ -85,10 +76,7 @@
             android:id="@+id/community_city_txtInLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginRight="16dp"
+            android:layout_margin="@dimen/edittext_margin"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/community_st_address_txtInLayout">
@@ -98,7 +86,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@{community.city}"
-                android:hint="City" />
+                android:hint="@string/hint_city" />
 
         </android.support.design.widget.TextInputLayout>
 
@@ -106,10 +94,7 @@
             android:id="@+id/community_state_txtInLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginRight="16dp"
+            android:layout_margin="@dimen/edittext_margin"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/community_city_txtInLayout">
@@ -119,7 +104,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@{community.state}"
-                android:hint="State"
+                android:hint="@string/hint_state"
                 android:inputType="textAutoComplete" />
 
         </android.support.design.widget.TextInputLayout>
@@ -129,10 +114,7 @@
             android:id="@+id/community_zip_txtInLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginRight="16dp"
+            android:layout_margin="@dimen/edittext_margin"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/community_state_txtInLayout">
@@ -142,7 +124,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@{community.zip}"
-                android:hint="Zip"
+                android:hint="@string/hint_zip"
                 android:inputType="number" />
 
         </android.support.design.widget.TextInputLayout>
@@ -152,10 +134,7 @@
             android:id="@+id/community_country_txtInLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginRight="16dp"
+            android:layout_margin="@dimen/edittext_margin"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/community_zip_txtInLayout">
@@ -165,7 +144,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@{community.country}"
-                android:hint="Country"
+                android:hint="@string/hint_country"
                 android:inputType="textAutoComplete" />
 
         </android.support.design.widget.TextInputLayout>
@@ -175,10 +154,7 @@
             android:id="@+id/community_phone_txtInLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginRight="16dp"
+            android:layout_margin="@dimen/edittext_margin"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintTop_toBottomOf="@id/community_country_txtInLayout">
@@ -188,7 +164,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@{community.phoneNum}"
-                android:hint="Phone"
+                android:hint="@string/hint_phone"
                 android:inputType="phone" />
 
         </android.support.design.widget.TextInputLayout>

@@ -7,7 +7,8 @@
     </data>
 
 
-    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.constraint.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
@@ -17,13 +18,13 @@
         <ImageView
             android:id="@+id/resident_photo_img"
             android:layout_width="match_parent"
-            android:layout_height="150dp"
+            android:layout_height="@dimen/hero_img_height"
             android:scaleType="centerCrop"
             tools:src="@tools:sample/backgrounds/scenic" />
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="75dp"
+            android:layout_height="@dimen/fade_scrim_height"
             android:background="@drawable/fade_gradient_bottom"
             app:layout_constraintBottom_toBottomOf="@id/resident_photo_img" />
 
@@ -31,23 +32,23 @@
             android:id="@+id/resident_fname_et"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:hint="First Name"
+            android:layout_margin="@dimen/edittext_margin"
+            android:hint="@string/hint_fname"
             app:layout_constraintTop_toBottomOf="@id/resident_photo_img" />
 
         <EditText
             android:id="@+id/resident_lname_et"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:hint="Last Name"
+            android:layout_margin="@dimen/edittext_margin"
+            android:hint="@string/hint_lname"
             app:layout_constraintTop_toBottomOf="@id/resident_fname_et" />
 
         <Spinner
             android:id="@+id/resident_gender_spn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:layout_margin="@dimen/edittext_margin"
             android:entries="@array/gender_list"
             app:layout_constraintTop_toBottomOf="@id/resident_lname_et" />
 
@@ -56,15 +57,15 @@
             android:id="@+id/resident_apt_spn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:layout_margin="@dimen/edittext_margin"
             app:layout_constraintTop_toBottomOf="@id/resident_gender_spn" />
 
         <EditText
             android:id="@+id/resident_email_id_et"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:hint="Email"
+            android:layout_margin="@dimen/edittext_margin"
+            android:hint="@string/hint_resident_email"
             android:inputType="textEmailAddress"
             app:layout_constraintTop_toBottomOf="@id/resident_apt_spn" />
 
@@ -72,8 +73,8 @@
             android:id="@+id/resident_phone_et"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
-            android:hint="Phone"
+            android:layout_margin="@dimen/edittext_margin"
+            android:hint="@string/hint_phone"
             android:inputType="phone|number"
             app:layout_constraintTop_toBottomOf="@id/resident_email_id_et" />
 
@@ -82,9 +83,9 @@
             android:id="@+id/add_resident_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:layout_margin="@dimen/edittext_margin"
             android:background="@color/colorAccent"
-            android:text="Submit"
+            android:text="@string/btn_txt_submit"
             android:visibility="visible"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/cancel_btn"
@@ -97,9 +98,9 @@
             android:id="@+id/cancel_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
+            android:layout_margin="@dimen/edittext_margin"
             android:background="@color/colorAccent"
-            android:text="Cancel"
+            android:text="@string/btn_txt_cancel"
             android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

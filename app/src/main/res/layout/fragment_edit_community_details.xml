@@ -21,13 +21,13 @@
             <ImageView
                 android:id="@+id/community_photo"
                 android:layout_width="match_parent"
-                android:layout_height="150dp"
+                android:layout_height="@dimen/hero_img_height"
                 android:scaleType="centerCrop"
                 tools:src="@tools:sample/backgrounds/scenic" />
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="75dp"
+                android:layout_height="@dimen/fade_scrim_height"
                 android:background="@drawable/fade_gradient_bottom"
                 app:layout_constraintBottom_toBottomOf="@id/community_photo" />
 
@@ -44,10 +44,9 @@
                 android:id="@+id/add_community_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="16dp"
+                android:layout_margin="@dimen/edittext_margin"
                 android:background="@color/colorAccent"
-                android:text="Add"
+                android:text="@string/btn_txt_add"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
