@@ -2,31 +2,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@android:color/darker_gray"
+    android:orientation="vertical"
     android:padding="@dimen/widget_margin">
 
     <TextView
         android:id="@+id/appwidget_status_tv"
+        style="@android:style/TextAppearance.DeviceDefault.Large"
         android:layout_width="match_parent"
-        android:gravity="center_horizontal"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
+        android:layout_margin="@dimen/edittext_gap"
         android:contentDescription="@string/appwidget_text"
+        android:gravity="center_horizontal"
         android:text="@string/appwidget_text"
-        android:textColor="#ffffff"
-        android:textSize="24sp"
-        style="@android:style/TextAppearance.DeviceDefault.Large" />
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/viewholder_primary_item" />
 
     <TextView
         android:id="@+id/appwidget_datetime_tv"
+        style="@android:style/TextAppearance.DeviceDefault.Small"
         android:layout_width="match_parent"
-        android:gravity="center_horizontal"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        tools:text="@tools:sample/date/mmddyy"
-        android:textColor="#ffffff"
-        android:textSize="16sp"
-        style="@android:style/TextAppearance.DeviceDefault.Small" />
+        android:layout_margin="@dimen/edittext_gap"
+        android:gravity="center_horizontal"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/default_tv_text_size"
+        tools:text="@tools:sample/date/mmddyy" />
 
 </LinearLayout>

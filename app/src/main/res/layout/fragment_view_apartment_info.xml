@@ -6,64 +6,66 @@
 
     </data>
 
-    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".ViewApartmentInfo">
+        android:layout_height="match_parent">
 
-        <!-- TODO: Show pictures here on top -->
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".ViewApartmentInfo">
 
-        <TextView
-            android:id="@+id/apt_name_tv"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginLeft="16dp"
-            android:layout_marginTop="32dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
-            android:textSize="24sp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="Unit Name" />
+            <!-- TODO: Show pictures here on top -->
 
-        <TextView
-            android:id="@+id/apt_num_rooms_tv"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:textSize="16sp"
-            app:layout_constraintLeft_toLeftOf="@id/apt_name_tv"
-            app:layout_constraintRight_toRightOf="@id/apt_name_tv"
-            app:layout_constraintTop_toBottomOf="@id/apt_name_tv"
-            tools:text="Num of rooms" />
+            <TextView
+                android:id="@+id/apt_name_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/edittext_margin"
+                android:textSize="@dimen/title_txt"
+                android:textStyle="bold"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="Unit Name" />
 
-        <TextView
-            android:id="@+id/apt_status_tv"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:textSize="16sp"
-            app:layout_constraintLeft_toLeftOf="@id/apt_num_rooms_tv"
-            app:layout_constraintRight_toRightOf="@id/apt_num_rooms_tv"
-            app:layout_constraintTop_toBottomOf="@id/apt_num_rooms_tv"
-            tools:text="Status" />
+            <TextView
+                android:id="@+id/apt_num_rooms_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/edittext_margin"
+                android:textSize="@dimen/default_tv_text_size"
+                app:layout_constraintLeft_toLeftOf="@id/apt_name_tv"
+                app:layout_constraintRight_toRightOf="@id/apt_name_tv"
+                app:layout_constraintTop_toBottomOf="@id/apt_name_tv"
+                tools:text="Num of rooms" />
 
-        <TextView
-            android:id="@+id/apt_notes_tv"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:textSize="16sp"
-            app:layout_constraintLeft_toLeftOf="@id/apt_status_tv"
-            app:layout_constraintRight_toRightOf="@id/apt_status_tv"
-            app:layout_constraintTop_toBottomOf="@id/apt_status_tv"
-            tools:text="@tools:sample/lorem[20]" />
+            <TextView
+                android:id="@+id/apt_status_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/edittext_margin"
+                android:textSize="@dimen/default_tv_text_size"
+                app:layout_constraintLeft_toLeftOf="@id/apt_num_rooms_tv"
+                app:layout_constraintRight_toRightOf="@id/apt_num_rooms_tv"
+                app:layout_constraintTop_toBottomOf="@id/apt_num_rooms_tv"
+                tools:text="Status" />
+
+            <TextView
+                android:id="@+id/apt_notes_tv"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/edittext_margin"
+                android:textSize="@dimen/default_tv_text_size"
+                app:layout_constraintLeft_toLeftOf="@id/apt_status_tv"
+                app:layout_constraintRight_toRightOf="@id/apt_status_tv"
+                app:layout_constraintTop_toBottomOf="@id/apt_status_tv"
+                tools:text="@tools:sample/lorem[20]" />
 
 
-    </android.support.constraint.ConstraintLayout>
+        </android.support.constraint.ConstraintLayout>
 
+    </android.support.v4.widget.NestedScrollView>
 </layout>

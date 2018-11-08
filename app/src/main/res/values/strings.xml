@@ -74,7 +74,7 @@
     <string name="hint_request_title">Maintenance Request Title/Type</string>
     <string name="hint_req_apt">Apartment Name</string>
     <string name="hint_req_resident_name">Resident Name</string>
-    <string name="hint_req_desc">Enter description of issue and/or maintenance request required</string>
+    <string name="hint_req_desc">Enter details of issue</string>
     <string name="hint_req_comments">Comments</string>
     <string name="btn_txt_cancel">Cancel</string>
     <string name="hint_fname">First Name</string>

@@ -25,4 +25,7 @@ http://developer.android.com/guide/topics/appwidgets/index.html#CreatingLayout
     <dimen name="header_margin">16dp</dimen>
     <dimen name="header_textsize">20sp</dimen>
     <dimen name="edittext_gap">8dp</dimen>
+    <dimen name="default_tv_text_size">16sp</dimen>
+    <dimen name="viewholder_primary_item">24sp</dimen>
+    <dimen name="item_thumbnail">56dp</dimen>
 </resources>
