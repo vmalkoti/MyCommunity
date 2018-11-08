@@ -6,8 +6,7 @@
         <!-- add variables here -->
     </data>
 
-    <android.support.v4.widget.NestedScrollView
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
@@ -21,6 +20,7 @@
                 android:id="@+id/resident_photo"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/hero_img_height"
+                android:contentDescription="@string/content_desc_resident_photo"
                 android:scaleType="centerCrop"
                 tools:src="@tools:sample/backgrounds/scenic" />
 
@@ -106,8 +106,8 @@
                 android:id="@+id/resident_apt_tv"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="@dimen/edittext_margin"
                 android:layout_marginEnd="@dimen/edittext_margin"
+                android:layout_marginRight="@dimen/edittext_margin"
                 android:autoLink="phone"
                 android:textSize="@dimen/default_tv_text_size"
                 app:layout_constraintEnd_toEndOf="parent"

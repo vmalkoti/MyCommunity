@@ -6,11 +6,10 @@
 
     </data>
 
-    <android.support.constraint.ConstraintLayout
-        android:id="@+id/resident_item_container"
-        xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/resident_item_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -19,6 +18,7 @@
             android:layout_width="@dimen/item_thumbnail"
             android:layout_height="@dimen/item_thumbnail"
             android:layout_margin="@dimen/edittext_gap"
+            android:contentDescription="@string/content_desc_resident_photo"
             android:scaleType="centerCrop"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"

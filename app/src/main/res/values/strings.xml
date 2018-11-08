@@ -98,6 +98,8 @@
     <string name="hint_state">State</string>
     <string name="hint_zip">Zip</string>
     <string name="hint_country">Country</string>
+    <string name="content_desc_community_photo">Community Main Photo</string>
+    <string name="content_desc_resident_photo">Resident Photo</string>
 
 
 </resources>
