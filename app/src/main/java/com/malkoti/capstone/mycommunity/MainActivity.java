@@ -19,6 +19,7 @@ import com.aurelhubert.ahbottomnavigation.AHBottomNavigationAdapter;
 import com.aurelhubert.ahbottomnavigation.notification.AHNotification;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.MobileAds;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.auth.FirebaseAuth;
 import com.malkoti.capstone.mycommunity.databinding.ActivityMainBinding;
 import com.malkoti.capstone.mycommunity.utils.FirebaseAuthUtil;
@@ -45,6 +46,8 @@ public class MainActivity
 
     private AHBottomNavigationAdapter bottomNavAdapter;
     private BottomBarFragmentStatePagerAdapter pagerAdapter;
+
+    private FirebaseAnalytics mFirebaseAnalytics;
 
     private FirebaseAuth firebaseAuth;
     private FirebaseAuth.AuthStateListener authStateListener = new FirebaseAuth.AuthStateListener() {
@@ -78,6 +81,10 @@ public class MainActivity
         Log.d(LOG_TAG, "onCreate: Started");
         signInLaunchIntent = new Intent(MainActivity.this, LoginActivity.class);
 
+        // Obtain the FirebaseAnalytics instance.
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+
+        // Obtain the FirebaseAuth instance
         firebaseAuth = FirebaseAuth.getInstance();
         viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
 
